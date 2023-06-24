@@ -31,6 +31,9 @@ module.exports = {
       postal_code: {
         type: Sequelize.INTEGER,
       },
+      telephone: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

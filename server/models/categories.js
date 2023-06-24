@@ -12,7 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       Categories.hasMany(models.Items, {
         foreignKey: "categories_id",
       });
-      Categories.belongsTo(models.Users);
+      Categories.belongsTo(models.Users, {
+        foreignKey: "users_id",
+      });
     }
   }
   Categories.init(

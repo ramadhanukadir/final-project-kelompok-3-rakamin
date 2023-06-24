@@ -10,28 +10,28 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Users.hasMany(models.Items, {
-        foreignKey: "user_id",
+        foreignKey: "users_id",
       });
       Users.hasMany(models.Categories, {
-        foreignKey: "user_id",
+        foreignKey: "users_id",
       });
       Users.hasMany(models.Suppliers, {
-        foreignKey: "user_id",
+        foreignKey: "users_id",
       });
       Users.hasMany(models.Customers, {
-        foreignKey: "user_id",
+        foreignKey: "users_id",
       });
       Users.hasMany(models.Orders, {
-        foreignKey: "user_id",
+        foreignKey: "users_id",
       });
-      Users.hasMany(models.Warehouse, {
-        foreignKey: "user_id",
+      Users.hasMany(models.Warehouses, {
+        foreignKey: "users_id",
       });
       Users.hasMany(models.Warehouses_Stock, {
-        foreignKey: "user_id",
+        foreignKey: "users_id",
       });
       Users.hasMany(models.Expenses, {
-        foreignKey: "user_id",
+        foreignKey: "users_id",
       });
     }
   }

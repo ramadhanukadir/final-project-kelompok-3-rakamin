@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       Warehouses.hasMany(models.Orders, {
         foreignKey: "warehouses_id",
       });
+      Warehouses.hasMany(models.Orders, {
+        foreignKey: "warehouses_id",
+      });
       Warehouses.hasMany(models.Warehouses_Stock, {
         foreignKey: "warehouses_id",
       });
@@ -31,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       city: DataTypes.STRING,
       province: DataTypes.STRING,
       postal_code: DataTypes.INTEGER,
+      telephone: DataTypes.STRING,
     },
     {
       sequelize,

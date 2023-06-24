@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Items.belongsTo(models.Users, {
-        foreignKey: "categories_id",
+        foreignKey: "users_id",
       });
       Items.belongsTo(models.Categories, {
         foreignKey: "categories_id",
@@ -18,12 +18,15 @@ module.exports = (sequelize, DataTypes) => {
       Items.hasMany(models.Suppliers_Items, {
         foreignKey: "items_id",
       });
-      Items.belongsToMany(models.Orders_Items, {
+      Items.belongsToMany(models.Orders, {
         through: models.Orders_Items,
         foreignKey: "items_id",
       });
       Items.hasMany(models.Warehouses_Stock, {
         foreignKey: "warehouses_id",
+      });
+      Items.hasMany(models.Expenses, {
+        foreignKey: "items_id",
       });
     }
   }
