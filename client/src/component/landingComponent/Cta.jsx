@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   VStack,
@@ -9,24 +8,13 @@ import {
   Grid,
   GridItem,
   Container,
+  Text,
+  ImageProps,
 } from "@chakra-ui/react";
 import {} from "@chakra-ui/react";
-
-const FeatureProps = {
-  heading: "",
-  text: "",
-};
-
-const Feature = ({ heading, text }) => {
-  return (
-    <GridItem>
-      <chakra.h3 fontSize="xl" fontWeight="600">
-        {heading}
-      </chakra.h3>
-      <chakra.p>{text}</chakra.p>
-    </GridItem>
-  );
-};
+import Image from "next/image";
+import Image2 from "../../image/image1.png";
+import Image3 from "../../image/image2.png";
 
 const Cta = () => {
   return (
@@ -41,48 +29,44 @@ const Cta = () => {
         <GridItem colSpan={1}>
           <VStack alignItems="flex-start" spacing="20px">
             <chakra.h2 fontSize="3xl" fontWeight="700">
-              Medium length title
+              Manage and fulfill orders anytime, anywhere
             </chakra.h2>
-            <Button colorScheme="green" size="md">
-              Call To Action
-            </Button>
+            <Text colorScheme="green" size="md">
+              Stay connected and get real-time updates on the order status, no
+              matter where you are.
+            </Text>
+            <Image
+              src={Image2}
+              alt={"Hero Image"}
+              fit={"cover"}
+              align={"center"}
+              width={200}
+              height={200}
+            />
           </VStack>
         </GridItem>
         <GridItem>
-          <Flex>
-            <chakra.p>
-              Provide your customers a story they would enjoy keeping in mind
-              the objectives of your website. Pay special attention to the tone
-              of voice.
-            </chakra.p>
-          </Flex>
+          <VStack>
+            <Image
+              src={Image3}
+              alt={"Hero Image"}
+              fit={"cover"}
+              align={"center"}
+              width={300}
+              height={300}
+            />
+          </VStack>
         </GridItem>
       </Grid>
-      <Divider mt={12} mb={12} />
-      <Grid
-        templateColumns={{
-          base: "repeat(1, 1fr)",
-          sm: "repeat(2, 1fr)",
-          md: "repeat(4, 1fr)",
-        }}
-        gap={{ base: "8", sm: "12", md: "16" }}>
-        <Cta
-          heading={"First Feature"}
-          text={"Short text describing one of you features/service"}
-        />
-        <Feature
-          heading={"Second Feature"}
-          text={"Short text describing one of you features/service"}
-        />
-        <Feature
-          heading={"Third Feature"}
-          text={"Short text describing one of you features/service"}
-        />
-        <Feature
-          heading={"Fourth Feature"}
-          text={"Short text describing one of you features/service"}
-        />
+      <Grid justifyContent="center" alignItems="center" marginTop={50}>
+        <Text textAlign="center">Ready to Get Started?</Text>
+        <Text>
+          Uncover our products to enhance your supply chain planning and unlock
+          your growth potential.
+        </Text>
+        <Button>Start Demo/Trial</Button>
       </Grid>
+      <Divider mt={12} mb={12} />
     </Box>
   );
 };
