@@ -2,76 +2,79 @@ import React from "react";
 import {
   Box,
   chakra,
-  Grid,
-  Flex,
-  Heading,
-  Text,
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
 } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import Image2 from "../../image/cloud-01.png";
 
 const TableLanding = () => {
-  // const data = [
-  //   {
-  //     id: 1,
-  //     icon: { PhoneIcon },
-  //     title: "Cost and Time Efficiency",
-  //     description:
-  //       "No longer need to pay for conventional server needs and maintenance.",
-  //     img: { Image2 },
-  //   },
-  //   {
-  //     id: 2,
-  //     icon: { AddIcon },
-  //     title: "Up to date and real time data",
-  //     description:
-  //       "Get the latest cash flow information based on the last transaction.",
-  //     img: { Image2 },
-  //   },
-  //   {
-  //     id: 3,
-  //     icon: { WarningIcon },
-  //     title: "Support Business Growth",
-  //     description:
-  //       "Save on IT infrastructure costs with flexible cloud technology.",
-  //     img: { Image2 },
-  //   },
-  //   {
-  //     id: 4,
-  //     icon: { CheckCircleIcon },
-  //     title: "The best after sales service with live chat",
-  //     description:
-  //       "Contact the support team for implementation, to product training for FREE!",
-  //     img: { Image2 },
-  //   },
-  // ];
+  const data = [
+    {
+      id: 1,
+      name: "Durasi Pengerjaan",
+      durasi: "Durasi pengerjaan",
+      software: "Otomatis & minim risiko human error",
+      icon: <CheckCircleIcon />,
+    },
+    {
+      id: 2,
+      name: "Aksesibilitas laporan",
+      durasi: "Aksesibilitas laporan",
+      software: "Mudah diakses dimana saja",
+      icon: <CheckCircleIcon />,
+    },
+    {
+      id: 3,
+      name: "Pembukuan",
+      durasi: "Pembukuan",
+      software: "Rapi, terintegrasi & real-time",
+      icon: <CheckCircleIcon />,
+    },
+    {
+      id: 4,
+      name: "Biaya dan Perawatan",
+      durasi: "Biaya dan Perawatan",
+      software: "Hemat biaya tanpa maintenance",
+      icon: <CheckCircleIcon />,
+    },
+    {
+      id: 5,
+      name: "Operasional",
+      durasi: "Operasional",
+      software: "Bisa digunakan siapapun",
+      icon: <CheckCircleIcon />,
+    },
+    {
+      id: 6,
+      name: "Kalkulasi",
+      durasi: "Kalkulasi",
+      software: "Perhitungan otomatis",
+      icon: <CheckCircleIcon />,
+    },
+  ];
 
   return (
     <Box maxW="7xl" mx={"auto"} my={15} pt={5} px={{ base: 2, sm: 12, md: 17 }}>
       <chakra.h1 textAlign={"center"} fontSize={"3xl"} fontWeight={"bold"}>
-        Benefits of Online Accounting System
+        Why You Switch to Online Management?
       </chakra.h1>
       <chakra.h3
         textAlign={"center"}
         fontSize={"xl"}
         pb={10}
         fontWeight={"normal"}>
-        Access data anytime anywhere online. No need to bother installing
-        applications anymore. These are the advantages of using accounting
-        software for your business.
+        Compare how to manage business finances conventionally by using the
+        Stocktrackr software
       </chakra.h3>
 
       <TableContainer>
-        <Table variant="striped" colorScheme="teal">
+        <Table variant="striped" size="md">
           <Thead>
             <Tr>
               <Th>Proses</Th>
@@ -80,39 +83,16 @@ const TableLanding = () => {
             </Tr>
           </Thead>
           <Tbody>
-            <Tr>
-              <Td fontWeight="bold">Durasi pengerjaan</Td>
-              <Td>Durasi pengerjaan</Td>
-              <Td>
-                <CheckCircleIcon pr="2" />
-                Otomatis & minim risiko human error
-              </Td>
-            </Tr>
-            <Tr>
-              <Td>feet</Td>
-              <Td>centimetres (cm)</Td>
-              <Td>30.48</Td>
-            </Tr>
-            <Tr>
-              <Td>yards</Td>
-              <Td>metres (m)</Td>
-              <Td>0.91444</Td>
-            </Tr>
-            <Tr>
-              <Td>yards</Td>
-              <Td>metres (m)</Td>
-              <Td>0.91444</Td>
-            </Tr>
-            <Tr>
-              <Td>yards</Td>
-              <Td>metres (m)</Td>
-              <Td>0.91444</Td>
-            </Tr>
-            <Tr>
-              <Td>yards</Td>
-              <Td>metres (m)</Td>
-              <Td>0.91444</Td>
-            </Tr>
+            {data.map((item) => (
+              <Tr key={item.id}>
+                <Td fontWeight="bold">{item.name}</Td>
+                <Td>{item.durasi}</Td>
+                <Td>
+                  {item.icon}
+                  {item.software}
+                </Td>
+              </Tr>
+            ))}
           </Tbody>
         </Table>
       </TableContainer>
