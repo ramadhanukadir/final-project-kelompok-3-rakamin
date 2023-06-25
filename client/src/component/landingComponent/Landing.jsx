@@ -1,5 +1,14 @@
 import React from "react";
-import { Navbar, Hero, AccountingSystem, TableLanding } from "./index";
+import {
+  Navbar,
+  Hero,
+  AccountingSystem,
+  TableLanding,
+  AccordionLanding,
+  Cta,
+  Footer,
+  Testimonials,
+} from "./index";
 
 const Landing = () => {
   return (
@@ -8,6 +17,10 @@ const Landing = () => {
       <Hero />
       <AccountingSystem />
       <TableLanding />
+      {/* <Testimonials /> */}
+      <AccordionLanding />
+      {/* <Cta /> */}
+      {/* <Footer /> */}
     </>
   );
 };

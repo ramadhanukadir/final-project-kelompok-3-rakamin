@@ -14,7 +14,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import Image2 from "../../image/cloud-01.png";
+import Image2 from "../../image/image3.png";
 
 const Hero = () => {
   return (
@@ -70,6 +70,8 @@ const Hero = () => {
               size={"lg"}
               fontWeight={"normal"}
               px={6}
+              bg={"blue.400"}
+              color={"white"}
               leftIcon={<PlayIcon h={4} w={4} color={"gray.300"} />}>
               Explore our Products
             </Button>
