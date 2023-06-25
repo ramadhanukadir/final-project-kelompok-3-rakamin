@@ -32,7 +32,7 @@ const Cta = () => {
               Manage and fulfill orders anytime, anywhere
             </chakra.h2>
             <Text colorScheme="green" size="md">
-              Stay connected and get real-time updates on the order status, no
+              Stay connected and get real-time updates on the order status, <br></br>no
               matter where you are.
             </Text>
             <Image
@@ -59,12 +59,12 @@ const Cta = () => {
         </GridItem>
       </Grid>
       <Grid justifyContent="center" alignItems="center" marginTop={50}>
-        <Text textAlign="center">Ready to Get Started?</Text>
+        <Text textAlign="center" fontWeight="bold" fontSize="3xl">Ready to Get Started?</Text>
         <Text>
           Uncover our products to enhance your supply chain planning and unlock
           your growth potential.
         </Text>
-        <Button>Start Demo/Trial</Button>
+        <Button bg="#1363DE" color="white" width="150px" marginInline={"auto"} marginTop={3}>Start Demo/Trial</Button>
       </Grid>
       <Divider mt={12} mb={12} />
     </Box>

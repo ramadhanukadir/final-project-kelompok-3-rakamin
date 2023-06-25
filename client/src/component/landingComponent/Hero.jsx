@@ -39,7 +39,7 @@ const Hero = () => {
                 bg: "blue.400",
                 zIndex: -1,
               }}>
-              Real Time
+              Real Time {" "}
             </Text>
             <Text as={"span"} color={"blue.400"}>
               Inventory Management for Business
