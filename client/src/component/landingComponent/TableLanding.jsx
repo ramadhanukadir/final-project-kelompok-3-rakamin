@@ -20,42 +20,42 @@ const TableLanding = () => {
       name: "Durasi Pengerjaan",
       durasi: "Durasi pengerjaan",
       software: "Otomatis & minim risiko human error",
-      icon: <CheckCircleIcon />,
+      icon: <CheckCircleIcon color="#1363DE"/>,
     },
     {
       id: 2,
       name: "Aksesibilitas laporan",
       durasi: "Aksesibilitas laporan",
       software: "Mudah diakses dimana saja",
-      icon: <CheckCircleIcon />,
+      icon: <CheckCircleIcon color="#1363DE"/>,
     },
     {
       id: 3,
       name: "Pembukuan",
       durasi: "Pembukuan",
       software: "Rapi, terintegrasi & real-time",
-      icon: <CheckCircleIcon />,
+      icon: <CheckCircleIcon color="#1363DE"/>,
     },
     {
       id: 4,
       name: "Biaya dan Perawatan",
       durasi: "Biaya dan Perawatan",
       software: "Hemat biaya tanpa maintenance",
-      icon: <CheckCircleIcon />,
+      icon: <CheckCircleIcon color="#1363DE"/>,
     },
     {
       id: 5,
       name: "Operasional",
       durasi: "Operasional",
       software: "Bisa digunakan siapapun",
-      icon: <CheckCircleIcon />,
+      icon: <CheckCircleIcon color="#1363DE"/>,
     },
     {
       id: 6,
       name: "Kalkulasi",
       durasi: "Kalkulasi",
       software: "Perhitungan otomatis",
-      icon: <CheckCircleIcon />,
+      icon: <CheckCircleIcon color="#1363DE"/>,
     },
   ];
 
@@ -88,7 +88,7 @@ const TableLanding = () => {
                 <Td fontWeight="bold">{item.name}</Td>
                 <Td>{item.durasi}</Td>
                 <Td>
-                  {item.icon}
+                  {item.icon} {" "}
                   {item.software}
                 </Td>
               </Tr>

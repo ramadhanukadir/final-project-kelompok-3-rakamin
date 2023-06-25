@@ -25,12 +25,12 @@ const AccordionLanding = () => {
       <Accordion defaultIndex={[0]} allowMultiple>
         <AccordionItem>
           <AccordionButton>
-            <Box flex="1" textAlign="left">
+            <Box flex="1" textAlign="left" fontWeight="bold">
               What is Inventory Management?
             </Box>
             <AccordionIcon />
           </AccordionButton>
-          <AccordionPanel pb={4} bg={"blue.400"}>
+          <AccordionPanel pb={4} bg={"#DFF6FE"}>
             <Text>
               Inventory or stock management is the process that businesses use
               to track stock, orders, sales, and services. It's particularly
@@ -42,12 +42,12 @@ const AccordionLanding = () => {
 
         <AccordionItem>
           <AccordionButton>
-            <Box flex="1" textAlign="left">
+            <Box flex="1" textAlign="left" fontWeight="bold">
               What are the 4 types of Inventory Management?
             </Box>
             <AccordionIcon />
           </AccordionButton>
-          <AccordionPanel pb={4} bg={"blue.400"}>
+          <AccordionPanel pb={4} bg={"#DFF6FE"}>
             <Text>The 4 types of inventory management are:</Text>
             <UnorderedList>
               <ListItem>
@@ -93,12 +93,12 @@ const AccordionLanding = () => {
 
         <AccordionItem>
           <AccordionButton>
-            <Box flex="1" textAlign="left">
+            <Box flex="1" textAlign="left" fontWeight="bold">
               What is Just-In-Time Management?
             </Box>
             <AccordionIcon />
           </AccordionButton>
-          <AccordionPanel pb={4} bg={"blue.400"}>
+          <AccordionPanel pb={4} bg={"#DFF6FE"}>
             <Text>
               Just-In-Time (JIT) Inventory Management is a system that involves
               ordering products from suppliers as and when they are needed,

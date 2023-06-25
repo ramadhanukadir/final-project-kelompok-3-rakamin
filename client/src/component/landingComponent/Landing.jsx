@@ -6,8 +6,6 @@ import {
   TableLanding,
   AccordionLanding,
   Cta,
-  Footer,
-  Testimonials,
 } from "./index";
 
 const Landing = () => {
@@ -17,10 +15,8 @@ const Landing = () => {
       <Hero />
       <AccountingSystem />
       <TableLanding />
-      {/* <Testimonials /> */}
       <AccordionLanding />
-      {/* <Cta /> */}
-      {/* <Footer /> */}
+      <Cta />
     </>
   );
 };
