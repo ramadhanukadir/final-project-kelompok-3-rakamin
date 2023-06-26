@@ -3,16 +3,19 @@ const Suppliers = db.Suppliers;
 
 const postSupplier = async (req, res) => {
     try {      
-        const Addsupplier = await Suppliers.create({
+        const Addsupplier = await Suppliers_.create({
             users_id : req.body.users_id,
             name: req.body.name,
             address: req.body.address,
             telephone: req.body.telephone
         })
         if(!Addsupplier) {
-            return res.status(404).json({message: "Suppliers not found"})
+            return res.status(404).json({
+                succes: false,
+                message: "Suppliers not found"})
         }
         return res.status(201).json({
+            succes: true,
             message: "Succes Create Suppliers",
             data: Addsupplier 
         })
@@ -37,6 +40,7 @@ const getAllSupplier = async (req, res) => {
     });
     if(findAllSupplier.length === 0) {
         return res.status(404).json({
+            succes: false,
             message: "Data Supplier Not Found",
         })
     }
@@ -44,6 +48,7 @@ const getAllSupplier = async (req, res) => {
     const totalPages = Math.ceil(totalItems / limit);
 
     return res.status(201).json({
+        succes: true,
         msg: "Data Suppllier Retrieved",
         page,
         totalItems: findAllSupplier.length, 
@@ -68,11 +73,13 @@ const getAllSupplier = async (req, res) => {
 
             if (!findIdSupplier) {
                 return res.status(404).json({
+                    succes: false,
                     message: "Data Supplier Not Found",
                 })
             }
             return res.status(201).json({
-                message: "Data Suppllier Found",
+                succes: true,
+                message: "Data Suppllier Retrieved",
                 data: findIdSupplier
             })
 
@@ -97,7 +104,6 @@ const getAllSupplier = async (req, res) => {
             
             } 
             
-
             await Suppliers.update({
                 users_id : req.body.users_id,
                 name: req.body.name,
@@ -106,6 +112,7 @@ const getAllSupplier = async (req, res) => {
             }, { where: {id: req.params.id}});
 
             return res.status(200).send({
+                succes: true,
                 message: "Successfully update data suppliers",
             });
                 
