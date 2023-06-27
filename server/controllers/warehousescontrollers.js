@@ -12,6 +12,13 @@ const getAllWarehouses = async (req, res) => {
 const getWarehousesById = async (req, res) => {
   try {
     const response = await Warehouses.findByPk(req.params.id);
+
+    if (!response) {
+      return res.status(404).json({
+        message: 'Warehouse Not Found!',
+      });
+    }
+
     return res.status(200).json({ data: response });
   } catch (error) {
     console.log(error.message);
@@ -44,7 +51,7 @@ const deleteWarehouses = async (req, res) => {
   try {
     await Warehouses.destroy({ where: { id: req.params.id } });
 
-    return res.status(200).json({ message: 'Successfully deleted' });
+    return res.status(200).json({ message: 'Warehouse deleted' });
   } catch (error) {
     console.log(error);
   }
