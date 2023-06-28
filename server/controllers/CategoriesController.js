@@ -12,7 +12,7 @@ const getAllCategories = async (req, res) => {
 
     return res.status(200).json({ data: response });
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -44,7 +44,7 @@ const getCategoriesById = async (req, res) => {
 
     return res.status(200).json({ category: response });
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -62,7 +62,7 @@ const createCategories = async (req, res) => {
 
     return res.status(201).json({ data: categories });
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -75,7 +75,7 @@ const updateCategories = async (req, res) => {
     );
     return res.status(200).json({ message: "Successfully updated" });
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -85,7 +85,7 @@ const deleteCategories = async (req, res) => {
 
     return res.status(200).json({ message: "Successfully deleted" });
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({ error: error.message });
   }
 };
 
