@@ -1,4 +1,4 @@
-const { Categories, Items } = require("./../models");
+const { Categories, Items } = require("../models");
 const { mappingItems } = require("../utils/response");
 
 const getAllCategories = async (req, res) => {
