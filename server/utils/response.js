@@ -1,5 +1,5 @@
-const mappingItems = (models) => {
-  return models.map((item) => ({
+const mappingItems = (items) => {
+  return items.map((item) => ({
     id: item.id,
     categoriesId: item.categories_id,
     name: item.name,
@@ -13,7 +13,7 @@ const mappingItems = (models) => {
   }));
 };
 
-const responseItems = (items) => {
+const responseItemsId = (items) => {
   return {
     id: items.id,
     name: items.name,
@@ -27,7 +27,39 @@ const responseItems = (items) => {
   };
 };
 
+const mappingCategory = (categories) => {
+  return categories.map((category) => ({
+    id: category.id,
+    usersId: category.users_id,
+    name: category.name,
+    description: category.description,
+  }));
+};
+
+const responseCategoriesId = (categories, include) => {
+  return {
+    id: categories.id,
+    name: categories.name,
+    description: categories.description,
+    totalItems: include.length,
+    items: include,
+  };
+};
+
+const mappingOrders = (orders) => {
+  return orders.map((order) => {
+    return {
+      id: order.id,
+      warehousesId: order.warehouses_id,
+      customersId: order.customers_id,
+    };
+  });
+};
+
 module.exports = {
   mappingItems,
-  responseItems,
+  mappingOrders,
+  responseItemsId,
+  mappingCategory,
+  responseCategoriesId,
 };
