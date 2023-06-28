@@ -10,6 +10,18 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        suppliers_id: 1,
+        items_id: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        suppliers_id: 1,
+        items_id: 3,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
   },
 
