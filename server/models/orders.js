@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "customers_id",
       });
       Orders.belongsTo(models.Warehouses, {
-        foreignKey: "warehouse_id",
+        foreignKey: "warehouses_id",
       });
       Orders.belongsToMany(models.Items, {
         through: models.Orders_Items,
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       users_id: DataTypes.INTEGER,
       customers_id: DataTypes.INTEGER,
-      warehouse_id: DataTypes.INTEGER,
+      warehouses_id: DataTypes.INTEGER,
     },
     {
       sequelize,
