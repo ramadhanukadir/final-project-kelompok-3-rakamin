@@ -6,6 +6,7 @@ import {
   TableLanding,
   AccordionLanding,
   Cta,
+  Footer,
 } from "./index";
 
 const Landing = () => {
@@ -17,6 +18,7 @@ const Landing = () => {
       <TableLanding />
       <AccordionLanding />
       <Cta />
+      <Footer />
     </>
   );
 };
