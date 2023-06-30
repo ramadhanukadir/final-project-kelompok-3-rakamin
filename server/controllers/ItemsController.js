@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const {
   Items,
   Warehouses,
@@ -10,13 +11,19 @@ const {
 const { mappingItems, responseItemsId } = require("../utils/response");
 
 const getAllItems = async (req, res) => {
-  const { page, limit, sort } = req.query;
+  const { id, page, limit, sort, q, filter } = req.query;
   try {
     const { rows, count } = await Items.findAndCountAll({
-      offset:
-        page && limit ? (parseInt(page) - 1) * limit : (parseInt(page) - 1) * 5,
-      limit: limit ? parseInt(limit) : 5,
-      order: sort ? [["name", sort]] : null,
+      offset: page && limit ? (page - 1) * limit : (page - 1) * 20,
+      limit: limit ? parseInt(limit) : 20,
+      order: sort && filter ? [[filter, sort]] : [["name", sort || "ASC"]],
+      where: {
+        users_id: id,
+        [Op.or]: [
+          { name: { [Op.iLike]: `%${q}%` } },
+          { SKU: { [Op.iLike]: `%${q}%` } },
+        ],
+      },
     });
 
     const response = mappingItems(rows);
@@ -25,7 +32,7 @@ const getAllItems = async (req, res) => {
       meta: {
         page: page ? parseInt(page) : page,
         totalPages:
-          page && limit ? Math.ceil(count / limit) : Math.ceil(count / 5),
+          page && limit ? Math.ceil(count / limit) : Math.ceil(count / 20),
         totalData: count,
       },
       data: response,
