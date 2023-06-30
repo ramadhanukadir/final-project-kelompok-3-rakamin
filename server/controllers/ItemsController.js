@@ -10,19 +10,23 @@ const {
 const { mappingItems, responseItemsId } = require("../utils/response");
 
 const getAllItems = async (req, res) => {
+  const { page, limit, sort } = req.query;
   try {
-    const { rows, count: itemsCount } = await Items.findAndCountAll({
-      offset: (req.query.page - 1) * req.query.limit,
-      limit: req.query.limit,
+    const { rows, count } = await Items.findAndCountAll({
+      offset:
+        page && limit ? (parseInt(page) - 1) * limit : (parseInt(page) - 1) * 5,
+      limit: limit ? parseInt(limit) : 5,
+      order: sort ? [["name", sort]] : null,
     });
 
     const response = mappingItems(rows);
 
     return res.status(200).json({
       meta: {
-        page: parseInt(req.query.page),
-        totalPages: Math.ceil(itemsCount / req.query.limit),
-        totalData: itemsCount,
+        page: page ? parseInt(page) : page,
+        totalPages:
+          page && limit ? Math.ceil(count / limit) : Math.ceil(count / 5),
+        totalData: count,
       },
       data: response,
     });
@@ -46,6 +50,7 @@ const getItemsById = async (req, res) => {
 };
 
 const createItems = async (req, res) => {
+  const imagePath = `http://localhost:${process.env.PORT}/${req.file.path}`;
   try {
     const {
       users_id,
@@ -55,7 +60,6 @@ const createItems = async (req, res) => {
       SKU,
       size,
       weight,
-      image_url,
       base_price,
       selling_price,
     } = req.body;
@@ -68,7 +72,7 @@ const createItems = async (req, res) => {
       SKU,
       size,
       weight,
-      image_url,
+      image_url: imagePath,
       base_price,
       selling_price,
     });
@@ -80,35 +84,36 @@ const createItems = async (req, res) => {
 };
 
 const updateItems = async (req, res) => {
+  const { id } = req.params;
+  const { name, description, SKU, size, weight, base_price, selling_price } =
+    req.body;
+
   try {
-    const { id } = req.params;
-    const {
+    const items = await Items.findByPk(id);
+    let updatedData = {
       name,
       description,
       SKU,
       size,
       weight,
-      image_url,
       base_price,
       selling_price,
-    } = req.body;
-    await Items.update(
-      {
-        name,
-        description,
-        SKU,
-        size,
-        weight,
-        image_url,
-        base_price,
-        selling_price,
+    };
+
+    if (req.file) {
+      const imagePath = `http://localhost:${process.env.PORT}/${req.file.path}`;
+      updatedData = {
+        ...updatedData,
+        image_url: imagePath,
+      };
+    }
+
+    await Items.update(updatedData, {
+      where: {
+        id: items.id,
       },
-      {
-        where: {
-          id,
-        },
-      }
-    );
+      returning: true,
+    });
     return res.status(200).json({ message: "Successfully updated" });
   } catch (error) {
     return res.status(500).json({ error: error.message });
