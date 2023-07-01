@@ -14,7 +14,6 @@ import {
 import {} from "@chakra-ui/react";
 import Image from "next/image";
 import Image2 from "../../image/image1.png";
-import Image3 from "../../image/image2.png";
 
 const Cta = () => {
   return (
@@ -47,14 +46,7 @@ const Cta = () => {
         </GridItem>
         <GridItem>
           <VStack>
-            <Image
-              src={Image3}
-              alt={"Hero Image"}
-              fit={"cover"}
-              align={"center"}
-              width={300}
-              height={300}
-            />
+           
           </VStack>
         </GridItem>
       </Grid>

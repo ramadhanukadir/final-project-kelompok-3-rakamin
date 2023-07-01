@@ -30,8 +30,8 @@ const Footer = () => {
             <Box>
               <Image
                 src={Image1}
-                width={100}
-                height={100}
+                width={200}
+                height={200}
                 alt="this is my image"
               />
             </Box>

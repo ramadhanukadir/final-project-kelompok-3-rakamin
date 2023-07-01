@@ -97,7 +97,7 @@ function Card({ icon, title, description, image }) {
       <Text fontSize="2xl" as="b">
         {title}
       </Text>
-      <Text fontSize="xl" as="cit">
+      <Text fontSize="s" as="cit">
         {description}
       </Text>
       <Image src={image} alt={image} boxSize={200} width={300} height={100} />

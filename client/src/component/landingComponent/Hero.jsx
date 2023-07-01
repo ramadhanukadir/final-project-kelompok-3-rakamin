@@ -31,6 +31,7 @@ const Hero = () => {
             <Text
               as={"span"}
               position={"relative"}
+              fontWeight="bold"
               _after={{
                 content: "''",
                 position: "absolute",
@@ -40,7 +41,7 @@ const Hero = () => {
               }}>
               Real Time{" "}
             </Text>
-            <Text as={"span"} color={"blue.400"}>
+            <Text as={"span"} color={"blue.400"} fontWeight="bold">
               Inventory Management for Business
             </Text>
           </Heading>
