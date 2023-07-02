@@ -20,7 +20,13 @@ module.exports = (sequelize, DataTypes) => {
   Suppliers.init(
     {
       users_id: DataTypes.INTEGER,
-      name: DataTypes.STRING,
+      name: {
+        allowNull: false,
+        unique: true,
+        validate: {
+          notEmpty: true,
+        },
+      },
       address: DataTypes.STRING,
       telephone: DataTypes.INTEGER,
     },

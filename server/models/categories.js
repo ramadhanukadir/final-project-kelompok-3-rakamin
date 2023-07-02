@@ -20,7 +20,12 @@ module.exports = (sequelize, DataTypes) => {
   Categories.init(
     {
       users_id: DataTypes.INTEGER,
-      name: DataTypes.STRING,
+      name: {
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
       description: DataTypes.STRING,
     },
     {

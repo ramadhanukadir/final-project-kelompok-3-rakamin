@@ -34,14 +34,38 @@ module.exports = (sequelize, DataTypes) => {
     {
       users_id: DataTypes.INTEGER,
       categories_id: DataTypes.INTEGER,
-      name: DataTypes.STRING,
-      SKU: DataTypes.STRING,
+      name: {
+        allowNull: false,
+        unique: true,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      SKU: {
+        allowNull: false,
+        unique: true,
+        validate: {
+          notEmpty: true,
+        },
+      },
       size: DataTypes.INTEGER,
       weight: DataTypes.INTEGER,
       description: DataTypes.STRING,
       image_url: DataTypes.STRING,
-      base_price: DataTypes.INTEGER,
-      selling_price: DataTypes.INTEGER,
+      base_price: {
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          min: 0,
+        },
+      },
+      selling_price: {
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          min: 0,
+        },
+      },
     },
     {
       sequelize,
