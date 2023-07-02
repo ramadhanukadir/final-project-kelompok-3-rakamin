@@ -57,10 +57,10 @@ const getItemsById = async (req, res) => {
 };
 
 const createItems = async (req, res) => {
+  const { id } = req.loggedUser;
   const imagePath = `http://localhost:${process.env.PORT}/${req.file.path}`;
   try {
     const {
-      users_id,
       categories_id,
       name,
       description,
@@ -72,7 +72,7 @@ const createItems = async (req, res) => {
     } = req.body;
 
     const items = await Items.create({
-      users_id,
+      id,
       categories_id,
       name,
       description,
@@ -147,7 +147,8 @@ const deleteItems = async (req, res) => {
 
 const addStockItems = async (req, res) => {
   try {
-    const { users_id, warehouses_id, items_id, suppliers_id, stock } = req.body;
+    const { warehouses_id, items_id, suppliers_id, stock } = req.body;
+    const { id } = req.loggedUser;
     await sequelize.transaction(async (t) => {
       const findItems = await Items.findOne({
         where: {
@@ -180,7 +181,7 @@ const addStockItems = async (req, res) => {
 
       const findStock = await Warehouses_Stock.findOne({
         where: {
-          users_id: users_id,
+          users_id: id,
           items_id: items_id,
           warehouses_id: warehouses_id,
         },
@@ -189,7 +190,7 @@ const addStockItems = async (req, res) => {
       if (!findStock) {
         await Warehouses_Stock.create(
           {
-            users_id,
+            id,
             items_id,
             warehouses_id,
             stock,
@@ -198,7 +199,7 @@ const addStockItems = async (req, res) => {
         );
         await Expenses.create(
           {
-            users_id,
+            id,
             items_id,
             warehouses_id,
             stock_update: stock,
@@ -225,7 +226,7 @@ const addStockItems = async (req, res) => {
           },
           {
             where: {
-              users_id: users_id,
+              users_id: id,
               items_id: items_id,
               warehouses_id: warehouses_id,
             },
@@ -234,7 +235,7 @@ const addStockItems = async (req, res) => {
         );
         await Expenses.create(
           {
-            users_id,
+            id,
             items_id,
             warehouses_id,
             suppliers_id,

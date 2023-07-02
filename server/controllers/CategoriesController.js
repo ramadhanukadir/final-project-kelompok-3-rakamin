@@ -48,14 +48,15 @@ const getCategoriesById = async (req, res) => {
 
 const createCategories = async (req, res) => {
   try {
-    const { users_id, name, description } = req.body;
+    const { id } = req.loggedUser;
+    const { name, description } = req.body;
     const categories = await Categories.create({
-      users_id,
+      id,
       name,
       description,
     });
 
-    if (!users_id || !name || !description)
+    if (!name || !description)
       return res.status(400).json({ message: "Bad request" });
 
     return res.status(201).json({ data: categories });
@@ -66,9 +67,10 @@ const createCategories = async (req, res) => {
 
 const updateCategories = async (req, res) => {
   try {
-    const { users_id, name, description } = req.body;
+    const { id } = req.loggedUser;
+    const { name, description } = req.body;
     await Categories.update(
-      { users_id, name, description },
+      { id, name, description },
       { where: { id: req.params.id } }
     );
     return res.status(200).json({ message: "Successfully updated" });
