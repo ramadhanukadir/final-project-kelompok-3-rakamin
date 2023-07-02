@@ -11,12 +11,13 @@ const {
 const { mappingItems, responseItemsId } = require("../utils/response");
 
 const getAllItems = async (req, res) => {
-  const { id, page, limit, sort, q, filter } = req.query;
+  const { id } = req.loggedUser;
+  const { page, limit, sort, q, order } = req.query;
   try {
     const { rows, count } = await Items.findAndCountAll({
       offset: page && limit ? (page - 1) * limit : (page - 1) * 20,
       limit: limit ? parseInt(limit) : 20,
-      order: sort && filter ? [[filter, sort]] : [["name", sort || "ASC"]],
+      order: sort && order ? [[order, sort]] : [["name", sort || "ASC"]],
       where: {
         users_id: id,
         [Op.or]: [
@@ -28,7 +29,7 @@ const getAllItems = async (req, res) => {
 
     const response = mappingItems(rows);
 
-    return res.status(200).json({
+    res.status(200).json({
       meta: {
         page: page ? parseInt(page) : page,
         totalPages:
@@ -38,7 +39,7 @@ const getAllItems = async (req, res) => {
       data: response,
     });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -46,13 +47,13 @@ const getItemsById = async (req, res) => {
   try {
     const items = await Items.findByPk(req.params.id);
 
-    if (!items) return res.status(404).json({ message: "Items not found" });
+    if (!items) res.status(404).json({ message: "Items not found" });
 
     const response = responseItemsId(items);
 
-    return res.status(200).json({ data: response });
+    res.status(200).json({ data: response });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -84,9 +85,9 @@ const createItems = async (req, res) => {
       selling_price,
     });
 
-    return res.status(201).json({ data: items });
+    res.status(201).json({ data: items });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -115,7 +116,7 @@ const updateItems = async (req, res) => {
       };
     }
 
-    if (!items) return res.status(404).json({ message: "Items not found" });
+    if (!items) res.status(404).json({ message: "Items not found" });
 
     await Items.update(updatedData, {
       where: {
@@ -123,9 +124,9 @@ const updateItems = async (req, res) => {
       },
       returning: true,
     });
-    return res.status(200).json({ message: "Successfully updated" });
+    res.status(200).json({ message: "Successfully updated" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -137,11 +138,11 @@ const deleteItems = async (req, res) => {
       },
     });
 
-    if (!items) return res.status(404).json({ message: "Items not found" });
+    if (!items) res.status(404).json({ message: "Items not found" });
 
-    return res.status(200).json({ message: "Successfully deleted" });
+    res.status(200).json({ message: "Successfully deleted" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -153,7 +154,7 @@ const addStockItems = async (req, res) => {
       const findItems = await Items.findOne({
         where: {
           id: items_id,
-          users_id: users_id,
+          users_id: id,
         },
       });
 
@@ -255,11 +256,11 @@ const addStockItems = async (req, res) => {
           );
         }
 
-        return res.status(200).json({ message: "Successfully update stock" });
+        res.status(200).json({ message: "Successfully update stock" });
       }
     });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
