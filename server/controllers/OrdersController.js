@@ -1,4 +1,13 @@
-const { Customers, Orders, Warehouses, sequelize } = require("../models");
+const {
+  Customers,
+  Orders,
+  Warehouses,
+  Warehouses_Stock,
+  Orders_Items,
+  Items,
+  sequelize,
+} = require("../models");
+const warehouses_stock = require("../models/warehouses_stock");
 const { mappingOrders } = require("./../utils/response");
 
 const getAllOrders = async (req, res) => {
@@ -137,13 +146,13 @@ const getOrdersById = async (req, res) => {
 };
 
 const postOrders = async (req, res, next) => {
-  const { users_id, customer_id, warehouse_id, order_id } = req.body;
+  const { users_id, customer_id, warehouse_id, orders_id } = req.body;
 
   const t = await sequelize.transaction();
 
   try {
-    const createdOrder = await Order.create(
-      { users_id, customer_id, warehouse_id, user_id: req.user.id },
+    const createdOrder = await Orders.create(
+      { users_id, customer_id, warehouse_id, customers_id },
       { transaction: t }
     );
 
@@ -153,13 +162,13 @@ const postOrders = async (req, res, next) => {
     for (let i = 0; i < order_products.length; i++) {
       const currentProduct = order_products[i];
 
-      const product = await Product.findByPk(currentProduct.product_id, {
+      const items = await Items.findByPk(currentProduct.items_id, {
         transaction: t,
       });
 
-      const warehouseStock = await WarehouseStock.findOne({
+      const warehouseStock = await Warehouses_Stock.findOne({
         where: {
-          product_id: currentProduct.product_id,
+          items_id: currentProduct.items_id,
           warehouse_id,
         },
         transaction: t,
@@ -169,27 +178,30 @@ const postOrders = async (req, res, next) => {
         throw { name: "emptyStock" };
       }
 
-      if (warehouseStock.quantity < currentProduct.quantity) {
+      if (warehouseStock.stock < currentProduct.quantity) {
         throw { name: "insufficient" };
       }
 
-      const updatedQuantity = warehouseStock.quantity - currentProduct.quantity;
+      const updatedQuantity = warehouseStock.stock - currentProduct.quantity;
       await warehouseStock.update(
-        { quantity: updatedQuantity },
+        { stock: updatedQuantity },
         { transaction: t }
       );
 
-      const createdOP = await OrderProduct.create(
+      const createdOP = await Orders_Items.create(
         {
-          product_id: currentProduct.product_id,
-          order_id: createdOrder.id,
-          price: currentProduct.price,
+          items_id: currentProduct.items_id,
+          orders_id: createdOrder.id,
+          total_price: currentProduct.total_price,
           quantity: currentProduct.quantity,
         },
         { transaction: t }
       );
 
-      totalPrice += currentProduct.price * currentProduct.quantity;
+      totalPrice +=
+        selling_price.price *
+        currentProduct.selling_price *
+        currentProduct.quantity;
       orderProductArray.push(createdOP);
     }
 
@@ -198,7 +210,6 @@ const postOrders = async (req, res, next) => {
     await Revenue.create(
       {
         user_id: req.user.id,
-        revenue: totalPrice,
         detail: `revenue from order detail ${createdOrder.id}`,
       },
       { transaction: t }
