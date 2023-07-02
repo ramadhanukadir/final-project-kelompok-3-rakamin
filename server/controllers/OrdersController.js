@@ -1,3 +1,4 @@
+const { Transaction } = require("sequelize");
 const {
   Customers,
   Orders,
@@ -145,85 +146,13 @@ const getOrdersById = async (req, res) => {
   }
 };
 
-const postOrders = async (req, res, next) => {
-  const { users_id, customer_id, warehouse_id, orders_id } = req.body;
-
+const postOrders = async (req, res) => {
   const t = await sequelize.transaction();
 
   try {
-    const createdOrder = await Orders.create(
-      { users_id, customer_id, warehouse_id, customers_id },
-      { transaction: t }
-    );
-
-    let orderProductArray = [];
-    let totalPrice = 0;
-
-    for (let i = 0; i < order_products.length; i++) {
-      const currentProduct = order_products[i];
-
-      const items = await Items.findByPk(currentProduct.items_id, {
-        transaction: t,
-      });
-
-      const warehouseStock = await Warehouses_Stock.findOne({
-        where: {
-          items_id: currentProduct.items_id,
-          warehouse_id,
-        },
-        transaction: t,
-      });
-
-      if (!warehouseStock) {
-        throw { name: "emptyStock" };
-      }
-
-      if (warehouseStock.stock < currentProduct.quantity) {
-        throw { name: "insufficient" };
-      }
-
-      const updatedQuantity = warehouseStock.stock - currentProduct.quantity;
-      await warehouseStock.update(
-        { stock: updatedQuantity },
-        { transaction: t }
-      );
-
-      const createdOP = await Orders_Items.create(
-        {
-          items_id: currentProduct.items_id,
-          orders_id: createdOrder.id,
-          total_price: currentProduct.total_price,
-          quantity: currentProduct.quantity,
-        },
-        { transaction: t }
-      );
-
-      totalPrice +=
-        selling_price.price *
-        currentProduct.selling_price *
-        currentProduct.quantity;
-      orderProductArray.push(createdOP);
-    }
-
-    await createdOrder.update({ total_price: totalPrice }, { transaction: t });
-
-    await Revenue.create(
-      {
-        user_id: req.user.id,
-        detail: `revenue from order detail ${createdOrder.id}`,
-      },
-      { transaction: t }
-    );
-
-    await t.commit();
-
-    res.status(201).json({
-      ...createdOrder.dataValues,
-      order_products: orderProductArray,
-    });
-  } catch (err) {
-    await t.rollback();
-    next(err);
+    console.log(req.body);
+  } catch (error) {
+    console.log("Error", error);
   }
 };
 
@@ -246,4 +175,5 @@ const deleteOrders = async (req, res) => {
 module.exports = {
   getAllOrders,
   getOrdersById,
+  postOrders,
 };
