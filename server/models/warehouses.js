@@ -29,8 +29,22 @@ module.exports = (sequelize, DataTypes) => {
   Warehouses.init(
     {
       users_id: DataTypes.INTEGER,
-      name: DataTypes.STRING,
-      address: DataTypes.STRING,
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          min: 0,
+        },
+      },
+      address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          min: 0,
+        },
+      },
       city: DataTypes.STRING,
       province: DataTypes.STRING,
       postal_code: DataTypes.INTEGER,

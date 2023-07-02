@@ -10,15 +10,22 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        suppliers_id: 1,
+        items_id: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        suppliers_id: 1,
+        items_id: 3,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete("Suppliers_Items", null, {});
   },
 };
