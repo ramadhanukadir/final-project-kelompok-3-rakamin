@@ -115,6 +115,8 @@ const updateItems = async (req, res) => {
       };
     }
 
+    if (!items) return res.status(404).json({ message: "Items not found" });
+
     await Items.update(updatedData, {
       where: {
         id: items.id,
@@ -129,11 +131,13 @@ const updateItems = async (req, res) => {
 
 const deleteItems = async (req, res) => {
   try {
-    await Items.destroy({
+    const items = await Items.destroy({
       where: {
         id: req.params.id,
       },
     });
+
+    if (!items) return res.status(404).json({ message: "Items not found" });
 
     return res.status(200).json({ message: "Successfully deleted" });
   } catch (error) {
