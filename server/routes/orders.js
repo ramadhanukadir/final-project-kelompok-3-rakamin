@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const OrdersController = require("../controllers/OrdersController");
 
-router.get("/orders", OrdersController.getAllOrders);
-router.get("/orders/:id", OrdersController.getOrdersById);
+router.get("/", OrdersController.getAllOrders);
+router.get("/:id", OrdersController.getOrdersById);
 
 module.exports = router;
