@@ -1,14 +1,14 @@
-const route = require('express').Router();
+const router = require('express').Router();
 const controller = require('../controllers/ExpensesController');
 
 
-route.post('/expense', controller.postExpenses);
-route.get('/expense', controller.getTotalExpenses);
-route.get('/expense/:id', controller.getIdExpenses);
-route.delete('/expense/:id', controller.deleteExpenses);
+router.post('/', controller.postExpenses);
+router.get('/', controller.getTotalExpenses);
+router.get('/:id', controller.getIdExpenses);
+router.delete('/:id', controller.deleteExpenses);
 
 
-route.put('/expense/:id', controller.updateExpenses);
+router.put('/:id', controller.updateExpenses);
 
 
 module.exports = route;

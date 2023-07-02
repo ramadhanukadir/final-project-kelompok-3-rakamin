@@ -1,11 +1,11 @@
-const route = require('express').Router();
+const router = require('express').Router();
 const controller = require('../controllers/Supplier.Controller');
 
-route.post('/suppliers', controller.postSupplier);
-route.get('/suppliers', controller.getAllSupplier);
-route.get('/suppliers/:id', controller.getIdSuppliers);
-route.put('/suppliers/:id', controller.updateSupplier);
-route.delete('/suppliers/:id', controller.deleteSuppliers);
+router.post('/', controller.postSupplier);
+router.get('/', controller.getAllSupplier);
+router.get('/:id', controller.getIdSuppliers);
+router.put('/:id', controller.updateSupplier);
+router.delete('/:id', controller.deleteSuppliers);
 
 
-module.exports = route;
+module.exports = router;
