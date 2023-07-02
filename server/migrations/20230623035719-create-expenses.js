@@ -22,6 +22,8 @@ module.exports = {
           model: "Warehouses",
           key: "id",
         },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       items_id: {
         type: Sequelize.INTEGER,
@@ -29,6 +31,8 @@ module.exports = {
           model: "Items",
           key: "id",
         },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       stock_update: {
         type: Sequelize.INTEGER,

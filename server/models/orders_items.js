@@ -15,18 +15,28 @@ module.exports = (sequelize, DataTypes) => {
       Orders_Items.belongsTo(models.Items, {
         foreignKey: "items_id",
       });
-      // Orders_Items.belongsToMany(models.Items, {
-      //   through: "Orders_Items",
-      //   foreignKey: "items_id",
-      // });
     }
   }
   Orders_Items.init(
     {
       orders_id: DataTypes.INTEGER,
       items_id: DataTypes.INTEGER,
-      quantity: DataTypes.INTEGER,
-      total_price: DataTypes.INTEGER,
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          min: 0,
+        },
+      },
+      total_price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          min: 0,
+        },
+      },
       revenue: DataTypes.INTEGER,
     },
     {

@@ -20,7 +20,13 @@ module.exports = (sequelize, DataTypes) => {
   Customers.init(
     {
       users_id: DataTypes.INTEGER,
-      full_name: DataTypes.STRING,
+      full_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
       address: DataTypes.STRING,
     },
     {
