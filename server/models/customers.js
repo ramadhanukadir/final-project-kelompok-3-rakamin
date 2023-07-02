@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       users_id: DataTypes.INTEGER,
       full_name: {
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notEmpty: true,

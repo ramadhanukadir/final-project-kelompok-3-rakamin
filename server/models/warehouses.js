@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       users_id: DataTypes.INTEGER,
       name: {
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -37,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       address: {
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
           notEmpty: true,

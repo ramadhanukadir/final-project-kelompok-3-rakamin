@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       users_id: DataTypes.INTEGER,
       categories_id: DataTypes.INTEGER,
       name: {
+        type: DataTypes.STRING,
         allowNull: false,
         unique: true,
         validate: {
@@ -42,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       SKU: {
+        type: DataTypes.STRING,
         allowNull: false,
         unique: true,
         validate: {
@@ -53,6 +55,7 @@ module.exports = (sequelize, DataTypes) => {
       description: DataTypes.STRING,
       image_url: DataTypes.STRING,
       base_price: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -60,6 +63,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       selling_price: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,

@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       orders_id: DataTypes.INTEGER,
       items_id: DataTypes.INTEGER,
       quantity: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -29,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       total_price: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           notEmpty: true,
