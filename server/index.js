@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 dotenv.config();
 const PORT = process.env.PORT;
-const router = require('./routes/index.')
+const router = require('./routes')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
