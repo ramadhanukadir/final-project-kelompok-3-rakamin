@@ -1,14 +1,24 @@
-const route = require('express').Router();
-const authJwt = require('../middlewares/authMiddleware')
+const express = require("express");
+const router = express.Router();
+const categoriesRoute = require("./categories");
+const userRoute = require("./users");
+const itemsRoute = require("./items");
+const ordersRoute = require("./orders");
+const customerRoute = require("./customers");
 const suppliersRoute = require('./suppliers');
 const suppliersItemsRoute =require('./suppliersItems')
 const expensesRoute =require('./expensese');
+const authMiddleware = require("../middlewares/authMiddleware");
 
-route.use(authJwt);
-route.use('/', suppliersRoute);
-route.use('/', suppliersItemsRoute);
-route.use('/', expensesRoute);
+router.use("/users", userRoute);
+router.use(authMiddleware);
+router.use("/api/categories", categoriesRoute);
+router.use("/api/items", itemsRoute);
+router.use("/api/orders", ordersRoute);
+router.use("/api/customer", customerRoute);
+router.use('/suppliers', suppliersRoute);
+router.use('/suppliers-items', suppliersItemsRoute);
+router.use('/expense', expensesRoute);
 
+module.exports = router;
 
-
-module.exports = route
