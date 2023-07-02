@@ -1,0 +1,97 @@
+import React from "react";
+import { Box, Grid, Heading, Text, chakra } from "@chakra-ui/react";
+import Image from "next/image";
+import {
+  AiOutlineClockCircle,
+  AiFillPieChart,
+  AiOutlineDollarCircle,
+} from "react-icons/ai";
+
+const AccountingSystem = () => {
+  const data = [
+    {
+      id: 1,
+      icon: <AiOutlineDollarCircle />,
+      title: "Cost and Time Efficiency",
+      description:
+        "No longer need to pay for conventional server needs and maintenance.",
+      image: "/image/image5.png",
+    },
+    {
+      id: 2,
+      icon: <AiOutlineClockCircle />,
+      title: "Up to date and real time data",
+      description:
+        "Get the latest cash flow information based on the last transaction.",
+      image: "/image/image5.png",
+    },
+    {
+      id: 3,
+      icon: <AiFillPieChart />,
+      title: "Support Business Growth",
+      description:
+        "Save on IT infrastructure costs with flexible cloud technology.",
+      image: "/image/image3.png",
+    },
+    {
+      id: 4,
+      icon: <AiOutlineClockCircle />,
+      title: "The best after sales service with live chat",
+      description:
+        "Contact the support team for implementation, to product training for FREE!",
+      image: "/image/image6.png",
+    },
+  ];
+
+  return (
+    <Box maxW="7xl" mx={"auto"} my={15} pt={5} px={{ base: 2, sm: 12, md: 17 }}>
+      <chakra.h1 textAlign={"center"} fontSize={"3xl"} fontWeight={"bold"}>
+        Benefits of Online Accounting System
+      </chakra.h1>
+      <chakra.h3
+        textAlign={"center"}
+        fontSize={"xl"}
+        pb={10}
+        fontWeight={"normal"}>
+        Access data anytime anywhere online. No need to bother installing
+        applications anymore. These are the advantages of using accounting
+        software for your business.
+      </chakra.h3>
+      <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+        {data.map((item) => (
+          <Box key={item.id}>
+            <Text>{item.title}</Text>
+            <Text>{item.description}</Text>
+            <Image src={item.image} alt={item.title} width={100} height={200} />
+          </Box>
+        ))}
+      </Grid>
+    </Box>
+  );
+};
+
+// function Card({ icon, title, description, image }) {
+//   return (
+//     <Box
+//       display="flex"
+//       flexDirection="column"
+//       justifyContent="start"
+//       alignItems="start"
+//       borderWidth="1px"
+//       borderRadius="lg"
+//       p={4}>
+//       <Heading size="xl" mb={2}>
+//         {icon}
+//       </Heading>
+//       <Text fontSize="2xl" as="b">
+//         {title}
+//       </Text>
+//       <Text fontSize="xl" as="cit">
+//         {description}
+//       </Text>
+//       <Image src={image} alt={image} boxSize={200} width={300} height={200} />
+//     </Box>
+//   );
+// }
+
+export default AccountingSystem;
