@@ -1,5 +1,5 @@
 const route = require('express').Router();
-const controller = require('../controllers/Expenses.Controller');
+const controller = require('../controllers/ExpensesController');
 
 
 route.post('/expense', controller.postExpenses);
