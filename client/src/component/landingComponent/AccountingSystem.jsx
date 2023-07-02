@@ -24,7 +24,7 @@ const AccountingSystem = () => {
       title: "Cost and Time Efficiency",
       description:
         "No longer need to pay for conventional server needs and maintenance.",
-      image: "/image2.png",
+      image: "/image4.png",
     },
     {
       id: 2,
