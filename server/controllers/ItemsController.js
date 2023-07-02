@@ -72,7 +72,7 @@ const createItems = async (req, res) => {
     } = req.body;
 
     const items = await Items.create({
-      id,
+      users_id: id,
       categories_id,
       name,
       description,
@@ -190,7 +190,7 @@ const addStockItems = async (req, res) => {
       if (!findStock) {
         await Warehouses_Stock.create(
           {
-            id,
+            users_id: id,
             items_id,
             warehouses_id,
             stock,
@@ -199,7 +199,7 @@ const addStockItems = async (req, res) => {
         );
         await Expenses.create(
           {
-            id,
+            users_id: id,
             items_id,
             warehouses_id,
             stock_update: stock,
@@ -235,7 +235,7 @@ const addStockItems = async (req, res) => {
         );
         await Expenses.create(
           {
-            id,
+            users_id: id,
             items_id,
             warehouses_id,
             suppliers_id,

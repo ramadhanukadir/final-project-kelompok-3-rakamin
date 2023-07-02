@@ -51,7 +51,7 @@ const createCategories = async (req, res) => {
     const { id } = req.loggedUser;
     const { name, description } = req.body;
     const categories = await Categories.create({
-      id,
+      users_id: id,
       name,
       description,
     });
@@ -70,7 +70,7 @@ const updateCategories = async (req, res) => {
     const { id } = req.loggedUser;
     const { name, description } = req.body;
     await Categories.update(
-      { id, name, description },
+      { users_id: id, name, description },
       { where: { id: req.params.id } }
     );
     return res.status(200).json({ message: "Successfully updated" });
