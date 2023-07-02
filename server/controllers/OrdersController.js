@@ -154,12 +154,66 @@ const postOrders = async (req, res) => {
   try {
     const { customers_id, warehouses_id, orders_items_attributes } = req.body;
 
-    const createOrders = await Orders.create({
-      customers_id,
-      warehouses_id,
-      users_id: id,
-    });
+    const createOrders = await Orders.create(
+      {
+        customers_id,
+        warehouses_id,
+        users_id: id,
+        total_revenue: 0,
+      },
+      {
+        transaction: t,
+      }
+    );
+
+    for (let i = 0; i < orders_items_attributes.length; i++) {
+      const element = orders_items_attributes[i];
+
+      const foundStock = await Warehouses_Stock.findOne({
+        where: {
+          warehouses_id,
+          items_id: element.items_id,
+        },
+      });
+
+      if (!foundStock) {
+        res.status(404).json({ message: "Stock not found" });
+      }
+
+      if (foundStock.stock < element.quantity) {
+        res.status(400).json({ message: "Stock empty" });
+      }
+
+      const createItems = await Orders_Items.create(
+        {
+          orders_id: createOrders.id,
+          items_id: element.items_id,
+          quantity: element.quantity,
+          total_price: element.total_price,
+        },
+        { transaction: t }
+      );
+
+      // await jane.increment({
+      //   'age': 2,
+      //   'cash': 100
+      // });
+
+      await foundStock.decrement("stock", {
+        by: element.quantity,
+        transaction: t,
+      });
+
+      await createOrders.increment("total_revenue", {
+        by: element.total_price,
+        transaction: t,
+      });
+    }
+
+    await t.commit();
+    res.status(201).json(createOrders);
   } catch (error) {
+    await t.rollback();
     console.log("Error", error);
   }
 };
