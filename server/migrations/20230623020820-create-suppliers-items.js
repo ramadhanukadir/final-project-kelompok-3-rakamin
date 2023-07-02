@@ -16,6 +16,8 @@ module.exports = {
           key: "id",
         },
         allowNull: false,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       suppliers_id: {
         type: Sequelize.INTEGER,
@@ -24,6 +26,8 @@ module.exports = {
           key: "id",
         },
         allowNull: false,
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       createdAt: {
         allowNull: false,
