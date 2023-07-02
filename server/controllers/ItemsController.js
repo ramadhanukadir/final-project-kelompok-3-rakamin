@@ -154,21 +154,18 @@ const addStockItems = async (req, res) => {
           id: items_id,
           users_id: users_id,
         },
-        transaction: t,
       });
 
       const findWarehouses = await Warehouses.findOne({
         where: {
           id: warehouses_id,
         },
-        transaction: t,
       });
 
       const findSuppliers = await Suppliers.findOne({
         where: {
           id: suppliers_id,
         },
-        transaction: t,
       });
 
       const findSuppliersItems = await Suppliers_Items.findOne({
@@ -176,7 +173,6 @@ const addStockItems = async (req, res) => {
           items_id: items_id,
           suppliers_id: suppliers_id,
         },
-        transaction: t,
       });
 
       if (!findItems || !findWarehouses || !findSuppliers)
@@ -188,29 +184,37 @@ const addStockItems = async (req, res) => {
           items_id: items_id,
           warehouses_id: warehouses_id,
         },
-        transaction: t,
       });
 
       if (!findStock) {
-        await Warehouses_Stock.create({
-          users_id,
-          items_id,
-          warehouses_id,
-          stock,
-        });
-        await Expenses.create({
-          users_id,
-          items_id,
-          warehouses_id,
-          stock_update: stock,
-          total_expenses: findItems.base_price * stock,
-        });
+        await Warehouses_Stock.create(
+          {
+            users_id,
+            items_id,
+            warehouses_id,
+            stock,
+          },
+          { transaction: t }
+        );
+        await Expenses.create(
+          {
+            users_id,
+            items_id,
+            warehouses_id,
+            stock_update: stock,
+            total_expenses: findItems.base_price * stock,
+          },
+          { transaction: t }
+        );
 
         if (!findSuppliersItems) {
-          await Suppliers_Items.create({
-            items_id,
-            suppliers_id,
-          });
+          await Suppliers_Items.create(
+            {
+              items_id,
+              suppliers_id,
+            },
+            { transaction: t }
+          );
         }
 
         return res.status(201).json({ message: "Successfully add stock" });
@@ -228,20 +232,26 @@ const addStockItems = async (req, res) => {
           },
           { transaction: t }
         );
-        await Expenses.create({
-          users_id,
-          items_id,
-          warehouses_id,
-          suppliers_id,
-          stock_update: stock,
-          total_expenses: findItems.base_price * stock,
-        });
+        await Expenses.create(
+          {
+            users_id,
+            items_id,
+            warehouses_id,
+            suppliers_id,
+            stock_update: stock,
+            total_expenses: findItems.base_price * stock,
+          },
+          { transaction: t }
+        );
 
         if (!findSuppliersItems) {
-          await Suppliers_Items.create({
-            items_id,
-            suppliers_id,
-          });
+          await Suppliers_Items.create(
+            {
+              items_id,
+              suppliers_id,
+            },
+            { transaction: t }
+          );
         }
 
         return res.status(200).json({ message: "Successfully update stock" });
