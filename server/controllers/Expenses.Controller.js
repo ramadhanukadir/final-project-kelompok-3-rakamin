@@ -4,12 +4,13 @@ const { Expenses, Items, Warehouses_Stock } = db;
 const postExpenses = async (req, res) => {
   try {
     const { users_id, warehouses_id, items_id, stock_update } = req.body;
+    const { id } = req.loggedUser;
+
        
     const item = await Items.findOne({
       where: {
         id:items_id,
-        users_id: users_id,
-      
+        users_id: id,
       }
     });
    
@@ -20,7 +21,7 @@ const postExpenses = async (req, res) => {
 
     const warehousesStock = await Warehouses_Stock.findOne({
       where: { 
-        users_id: users_id, 
+        users_id: id, 
         warehouses_id: warehouses_id, 
         items_id: items_id
       },
@@ -40,7 +41,7 @@ const postExpenses = async (req, res) => {
     const total_expenses = warehousesStock.stock * item.base_price;
 
     const newExpenses = await Expenses.create({
-      users_id,
+      users_id: id,
       warehouses_id,
       items_id,
       stock_update,
