@@ -1,4 +1,4 @@
-const { Customers, Orders, Warehouses } = require("../models");
+const { Customers, Orders, Warehouses, sequelize } = require("../models");
 const { mappingOrders } = require("./../utils/response");
 
 const getAllOrders = async (req, res) => {
@@ -136,7 +136,101 @@ const getOrdersById = async (req, res) => {
   }
 };
 
-const createOrders = async (req, res) => {};
+const postOrders = async (req, res, next) => {
+  const { users_id, customer_id, warehouse_id, order_id } = req.body;
+
+  const t = await sequelize.transaction();
+
+  try {
+    const createdOrder = await Order.create(
+      { users_id, customer_id, warehouse_id, user_id: req.user.id },
+      { transaction: t }
+    );
+
+    let orderProductArray = [];
+    let totalPrice = 0;
+
+    for (let i = 0; i < order_products.length; i++) {
+      const currentProduct = order_products[i];
+
+      const product = await Product.findByPk(currentProduct.product_id, {
+        transaction: t,
+      });
+
+      const warehouseStock = await WarehouseStock.findOne({
+        where: {
+          product_id: currentProduct.product_id,
+          warehouse_id,
+        },
+        transaction: t,
+      });
+
+      if (!warehouseStock) {
+        throw { name: "emptyStock" };
+      }
+
+      if (warehouseStock.quantity < currentProduct.quantity) {
+        throw { name: "insufficient" };
+      }
+
+      const updatedQuantity = warehouseStock.quantity - currentProduct.quantity;
+      await warehouseStock.update(
+        { quantity: updatedQuantity },
+        { transaction: t }
+      );
+
+      const createdOP = await OrderProduct.create(
+        {
+          product_id: currentProduct.product_id,
+          order_id: createdOrder.id,
+          price: currentProduct.price,
+          quantity: currentProduct.quantity,
+        },
+        { transaction: t }
+      );
+
+      totalPrice += currentProduct.price * currentProduct.quantity;
+      orderProductArray.push(createdOP);
+    }
+
+    await createdOrder.update({ total_price: totalPrice }, { transaction: t });
+
+    await Revenue.create(
+      {
+        user_id: req.user.id,
+        revenue: totalPrice,
+        detail: `revenue from order detail ${createdOrder.id}`,
+      },
+      { transaction: t }
+    );
+
+    await t.commit();
+
+    res.status(201).json({
+      ...createdOrder.dataValues,
+      order_products: orderProductArray,
+    });
+  } catch (err) {
+    await t.rollback();
+    next(err);
+  }
+};
+
+const updateOrders = async (req, res) => {};
+
+const deleteOrders = async (req, res) => {
+  try {
+    await Items.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    return res.status(200).json({ message: "Successfully deleted" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
 
 module.exports = {
   getAllOrders,
