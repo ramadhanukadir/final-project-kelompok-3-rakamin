@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const categoriesRoute = require("./categories");
-const userRoute = require("./usersRoute");
+const userRoute = require("./users");
 const itemsRoute = require("./items");
 const ordersRoute = require("./orders");
-const customerRoute = require("./customersRoute");
+const customerRoute = require("./customers");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 router.use("/users", userRoute);
