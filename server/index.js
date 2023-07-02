@@ -5,7 +5,6 @@ const dotenv = require("dotenv");
 dotenv.config();
 const PORT = process.env.PORT;
 const router = require("./routes");
-const users = require("./routes/usersRoute");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,8 +17,7 @@ app.use(
   })
 );
 
-app.use("/api", router);
-app.use(users);
+app.use(router);
 
 app.get("/ping", (req, res) => {
   try {
