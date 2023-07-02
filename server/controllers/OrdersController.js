@@ -149,8 +149,16 @@ const getOrdersById = async (req, res) => {
 const postOrders = async (req, res) => {
   const t = await sequelize.transaction();
 
+  const { id } = req.loggedUser;
+
   try {
-    console.log(req.body);
+    const { customers_id, warehouses_id, orders_items_attributes } = req.body;
+
+    const createOrders = await Orders.create({
+      customers_id,
+      warehouses_id,
+      users_id: id,
+    });
   } catch (error) {
     console.log("Error", error);
   }
