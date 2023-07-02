@@ -3,10 +3,8 @@ const { Expenses, Items, Warehouses_Stock } = db;
 
 const postExpenses = async (req, res) => {
   try {
-    const {users_id, warehouses_id, items_id, stock_update } = req.body;
-    
-
-   
+    const { users_id, warehouses_id, items_id, stock_update } = req.body;
+       
     const item = await Items.findOne({
       where: {
         id:items_id,
@@ -14,9 +12,9 @@ const postExpenses = async (req, res) => {
       
       }
     });
-    // console.log('item', item);
+   
     if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
+      return res.status(404).json({ message: 'Item Not Found' });
     }
 
 
@@ -27,44 +25,32 @@ const postExpenses = async (req, res) => {
         items_id: items_id
       },
     });
-    // console.log('warehouseStock', warehousesStock);
+   
     if (!warehousesStock) {
-      return res.status(404).json({ message: 'Stock not found' });
+      return res.status(404).json({ message: 'Stock Not Found' });
     }
 
+    warehousesStock.stock += stock_update;
    
     if (stock_update === null || stock_update === undefined) {
-      return res.status(400).json({ message: 'Stock update value is required' });
+      return res.status(400).json({ message: 'Stock Update Value Is Required' });
     }
-
-    
-    
-   
-    warehousesStock.stock += stock_update;
-    
+       
     await warehousesStock.save();
-    console.log('warehpusesStock', typeof warehousesStock.stock);
     const total_expenses = warehousesStock.stock * item.base_price;
 
-    console.log('item base price', typeof item.base_price);
-    console.log('Total Expenses:', total_expenses);
-
-  
-
-    const newExpense = await Expenses.create({
+    const newExpenses = await Expenses.create({
       users_id,
       warehouses_id,
       items_id,
       stock_update,
       total_expenses
     });
-    // console.log('New Expense:', newExpense);
-
 
     res.status(201).json({
       success: true,
       message: "Created Data Expeneses Successfully",
-      newExpense,
+      dataExpenses: newExpenses,
     });
   } catch (error) {
     res.status(500).json({
@@ -74,18 +60,18 @@ const postExpenses = async (req, res) => {
   }
 };
 
-
 const updateExpenses = async (req, res) => {
   try {
-    // const {users_id, warehouses_id, items_id, stock_update } = req.body;
-    
-  const id = req.params.id
+    const {users_id, warehouses_id, items_id, stock_update } = req.body;
+      
+  const updateExpenses = await Expenses.findOne({
+    where:{ 
+      id: req.params.id,
+    }
+  });
 
-  const idExp = await Expenses.findByPk(id);
-
-  if(!idExp) {
-    return res.status(404).json({ message: 'Item not found' });
-    
+  if(!updateExpenses) {
+    return res.status(404).json({ message: 'Id Expenses not found' });    
   }
 
     const item = await Items.findOne({
@@ -110,14 +96,15 @@ const updateExpenses = async (req, res) => {
     if (!warehousesStock) {
       return res.status(404).json({ message: 'Stock not found' });
     }
+    
+    warehousesStock.stock += stock_update;  
 
     if (stock_update === null || stock_update === undefined) {
       return res.status(400).json({ message: 'Stock update value is required' });
     }
 
-    warehousesStock.stock += stock_update;
-
     await warehousesStock.save();
+    console.log(warehousesStock.stock);
 
     const total_expenses = warehousesStock.stock * item.base_price;
 
@@ -127,32 +114,28 @@ const updateExpenses = async (req, res) => {
         warehouses_id,
         items_id,
         stock_update,
-        total_expenses,
+        total_expenses
       },
       {
         where: {
-          users_id,
-          warehouses_id,
-          items_id,
-          id: id
+          id: req.params.id
         },
       }
     );
+    
 
-    res.status(200).json({
+   return res.status(200).json({
       success: true,
       message: 'Updated Expenses Successfully',
+    
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(400).json({
       message: 'Server Internal Error',
       error,
     });
   }
 };
-
-
-
 
 
 const getTotalExpenses = async (req, res) => {
@@ -164,28 +147,28 @@ const getTotalExpenses = async (req, res) => {
     if(!allExpenses) {
       res.status(404).json({
         succes: false,
-        message: "Data All Expenses Not Found"
+        message: "Data Expenses Not Found"
       })
     }
     
     const expenses = await Expenses.findAll();
     let totalExpenses = 0;
-    expenses.forEach((expense) => {
-      totalExpenses += expense.total_expenses;
+    expenses.forEach((expenses) => {
+      totalExpenses += expenses.total_expenses;
     });
 
     
     if(!expenses) {
       res.status(404).json({
         succes: false,
-        message: "Data All Expenses Not Found"
+        message: "Data Expenses Not Found"
       })
     }
 
     res.status(200).json({
       success: true,
       totalExpenses: totalExpenses,
-      allExpenses: allExpenses
+      dataExpenses: allExpenses
     });
   } catch (error) {
     res.status(500).json({
@@ -196,26 +179,57 @@ const getTotalExpenses = async (req, res) => {
 };
 
 
-const getIdExpensesController = async(req, res) => {
+const getIdExpenses = async(req, res) => {
   try {
     const id = req.params.id
-    const findOneExpenses = await Expeneses.findByPk(id);
+    const findOneExpenses = await Expenses.findByPk(id,{
+      attributes: {exclude: ['createdAt', 'updateAt']}
+    });
 
     if(!findOneExpenses) {
+      return res.status(404).json({
+        succes: false,
+        message: "Data Id Expenses Not Found"
+      })
+    }
+
+   return res.status(200).json({
+      success: true,
+      message: "Data Id Expenses Retrieved",
+      dataExpenses: findOneExpenses
+    })
+  } catch (error) {
+    return res.status(400).json({
+      succes: false,
+      message: "",
+    })
+  }
+}
+
+const deleteExpenses = async(req, res) => {
+  try {
+    const id = req.params.id
+    const destroyExpenses = await Expenses.findByPk(id);
+
+    if(!destroyExpenses) {
       return res.status(404).json({
         succes: false,
         message: "Data Expenses Not Found"
       })
     }
 
+    await Expenses.destroy({
+      where: {id}
+    })
+
    return res.status(200).json({
       success: true,
-      message: "Data Expenses Retrieved"
+      message: "Deleted Data Expenses Sucessfully",
     })
   } catch (error) {
     return res.status(400).json({
       succes: false,
-      message: "Failed Get data"
+      message: "Delete Data Expenses failed",
     })
   }
 }
@@ -225,5 +239,7 @@ const getIdExpensesController = async(req, res) => {
 module.exports = {
   postExpenses,
   getTotalExpenses,
-  updateExpenses
+  updateExpenses,
+  getIdExpenses,
+  deleteExpenses
 };

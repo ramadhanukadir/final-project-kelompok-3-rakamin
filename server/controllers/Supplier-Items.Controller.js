@@ -5,9 +5,9 @@ const postSupplierItems = async(req, res) => {
 
     try {
         
-        const AddsupplierItems = await Suppliers_Items.create(req.body)
+        const addsuppliersItems = await Suppliers_Items.create(req.body)
     
-        if(!AddsupplierItems) {
+        if(!addsuppliersItems) {
             return res.status(404).json({
                 message: "Data Suppliers Items Not Found"
             })
@@ -15,7 +15,7 @@ const postSupplierItems = async(req, res) => {
 
         return res.status(200).json({
             message: "Created Data Suppliers Items Successfully",
-            data: AddsupplierItems
+            dataSuppliersItems: addsuppliersItems
         })
     } catch (error) {
         return res.status(400).json({
@@ -29,9 +29,9 @@ const updateSupplierItems = async(req, res) => {
     try {
         const id = req.params.id
 
-        const putSupplierItems = await Suppliers_Items.findByPk(id);
+        const putSuppliersItems = await Suppliers_Items.findByPk(id);
 
-        if(!putSupplierItems){
+        if(!putSuppliersItems){
             return res.status(404).json({
                 success: false,
                 message: "Data Suppliers Items Not Found"
@@ -47,7 +47,7 @@ const updateSupplierItems = async(req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Update Data  Suppliers Items Successfully "
+            message: "Update Data Suppliers Items Successfully "
         })
     } catch (error) {
         res.status(404).json({
@@ -80,7 +80,7 @@ const getIdSuppliersItems = async(req, res) => {
         return res.status(200).json({
             succes: true,
             message: "Data Suppliers Items Retrieved",
-            data: findOneSuppliersItems
+            dataSuppiersItems: findOneSuppliersItems
         })
 
 
@@ -94,11 +94,11 @@ const getIdSuppliersItems = async(req, res) => {
 
 const getAllSupplierItems = async(req, res) => {
     try {
-        const findAllSupplierItems = await Suppliers_Items.findAll(  {
+        const findAllSuppliersItems = await Suppliers_Items.findAll(  {
             attributes: {exclude: ['createdAt', 'updatedAt']},
         })
 
-        if(!findAllSupplierItems) {
+        if(!findAllSuppliersItems) {
            res.status(404).json({
                 success: false,
                 message: "Data Suppliers Items Not Found",
@@ -108,7 +108,7 @@ const getAllSupplierItems = async(req, res) => {
         return res.status(200).json({
             succes: true,
             message: "Data Suppliers Items Found",
-            data:findAllSupplierItems,
+            data:findAllSuppliersItems,
         })
     } catch (error) {
         return res.send(400).json({
@@ -123,23 +123,24 @@ const deleteSuppliersItems = async (req, res) => {
     try {            
         const id = req.params.id
         const destroySuppliersItems = await Suppliers_Items.findByPk(id)
+
         if(!destroySuppliersItems) {
             return res.status(404).json({
                 succes: false,
                 message: "Data Suppliers Items Not Found"
             })
         }
-        Suppliers.destroy({
+       await Suppliers_Items.destroy({
             where: {id: req.params.id}
         })
         return res.status(200).json({
             succes: true,
-            message: "Deleted Suppliers Successfully"
+            message: "Deleted Data Suppliers Successfully"
         })
 
     } catch (error) {   
         return res.status(400).json({
-            message: "Delete Suppliers Failed"
+            message: "Delete Data Suppliers Failed"
         })
         
     }

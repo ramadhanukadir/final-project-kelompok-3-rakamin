@@ -1,27 +1,28 @@
 const db = require('../models');
-const Suppliers = db.Suppliers;
+const { Suppliers } = db
 
 const postSupplier = async (req, res) => {
     try {      
-        const Addsupplier = await Suppliers_.create({
+        const Addsuppliers = await Suppliers.create({
             users_id : req.body.users_id,
             name: req.body.name,
             address: req.body.address,
             telephone: req.body.telephone
         })
-        if(!Addsupplier) {
-            return res.status(404).json({
+        if(!Addsuppliers) {
+            return res.status(400).json({
                 succes: false,
-                message: "Suppliers not found"})
+                message: "Failed Create Data Suppliers"
+            })
         }
         return res.status(201).json({
             succes: true,
-            message: "Succes Create Suppliers",
-            data: Addsupplier 
+            message: "Create Data Suppliers Successfully",
+            dataSuppliers: Addsuppliers 
         })
     } catch (err) {
         res.status(400).json({
-            msg: "Failed Created Error",
+            msg: "Failed Created Supplier",
             err
         })
     }
@@ -33,15 +34,15 @@ const getAllSupplier = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const offset = (page - 1) * req.query.limit;
 
-    const  findAllSupplier = await Suppliers.findAll({
-        attributes: ['id', 'users_id', 'name', 'address', 'telephone'],
+    const  findAllSuppliers = await Suppliers.findAll({
+        attributes: { exclude: ['createdAt', 'updateAt']},
         limit: req.query.limit,
         offset
     });
-    if(findAllSupplier.length === 0) {
+    if(findAllSuppliers.length === 0) {
         return res.status(404).json({
             succes: false,
-            message: "Data Supplier Not Found",
+            message: "Data Suppliers Not Found",
         })
     }
     const totalItems = await Suppliers.count();
@@ -49,11 +50,11 @@ const getAllSupplier = async (req, res) => {
 
     return res.status(201).json({
         succes: true,
-        msg: "Data Suppllier Retrieved",
+        msg: "Data Supplliers Retrieved",
         page,
-        totalItems: findAllSupplier.length, 
+        totalItems: findAllSuppliers.length, 
         totalPages,
-        data: findAllSupplier
+        dataSuppliers: findAllSuppliers
     })
    } catch (error) {
         res.status(400).json({
@@ -66,26 +67,26 @@ const getAllSupplier = async (req, res) => {
     const getIdSuppliers = async (req, res) => {
         try {
             const id  = req.params.id;
-            const findIdSupplier = await Suppliers.findByPk(id, 
+            const findIdSuppliers = await Suppliers.findByPk(id, 
             {
-                attributes: ['users_id', 'name', 'address', 'telephone'],
+                attributes: { exclude: ['createdAt', 'updateAt']},
             })
 
-            if (!findIdSupplier) {
+            if (!findIdSuppliers) {
                 return res.status(404).json({
                     succes: false,
-                    message: "Data Supplier Not Found",
+                    message: "Data Suppliers Not Found",
                 })
             }
             return res.status(201).json({
                 succes: true,
-                message: "Data Suppllier Retrieved",
-                data: findIdSupplier
+                message: "Data Supplliers Retrieved",
+                dataSuppliers: findIdSuppliers
             })
 
         } catch (error) {
-            return res.status(401).json({
-                message: "Failed to get supplier data",
+            return res.status(400).json({
+                message: "Failed To get Data Supplies",
                 error
             })
         }
@@ -100,7 +101,7 @@ const getAllSupplier = async (req, res) => {
                 
               return res.status(404).json({
                 success: false,
-                messagge: "Supplier Not Found"});
+                messagge: "Data Suppliers Not Found"});
             
             } 
             
@@ -113,13 +114,13 @@ const getAllSupplier = async (req, res) => {
 
             return res.status(200).send({
                 succes: true,
-                message: "Successfully update data suppliers",
+                message: "Update Data Suppliers Sucessfully",
             });
                 
        } catch (error) {
             return res.status(400).json({
                 success: false,
-                messsage: "failed update data suppliers",
+                messsage: "Failed Update Data Suppliers",
                 error
             })
         }
@@ -129,13 +130,14 @@ const getAllSupplier = async (req, res) => {
         try {            
             const id = req.params.id
             const destroySuppliers = await Suppliers.findByPk(id)
+
             if(!destroySuppliers) {
                 return res.status(404).json({
                     succes: false,
                     message: "Data Suppliers Not Found"
                 })
             }
-            Suppliers.destroy({
+           await Suppliers.destroy({
                 where: {id: req.params.id}
             })
             return res.status(200).json({
