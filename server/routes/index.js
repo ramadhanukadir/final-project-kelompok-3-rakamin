@@ -7,7 +7,7 @@ const ordersRoute = require("./orders");
 const customerRoute = require("./customers");
 const suppliersRoute = require('./suppliers');
 const suppliersItemsRoute =require('./suppliersItems')
-const expensesRoute =require('./expensese');
+const expensesRoute =require('./expense');
 const authMiddleware = require("../middlewares/authMiddleware");
 
 router.use("/users", userRoute);
