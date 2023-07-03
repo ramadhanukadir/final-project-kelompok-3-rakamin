@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 dotenv.config();
 const PORT = process.env.PORT;
-const router = require('./routes/index.')
+const router = require("./routes");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -17,7 +17,7 @@ app.use(
   })
 );
 
-app.use(router);
+app.use("/api", router);
 
 app.get("/ping", (req, res) => {
   try {
@@ -27,10 +27,8 @@ app.get("/ping", (req, res) => {
   }
 });
 
-
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
 
 module.exports = app;
