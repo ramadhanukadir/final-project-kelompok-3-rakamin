@@ -25,7 +25,14 @@ const loginUsers = async (req, res) => {
       { userId: user.id, fName: user.first_name, lname: user.last_name },
       process.env.JWT_SECRETKEY
     );
-    return res.status(200).json({ accessToken: token, userId: user.id });
+    return res.status(200).json({
+      accessToken: token,
+      dataUser: {
+        id: user.id,
+        firstName: user.first_name,
+        lastName: user.last_name,
+      },
+    });
   } catch (error) {
     console.log(error);
   }

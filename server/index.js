@@ -17,7 +17,7 @@ app.use(
   })
 );
 
-app.use(router);
+app.use("/api", router);
 
 app.get('/ping', (req, res) => {
   try {
@@ -30,3 +30,5 @@ app.get('/ping', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+module.exports = app;

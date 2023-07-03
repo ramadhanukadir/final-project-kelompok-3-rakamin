@@ -15,17 +15,7 @@ import {
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  VStack,
-  FormControl,
-  FormLabel,
-  Input,
+  Image,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -34,17 +24,16 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 // import Link from "next/link";
-import Image from "next/image";
-import Image1 from "../../image/StocktrackrLogo-01.png";
 import { useRouter } from "next/router";
 
 const Navbar = () => {
   const { isOpen, onToggle, onOpen, onClose } = useDisclosure();
   const { isLoggedIn, setIsLoggedIn } = useState(false);
+
   const router = useRouter();
 
-  const handleSubmit = () => {
-    router.push("/dashboard");
+  const handleLoginClick = () => {
+    router.push("/login");
   };
 
   return (
@@ -73,7 +62,19 @@ const Navbar = () => {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-          <Image src={Image1} width={50} height={10} alt="this is my image" />
+          <Text
+            textAlign={useBreakpointValue({ base: "center", md: "left" })}
+            fontFamily={"heading"}
+            color={useColorModeValue("gray.800", "white")}>
+            Logo
+          </Text>
+          {/* <Image
+            src="/StocktrackrLogo-01.png"
+            alt="logo"
+            width={150}
+            height={100}
+            onClick={handleLoginClick}
+          /> */}
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
             <DesktopNav />
@@ -85,64 +86,10 @@ const Navbar = () => {
           justify={"flex-end"}
           direction={"row"}
           spacing={6}>
-          {!isLoggedIn ? (
-            <Button onClick={onOpen} colorScheme="blue">
-              Login
-            </Button>
-          ) : (
-            <Button
-              colorScheme="blue"
-              onClick={() => {
-                Cookies.remove("isLoggedIn");
-                setIsLoggedIn(false);
-              }}>
-              Logout
-            </Button>
-          )}
+          <Button onClick={handleLoginClick} colorScheme="blue">
+            Login
+          </Button>
         </Stack>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <form id="login-form" onSubmit={handleSubmit}>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Login</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <VStack>
-                  <FormControl isRequired>
-                    <FormLabel>Email</FormLabel>
-                    <Input
-                      name="email"
-                      type="email"
-                      placeholder="Enter your email address"
-                    />
-                  </FormControl>
-                  <FormControl isRequired>
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                      type="password"
-                      name="password"
-                      placeholder="Enter your password"
-                    />
-                  </FormControl>
-                </VStack>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  type="submit"
-                  form="login-form"
-                  colorScheme="blue"
-                  mr={3}>
-                  Login
-                </Button>
-                <Link href="/register" onClick={onClose}>
-                  <Button variant="ghost">
-                    Doesn&apos;t Have Account? Click here
-                  </Button>
-                </Link>
-              </ModalFooter>
-            </ModalContent>
-          </form>
-        </Modal>
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
@@ -296,16 +243,9 @@ const MobileNavItem = ({ label, children, href }) => {
   );
 };
 
-// interface NavItem {
-//     label: string;
-//     subLabel?: string;
-//     children?: Array<NavItem>;
-//     href?: string;
-//   }
-
 const NAV_ITEMS = [
   {
-    label: "Inspiration",
+    label: "Hero",
     children: [
       {
         label: "Explore Design Work",
@@ -320,7 +260,7 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: "Find Work",
+    label: "AccountingSystem",
     children: [
       {
         label: "Job Board",
@@ -335,11 +275,11 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: "Learn Design",
+    label: "TableLanding",
     href: "#",
   },
   {
-    label: "Hire Designers",
+    label: "AccordionLanding",
     href: "#",
   },
 ];

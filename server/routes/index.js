@@ -7,16 +7,22 @@ const ordersRoute = require('./orders');
 const customerRoute = require('./customers');
 const warehousesRoute = require('./warehouses');
 const warehousesStockRoute = require('./warehousesStock');
-
+const suppliersRoute = require('./suppliers');
+const suppliersItemsRoute = require('./suppliersItems');
+const expensesRoute = require('./expensese');
 const authMiddleware = require('../middlewares/authMiddleware');
 
 router.use('/users', userRoute);
 router.use(authMiddleware);
-router.use('/api/categories', categoriesRoute);
-router.use('/api/items', itemsRoute);
-router.use('/api/orders', ordersRoute);
-router.use('/api/customer', customerRoute);
-router.use('/api/warehouses', warehousesRoute);
-router.use('/api/warehouses-stock', warehousesStockRoute);
+
+router.use('/warehouses', warehousesRoute);
+router.use('/warehouses-stock', warehousesStockRoute);
+router.use('/categories', categoriesRoute);
+router.use('/items', itemsRoute);
+router.use('/orders', ordersRoute);
+router.use('/customer', customerRoute);
+router.use('/suppliers', suppliersRoute);
+router.use('/suppliers-items', suppliersItemsRoute);
+router.use('/expense', expensesRoute);
 
 module.exports = router;
