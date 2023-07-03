@@ -14,7 +14,6 @@ import {
 import {} from "@chakra-ui/react";
 import Image from "next/image";
 import Image2 from "../../image/image1.png";
-import Image3 from "../../image/image2.png";
 
 const Cta = () => {
   return (
@@ -32,8 +31,8 @@ const Cta = () => {
               Manage and fulfill orders anytime, anywhere
             </chakra.h2>
             <Text colorScheme="green" size="md">
-              Stay connected and get real-time updates on the order status, <br></br>no
-              matter where you are.
+              Stay connected and get real-time updates on the order status,{" "}
+              <br></br>no matter where you are.
             </Text>
             <Image
               src={Image2}
@@ -47,26 +46,28 @@ const Cta = () => {
         </GridItem>
         <GridItem>
           <VStack>
-            <Image
-              src={Image3}
-              alt={"Hero Image"}
-              fit={"cover"}
-              align={"center"}
-              width={300}
-              height={300}
-            />
+           
           </VStack>
         </GridItem>
       </Grid>
       <Grid justifyContent="center" alignItems="center" marginTop={50}>
-        <Text textAlign="center" fontWeight="bold" fontSize="3xl">Ready to Get Started?</Text>
+        <Text textAlign="center" fontWeight="bold" fontSize="3xl">
+          Ready to Get Started?
+        </Text>
         <Text>
           Uncover our products to enhance your supply chain planning and unlock
           your growth potential.
         </Text>
-        <Button bg="#1363DE" color="white" width="150px" marginInline={"auto"} marginTop={3}>Start Demo/Trial</Button>
+        <Button
+          bg="#1363DE"
+          color="white"
+          width="150px"
+          marginInline={"auto"}
+          marginTop={3}>
+          Start Demo/Trial
+        </Button>
       </Grid>
-      <Divider mt={12} mb={12} />
+      <Divider mt={12} />
     </Box>
   );
 };
