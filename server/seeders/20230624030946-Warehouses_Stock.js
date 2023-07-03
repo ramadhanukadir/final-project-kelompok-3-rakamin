@@ -1,11 +1,10 @@
-"use strict";
+'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert("Warehouses_Stocks", [
+    await queryInterface.bulkInsert('Warehouses_Stocks', [
       {
-        users_id: 1,
         warehouses_id: 1,
         items_id: 1,
         stock: 10,
@@ -13,7 +12,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        users_id: 1,
         warehouses_id: 2,
         items_id: 1,
         stock: 10,
@@ -21,7 +19,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        users_id: 1,
         warehouses_id: 3,
         items_id: 1,
         stock: 10,
@@ -29,7 +26,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        users_id: 1,
         warehouses_id: 4,
         items_id: 1,
         stock: 10,
@@ -40,6 +36,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("Warehouses_Stocks", null, {});
+    await queryInterface.bulkDelete('Warehouses_Stocks', null, {});
   },
 };
