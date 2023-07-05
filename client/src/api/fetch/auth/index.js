@@ -1,0 +1,21 @@
+import { instance } from './../../../modules/axios';
+
+export const handleLogin = async (payload) => {
+  try {
+    const { data } = await instance.post('/users/login', payload);
+    sessionStorage.setItem('token', data.accessToken);
+    sessionStorage.setItem('userData', JSON.stringify(data.dataUser));
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message || 'Something went wrong');
+  }
+};
+
+export const handleRegister = async (payload) => {
+  try {
+    const { data } = await instance.post('/users/register', payload);
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message || 'Something went wrong');
+  }
+};
