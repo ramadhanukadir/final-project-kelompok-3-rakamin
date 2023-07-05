@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Container,
   Stack,
@@ -32,6 +31,7 @@ const Hero = () => {
             <Text
               as={"span"}
               position={"relative"}
+              fontWeight="bold"
               _after={{
                 content: "''",
                 position: "absolute",
@@ -39,9 +39,9 @@ const Hero = () => {
                 bg: "blue.400",
                 zIndex: -1,
               }}>
-              Real Time {" "}
+              Real Time{" "}
             </Text>
-            <Text as={"span"} color={"blue.400"}>
+            <Text as={"span"} color={"blue.400"} fontWeight="bold">
               Inventory Management for Business
             </Text>
           </Heading>
