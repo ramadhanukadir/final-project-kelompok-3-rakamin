@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const dotenv = require("dotenv");
+const cors = require("cors");
 dotenv.config();
 const PORT = process.env.PORT;
 const router = require("./routes");
@@ -17,6 +18,7 @@ app.use(
   })
 );
 
+app.use(cors());
 app.use("/api", router);
 
 app.get("/ping", (req, res) => {
