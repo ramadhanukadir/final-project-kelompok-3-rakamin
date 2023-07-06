@@ -48,9 +48,7 @@ const responseCategoriesId = (categories, include) => {
 
 const convertDate = (param) => {
   let date = new Date(param);
-  let formattedDate = `${date.getDate()}-${
-    date.getMonth() + 1
-  }-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
+  let formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
   return formattedDate;
 };
 
@@ -69,6 +67,19 @@ const mappingOrders = (orders, warehouse, customer) => {
   });
 };
 
+const mappingWarehouses = (warehouses) => {
+  return warehouses.map((warehouse) => ({
+    id: warehouse.id,
+    usersId: warehouse.users_id,
+    name: warehouse.name,
+    address: warehouse.address,
+    city: warehouse.city,
+    province: warehouse.province,
+    postal_code: warehouse.postal_code,
+    telephone: warehouse.telephone,
+  }));
+};
+
 const mappingOrderDetail = (items) => {
   return items.map((item) => {
     return {
@@ -80,13 +91,7 @@ const mappingOrderDetail = (items) => {
   });
 };
 
-const responseOrdersId = (
-  customer,
-  warehouse,
-  totalRevenue,
-  date,
-  orderDetail
-) => {
+const responseOrdersId = (customer, warehouse, totalRevenue, date, orderDetail) => {
   return {
     customer: customer.full_name,
     warehouse: warehouse.name,
@@ -102,6 +107,7 @@ module.exports = {
   responseItemsId,
   mappingCategory,
   responseCategoriesId,
+  mappingWarehouses,
   mappingOrderDetail,
   responseOrdersId,
   convertDate,
