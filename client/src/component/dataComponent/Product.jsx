@@ -32,7 +32,7 @@ import {
   InputGroup,
   InputRightElement,
 } from '@chakra-ui/react';
-import { getAllCategories, createCategories } from '@/modules/fetch';
+// import { getAllCategories, createCategories } from '@/modules/fetch';
 //import { useNavigate } from "react-router-dom";
 import {
   PhoneIcon,
