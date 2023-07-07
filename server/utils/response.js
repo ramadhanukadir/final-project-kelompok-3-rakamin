@@ -72,12 +72,11 @@ const mappingOrders = (orders, warehouse, customer) => {
 const mappingWarehouses = (warehouses) => {
   return warehouses.map((warehouse) => ({
     id: warehouse.id,
-    usersId: warehouse.users_id,
     name: warehouse.name,
     address: warehouse.address,
     city: warehouse.city,
     province: warehouse.province,
-    postal_code: warehouse.postal_code,
+    postalCode: warehouse.postal_code,
     telephone: warehouse.telephone,
   }));
 };
