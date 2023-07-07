@@ -1,4 +1,4 @@
-const { Transaction } = require("sequelize");
+const { Transaction } = require('sequelize');
 const {
   Customers,
   Orders,
@@ -7,14 +7,14 @@ const {
   Orders_Items,
   Items,
   sequelize,
-} = require("../models");
-const warehouses_stock = require("../models/warehouses_stock");
+} = require('../models');
+const warehouses_stock = require('../models/warehouses_stock');
 const {
   mappingOrders,
   responseOrdersId,
   mappingOrderDetail,
   convertDate,
-} = require("./../utils/response");
+} = require('./../utils/response');
 
 const getAllOrders = async (req, res) => {
   try {
@@ -52,7 +52,7 @@ const getOrdersById = async (req, res) => {
       orderDetail
     );
 
-    if (!order) return res.status(404).json({ message: "Orders not found" });
+    if (!order) return res.status(404).json({ message: 'Orders not found' });
 
     return res.status(200).json(response);
   } catch (error) {
@@ -96,11 +96,11 @@ const postOrders = async (req, res) => {
       });
 
       if (!foundStock) {
-        return res.status(404).json({ message: "Stock not found" });
+        return res.status(404).json({ message: 'Stock not found' });
       }
 
       if (foundStock.stock < items.quantity) {
-        return res.status(400).json({ message: "Stock Insufficient" });
+        return res.status(400).json({ message: 'Stock Insufficient' });
       }
 
       const createItems = await Orders_Items.create(
@@ -113,12 +113,12 @@ const postOrders = async (req, res) => {
         { transaction: t }
       );
 
-      await foundStock.decrement("stock", {
+      await foundStock.decrement('stock', {
         by: items.quantity,
         transaction: t,
       });
 
-      await createOrders.increment("total_revenue", {
+      await createOrders.increment('total_revenue', {
         by: createItems.total_price,
         transaction: t,
       });
@@ -128,22 +128,6 @@ const postOrders = async (req, res) => {
     res.status(201).json(createOrders);
   } catch (error) {
     await t.rollback();
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-const updateOrders = async (req, res) => {};
-
-const deleteOrders = async (req, res) => {
-  try {
-    await Items.destroy({
-      where: {
-        id: req.params.id,
-      },
-    });
-
-    return res.status(200).json({ message: "Successfully deleted" });
-  } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };

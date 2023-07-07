@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   Container,
   Stack,
@@ -14,31 +15,65 @@ import {
   InputGroup,
   InputRightElement,
   Link,
+  FormErrorMessage,
+  useToast,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import Image from "next/image";
 import Image2 from "../image/cloud-01.png";
 import { useRouter } from "next/router";
+import { handleLogin } from "@/api/fetch/auth";
+import InputField from "@/component/InputField/InputField";
+//import { DataContext } from '@/context/AllDataContext';
+// import AllDataContextProvider from '@/context/AllDataContext';
 
 const login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  //const { setIsLogin } = useContext(DataContext);
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm();
+  const toast = useToast();
 
   const handleHome = () => {
     router.push("/");
   };
 
-  const handleLoginClick = () => {
-    router.push("/dashboard");
+  const onSubmit = async (data) => {
+    try {
+      await handleLogin(data);
+      console.log(data);
+      toast({
+        description: "Login Success",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      //setIsLogin(true);
+      router.push("/dashboard");
+    } catch (error) {
+      toast({
+        description: error.message || "Something went wrong",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+    }
   };
   return (
-    <Container maxW={"7xl"}>
+    <Container maxW={"7xl"} height={"inherit"} py={{ base: 10, md: 8 }}>
       <Stack
         align={"center"}
-        spacing={{ base: 8, md: 10 }}
-        py={{ base: 20, md: 28 }}
+        maxH={"full"}
+        // spacing={{ base: 8, md: 10 }}
+        // py={{ base: 20, md: 28 }}
         direction={{ base: "column", md: "row" }}>
-        <Stack flex={1} spacing={{ base: 5, md: 10 }}>
+        <Stack flex={1} height={"inherit"}>
           <Image
             src="/StocktrackrLogo-01.png"
             alt="logo"
@@ -64,13 +99,26 @@ const login = () => {
             </Text>
             <Text fontSize="2xl">Log in to Your Account</Text>
           </Heading>
-          <FormControl>
-            <FormLabel>Email address</FormLabel>
-            <Input type="email" />
-            <FormHelperText>We'll never share your email.</FormHelperText>
-            <FormLabel>Password</FormLabel>
-            <InputGroup>
-              <Input type={showPassword ? "text" : "password"} />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <InputField
+              name="usernameOrEmail"
+              label="Username or Email"
+              type="text"
+              placeholder="Insert username or email"
+              register={register("usernameOrEmail", {
+                required: "This is required",
+              })}
+              errors={errors.usernameOrEmail}
+            />
+            <InputField
+              name="password"
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Insert password"
+              register={register("password", {
+                required: "This is required",
+              })}
+              errors={errors.password}>
               <InputRightElement h={"full"}>
                 <Button
                   variant={"ghost"}
@@ -80,7 +128,7 @@ const login = () => {
                   {showPassword ? <ViewIcon /> : <ViewOffIcon />}
                 </Button>
               </InputRightElement>
-            </InputGroup>
+            </InputField>
             <Text>
               New here?{" "}
               <Link href="/register" fontWeight="bold">
@@ -88,42 +136,48 @@ const login = () => {
                 Create an Account!
               </Link>
             </Text>
-          </FormControl>
-          <Stack
-            spacing={{ base: 4, sm: 6 }}
-            direction={{ base: "column", sm: "row" }}>
-            <Button
-              rounded={"lg"}
-              size={"lg"}
-              fontWeight={"Bold"}
-              px={20}
-              colorScheme={"red"}
-              bg={"blue.400"}
-              _hover={{ bg: "blue.500" }}
-              onClick={handleLoginClick}>
-              Login
-            </Button>
-          </Stack>
+
+            <Stack
+              spacing={{ base: 4, sm: 6 }}
+              direction={{ base: "column", sm: "row" }}>
+              <Button
+                type="submit"
+                rounded={"lg"}
+                size={"lg"}
+                fontWeight={"Bold"}
+                px={20}
+                colorScheme={"red"}
+                bg={"blue.400"}
+                _hover={{ bg: "blue.500" }}
+                isLoading={isSubmitting}>
+                Login
+              </Button>
+            </Stack>
+          </form>
         </Stack>
         <Flex
           flex={1}
           justify={"center"}
           align={"center"}
-          position={"relative"}
-          w={"full"}>
+          // position={'relative'}
+          width={"full"}
+          height={"auto"}
+          // p={5}
+        >
           <Box
-            position={"relative"}
-            height={{ base: "300px", sm: "300px", lg: "500px" }}
-            rounded={"2xl"}
+            // position={'relative'}
+            // height={{ base: '300px', sm: '300px', lg: '500px' }}
+            // rounded={'2xl'}
             width={"full"}
-            overflow={"hidden"}>
+            // overflow={'hidden'}
+          >
             <Image
               src={Image2}
               alt={"Hero Image"}
               fit={"cover"}
-              align={"center"}
+              // align={'center'}
               w={"100%"}
-              h={"100%"}
+              h={"auto"}
             />
           </Box>
         </Flex>
