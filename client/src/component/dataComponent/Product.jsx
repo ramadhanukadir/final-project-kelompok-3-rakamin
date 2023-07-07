@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { instance } from "@/modules/axios";
 import {
   Button,
   Image,
@@ -35,6 +36,7 @@ import {
   getAllWarehouse,
   getAllWarehouseStock,
   getAllSuppliers,
+  getWarehouseId,
 } from "@/modules/fetch";
 //import { useNavigate } from "react-router-dom";
 import { WarningIcon, SearchIcon, ArrowForwardIcon } from "@chakra-ui/icons";
@@ -265,10 +267,7 @@ const Product = () => {
                     <Td>{item.weight}</Td>
                     <Td>{item.basePrice}</Td>
                     <Td>{item.sellingPrice}</Td>
-                    <Image
-                      src={`http://localhost:3000/${item.imageUrl}`}
-                      boxSize="50px"
-                    />
+                    <Image src={item.imageUrl} boxSize="50px" />
                   </Tr>
                 ))}
               </Tbody>
@@ -307,16 +306,9 @@ export const AddProductForm = () => {
       formData.append("selling_price", data.selling_price);
       formData.append("image_url", data.image_url[0]);
 
-      const response = await axios.post(
-        "http://localhost:3000/api/items",
+      const response = await instance.post(
+        "/items",
         formData,
-        {
-          headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImZOYW1lIjoiSm9obiIsImxuYW1lIjoiRG9lIiwiaWF0IjoxNjg4NDc0MTc0fQ.XVjCXQTspbYuUEabpmFBja17eSe9w1FNplwLQpOjEmI",
-            "Content-Type": "multipart/form-data",
-          },
-        },
         handleCloseModal(),
         toast({
           title: "Created Product",
@@ -335,7 +327,7 @@ export const AddProductForm = () => {
       console.error("Terjadi kesalahan saat mengirim permintaan:", error);
       toast({
         title: "Failed to create product.",
-        description: err.message,
+        description: error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -665,12 +657,36 @@ export const MoveStock = () => {
     formState: { errors },
     reset,
     setValue,
+    watch,
   } = useForm();
   const [items, setItems] = useState([]);
   const [warehouse, setWarehouse] = useState([]);
+  const [warehouseItems, setWarehouseItems] = useState([]);
+  const id = watch("source_warehouse_id");
+  const [warehouseId, setWarehouseId] = useState(id);
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
-  console.log(typeof items);
+
+  // id = id ? watch("source_warehouse_id") : 1;
+  console.log("INI ID ", id);
+
+  // useEffect(() => {
+  //   // if (id) {
+  //   //setWarehouseId(id);
+  //   // } else {
+  //   //   setWarehouseId(1);
+  //   // }
+
+  //   const fetchItems = async () => {
+  //     const items = await getWarehouseId(warehouseId);
+  //     // setWarehouseItems(items.stockItems);
+  //     console.log(items);
+  //   };
+  //   fetchItems();
+  //   // setWarehouseId(id);
+  // }, [warehouseId]);
+
+  // console.log(warehouseItems);
 
   useEffect(() => {
     const fetchItems = async () => {

@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { Navbar } from "@/component/landingComponent";
 import SideBar from "@/component/landingComponent/SideBar";
 import { useRouter } from "next/router";
+// import AllDataContextProvider from '@/context/AllDataContext';
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -18,8 +19,10 @@ export default function App({ Component, pageProps }) {
             <SideBar />
           </Box>
         )}
-        <Box p={5}>
+        <Box height={"100vh"}>
           <Component {...pageProps} />
+          {/* <AllDataContextProvider>
+          </AllDataContextProvider> */}
         </Box>
       </Grid>
     </ChakraProvider>

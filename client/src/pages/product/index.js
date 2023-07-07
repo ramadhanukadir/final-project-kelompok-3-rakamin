@@ -1,5 +1,4 @@
 import React from "react";
-
 import Product from "@/component/dataComponent/Product";
 import { Box } from "@chakra-ui/react";
 

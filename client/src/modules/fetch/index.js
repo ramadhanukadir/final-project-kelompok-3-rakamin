@@ -70,9 +70,19 @@ async function getAllSuppliers() {
   }
 }
 
+async function getWarehouseId(id) {
+  try {
+    const response = await instance.get(`/warehouses/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message || "Something went Wrong");
+  }
+}
+
 export {
   getAllCategories,
   getAllWarehouse,
   getAllWarehouseStock,
   getAllSuppliers,
+  getWarehouseId,
 };

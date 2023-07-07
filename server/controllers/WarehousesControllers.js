@@ -1,5 +1,10 @@
-const { Warehouses, Items } = require('../models');
-const { mappingWarehouses } = require('../utils/response');
+const { Warehouses, Items, Warehouses_Stock } = require('../models');
+const {
+  mappingWarehouses,
+  mappingItems,
+  responseItemsId,
+  responseWarehouseId,
+} = require('../utils/response');
 
 const getAllWarehouses = async (req, res) => {
   try {
@@ -8,7 +13,6 @@ const getAllWarehouses = async (req, res) => {
       where: {
         users_id: id,
       },
-      attributes: ['id', 'users_id', 'name', 'address', 'city', 'province', 'postal_code', 'telephone'],
     });
 
     const response = mappingWarehouses(warehouses);
@@ -23,14 +27,34 @@ const getWarehousesById = async (req, res) => {
   const { id } = req.loggedUser;
 
   try {
-    const data = await Warehouses.findOne({
+    const findWarehouse = await Warehouses.findOne({
       where: {
         users_id: id,
         id: req.params.id,
       },
-      attributes: ['id', 'users_id', 'name', 'address', 'city', 'province', 'postal_code', 'telephone'],
     });
-    res.status(200).json(data);
+
+    if (!findWarehouse)
+      res.status(404).json({ message: 'Warehouses not found' });
+
+    const warehouse = responseWarehouseId(findWarehouse);
+
+    const warehouseStock = await Warehouses_Stock.findAll({
+      where: {
+        warehouses_id: warehouse.id,
+      },
+      include: [
+        {
+          model: Items,
+          required: false,
+        },
+      ],
+    });
+
+    const stockItems = warehouseStock.map((item) => {
+      return { stock: item.stock, items: responseItemsId(item.Item) };
+    });
+    res.status(200).json({ warehouse, stockItems });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
