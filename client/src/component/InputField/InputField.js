@@ -18,9 +18,16 @@ function InputField({
   errors,
   value,
   onChange,
+  keyProp,
+  min,
+  max,
 }) {
   return (
-    <FormControl mt={{ base: 3, sm: 4, md: 5, lg: 5 }} isInvalid={errors}>
+    <FormControl
+      mt={{ base: 3, sm: 4, md: 5, lg: 5 }}
+      isInvalid={errors}
+      key={keyProp}
+    >
       <FormLabel
         htmlFor={name}
         mt={2}
@@ -59,6 +66,8 @@ function InputField({
           paddingBlock={2}
           paddingInline={3}
           {...register}
+          min={min}
+          max={max}
         />
         {children}
       </InputGroup>
