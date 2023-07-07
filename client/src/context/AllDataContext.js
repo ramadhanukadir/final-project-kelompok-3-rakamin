@@ -7,8 +7,6 @@ import {
 } from '@/api/fetch/orders';
 
 const AllDataContext = createContext();
-// const token = sessionStorage.getItem('token');
-// console.log(token);
 
 const AllDataContextProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(true);
