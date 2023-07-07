@@ -69,8 +69,8 @@ const postOrders = async (req, res) => {
 
     const createOrders = await Orders.create(
       {
-        customers_id,
-        warehouses_id,
+        customers_id: parseInt(customers_id),
+        warehouses_id: parseInt(warehouses_id),
         users_id: id,
         total_revenue: 0,
       },
@@ -106,15 +106,15 @@ const postOrders = async (req, res) => {
       const createItems = await Orders_Items.create(
         {
           orders_id: createOrders.id,
-          items_id: items.items_id,
-          quantity: items.quantity,
-          total_price: foundItems.selling_price * items.quantity,
+          items_id: parseInt(items.items_id),
+          quantity: parseInt(items.quantity),
+          total_price: foundItems.selling_price * parseInt(items.quantity),
         },
         { transaction: t }
       );
 
       await foundStock.decrement('stock', {
-        by: items.quantity,
+        by: parseInt(items.quantity),
         transaction: t,
       });
 
