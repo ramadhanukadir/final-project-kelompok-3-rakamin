@@ -19,3 +19,30 @@ export const getAllItems = async (page, sort, order, q = '') => {
     throw new Error(error.response.data.message);
   }
 };
+
+export const getAllWarehouses = async () => {
+  try {
+    const { data } = await instance.get('/warehouses');
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
+export const getWarehousesById = async (id) => {
+  try {
+    const { data } = await instance.get(`/warehouses/${id}`);
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
+export const postOrders = async (payload) => {
+  try {
+    const { data } = await instance.post('/orders', payload);
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
