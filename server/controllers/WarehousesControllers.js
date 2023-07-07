@@ -13,16 +13,6 @@ const getAllWarehouses = async (req, res) => {
       where: {
         users_id: id,
       },
-      attributes: [
-        'id',
-        'users_id',
-        'name',
-        'address',
-        'city',
-        'province',
-        'postal_code',
-        'telephone',
-      ],
     });
 
     const response = mappingWarehouses(warehouses);
