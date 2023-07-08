@@ -18,7 +18,12 @@ const {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Orders.findAll();
+    const { id } = req.loggedUser;
+    const orders = await Orders.findAll({
+      where: {
+        users_id: id,
+      },
+    });
     const warehouse = await Warehouses.findAll();
     const customer = await Customers.findAll();
     const response = mappingOrders(orders, warehouse, customer);
