@@ -1,8 +1,8 @@
-const { Users } = require("../models");
-const bcrypt = require("bcrypt");
-const { Op } = require("sequelize");
-const jwt = require("jsonwebtoken");
-const path = require("path");
+const { Users } = require('../models');
+const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
+const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const loginUsers = async (req, res) => {
   try {
@@ -14,12 +14,12 @@ const loginUsers = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "Invalid Credential" });
+      return res.status(404).json({ message: 'Invalid Credential' });
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(404).json({ message: "Invalid Credential" });
+      return res.status(404).json({ message: 'Invalid Credential' });
     }
     const token = jwt.sign(
       { userId: user.id, fName: user.first_name, lname: user.last_name },
@@ -42,6 +42,16 @@ const createUsers = async (req, res) => {
   try {
     const { first_name, last_name, username, email, password } = req.body;
     const hashPassword = await bcrypt.hash(password, 10);
+    const findUser = await Users.findOne({
+      where: {
+        [Op.or]: [{ username: username }, { email: email }],
+      },
+    });
+    if (findUser)
+      return res
+        .status(400)
+        .json({ message: 'Username or Email already exists' });
+
     const users = await Users.create({
       first_name,
       last_name,
@@ -49,11 +59,11 @@ const createUsers = async (req, res) => {
       email,
       password: hashPassword,
       image_url:
-        "https://upload.wikimedia.org/wikipedia/commons/b/b5/Windows_10_Default_Profile_Picture.svg",
+        'https://upload.wikimedia.org/wikipedia/commons/b/b5/Windows_10_Default_Profile_Picture.svg',
     });
 
     if (!first_name || !last_name || !username || !email || !hashPassword)
-      return res.status(400).json({ message: "Bad request" });
+      return res.status(400).json({ message: 'Bad request' });
 
     return res.status(201).json({ data: users });
   } catch (error) {
@@ -86,7 +96,7 @@ const updateUsers = async (req, res) => {
       },
       { where: { id: req.params.id } }
     );
-    return res.status(200).json({ message: "Successfully updated" });
+    return res.status(200).json({ message: 'Successfully updated' });
   } catch (error) {
     console.log(error);
   }
