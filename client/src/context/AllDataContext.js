@@ -52,7 +52,7 @@ const AllDataContextProvider = ({ children }) => {
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [isLogin, warehouseId, orders]);
+  }, [isLogin, warehouseId]);
 
   return (
     <AllDataContext.Provider
@@ -73,6 +73,7 @@ const AllDataContextProvider = ({ children }) => {
         setCustomers,
         orders,
         setOrders,
+        fetchOrders,
       }}
     >
       {children}
