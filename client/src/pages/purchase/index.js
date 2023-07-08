@@ -2,10 +2,19 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   Box,
   Button,
+  Container,
   FormControl,
   FormLabel,
+  Link,
   Select,
   Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
   useToast,
 } from '@chakra-ui/react';
 import { useFieldArray, useForm, watch } from 'react-hook-form';
@@ -13,9 +22,10 @@ import { DataContext } from '@/context/AllDataContext';
 import SelectField from '@/component/SelectField/SelectField';
 import InputField from '@/component/InputField/InputField';
 import { postOrders } from '@/api/fetch/orders';
+import { useRouter } from 'next/router';
 
 const index = () => {
-  const { customers, warehouses, warehouseId, setWarehouseId, warehouseItems } =
+  const { customers, warehouses, orders, setWarehouseId, warehouseItems } =
     useContext(DataContext);
   const {
     register,
@@ -31,8 +41,10 @@ const index = () => {
     name: 'orders_items',
   });
   const toast = useToast();
+  const router = useRouter();
 
   const id = watch('warehouses_id');
+  console.log(warehouses, 'ORDERS');
 
   useEffect(() => {
     setWarehouseId(parseInt(id));
@@ -63,7 +75,7 @@ const index = () => {
     }
   };
   return (
-    <div>
+    <Container>
       <Box p={14} ml={10}>
         <form onSubmit={handleSubmit(onSubmit)} key={0}>
           <SelectField
@@ -152,37 +164,73 @@ const index = () => {
             spacing={{ base: 4, sm: 6 }}
             direction={{ base: 'column', sm: 'row' }}
           >
-            <Button
-              type='submit'
-              rounded={'lg'}
-              size={'lg'}
-              fontWeight={'Bold'}
-              px={20}
-              colorScheme={'red'}
-              bg={'blue.400'}
-              _hover={{ bg: 'blue.500' }}
-              onClick={() => append({ items_id: '', quantity: '' })}
-              isDisabled={fields.length === warehouseItems.length}
-            >
-              Add Product
-            </Button>
-            <Button
-              type='submit'
-              rounded={'lg'}
-              size={'lg'}
-              fontWeight={'Bold'}
-              px={20}
-              colorScheme={'red'}
-              bg={'blue.400'}
-              _hover={{ bg: 'blue.500' }}
-              isLoading={isSubmitting}
-            >
-              Add Order
-            </Button>
+            {warehouseItems.length !== 0 && (
+              <>
+                <Button
+                  type='submit'
+                  rounded={'lg'}
+                  size={'lg'}
+                  fontWeight={'Bold'}
+                  px={20}
+                  colorScheme={'red'}
+                  bg={'blue.400'}
+                  _hover={{ bg: 'blue.500' }}
+                  onClick={() => append({ items_id: '', quantity: '' })}
+                  isDisabled={fields.length === warehouseItems.length}
+                >
+                  Add Product
+                </Button>
+                <Button
+                  type='submit'
+                  rounded={'lg'}
+                  size={'lg'}
+                  fontWeight={'Bold'}
+                  px={20}
+                  colorScheme={'red'}
+                  bg={'blue.400'}
+                  _hover={{ bg: 'blue.500' }}
+                  isLoading={isSubmitting}
+                  isDisabled={fields.length === 0}
+                >
+                  Add Order
+                </Button>
+              </>
+            )}
           </Stack>
         </form>
       </Box>
-    </div>
+      <TableContainer>
+        <Table variant='simple'>
+          <Thead bg={'#DFF6FE'}>
+            <Tr>
+              <Th>Warehouse</Th>
+              <Th>Customer</Th>
+              <Th>Total Revenue</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {orders?.map((order) => (
+              <Tr
+                key={order.id}
+                w={'full'}
+                cursor={'pointer'}
+                onClick={() => router.push(`/purchase/${order.id}`)}
+                _hover={{ bg: 'gray.100' }}
+              >
+                <Td>{order.warehouse}</Td>
+                <Td>{order.customer}</Td>
+                <Td>
+                  {order.totalRevenue.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                  })}
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 };
 

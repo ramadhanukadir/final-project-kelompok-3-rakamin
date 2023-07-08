@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import {
   getAllCustomer,
   getAllItems,
+  getAllOrders,
   getAllWarehouses,
   getWarehousesById,
 } from '@/api/fetch/orders';
@@ -16,6 +17,7 @@ const AllDataContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   const fetchCustomers = async () => {
     const { data } = await getAllCustomer();
@@ -37,15 +39,20 @@ const AllDataContextProvider = ({ children }) => {
     setWarehouseItems(data.stockItems);
   };
 
+  const fetchOrders = async () => {
+    const { data } = await getAllOrders();
+    setOrders(data);
+  };
+
   useEffect(() => {
     if (isLogin) {
-      fetchCustomers(), fetchItems(), fetchWarehouse();
+      fetchCustomers(), fetchItems(), fetchWarehouse(), fetchOrders();
     }
 
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [isLogin, warehouseId]);
+  }, [isLogin, warehouseId, orders]);
 
   return (
     <AllDataContext.Provider
@@ -64,6 +71,8 @@ const AllDataContextProvider = ({ children }) => {
         setCategories,
         customers,
         setCustomers,
+        orders,
+        setOrders,
       }}
     >
       {children}
