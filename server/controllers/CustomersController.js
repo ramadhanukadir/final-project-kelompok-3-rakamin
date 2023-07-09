@@ -2,10 +2,37 @@ const { Customers } = require("../models");
 
 const getAllCustomers = async (req, res) => {
   try {
-    const customers = await Customers.findAll();
-    return res.status(200).json({ data: customers });
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const offset = (page - 1) * req.query.limit;
+
+    const findAllCustomers = await Customers.findAll({
+      attributes: { exclude: ["createdAt", "updateAt"] },
+      limit: req.query.limit,
+      offset,
+    });
+    if (findAllCustomers.length === 0) {
+      return res.status(404).json({
+        succes: false,
+        message: "Data Customers Not Found",
+      });
+    }
+    const totalItems = await Customers.count();
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return res.status(201).json({
+      succes: true,
+      msg: "Data Customers Retrieved",
+      page,
+      totalItems: findAllCustomers.length,
+      totalPages,
+      dataCustomers: findAllCustomers,
+    });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({
+      message: "Failed Data Customers",
+      error,
+    });
   }
 };
 
