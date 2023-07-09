@@ -22,6 +22,7 @@ import {
   ModalCloseButton,
   ModalHeader,
   ModalOverlay,
+  ModalFooter,
   VStack,
   FormLabel,
   FormControl,
@@ -33,10 +34,12 @@ import {
 } from "@chakra-ui/react";
 import {
   getAllCategories,
-  getAllWarehouse,
+  getAllWarehouses,
   getAllWarehouseStock,
   getAllSuppliers,
   getWarehouseId,
+  deleteItems,
+  updateItems,
 } from "@/modules/fetch";
 //import { useNavigate } from "react-router-dom";
 import { WarningIcon, SearchIcon, ArrowForwardIcon } from "@chakra-ui/icons";
@@ -52,13 +55,19 @@ import {
   FiMove,
 } from "react-icons/fi";
 import { Form, useForm } from "react-hook-form";
-import axios from "axios";
 
 const Product = () => {
   const [product, setProduct] = useState([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  // const navigate = useNavigate();
+  const {
+    handleSubmit,
+    reset,
+    register,
+    formState: { errors },
+  } = useForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editItemId, setEditItemId] = useState(null);
+  // const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -68,7 +77,78 @@ const Product = () => {
     fetchProduct();
   }, []);
 
-  // console.log(product.data);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleEdit = async (id) => {
+    const foundProduct = await updateItems(id);
+    if (foundProduct) {
+      setEditItemId(id);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleDeleteItems = async (id) => {
+    try {
+      await deleteItems(id);
+      handleCloseModal(),
+        toast({
+          title: "Delete Product",
+          description: "You have successfully Created Product.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+    } catch (error) {
+      toast({
+        title: "Failed to delete product.",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("categories_id", data.categories_id);
+      formData.append("name", data.name);
+      formData.append("SKU", data.SKU);
+      formData.append("size", data.size);
+      formData.append("weight", data.weight);
+      formData.append("description", data.description);
+      formData.append("base_price", data.base_price);
+      formData.append("selling_price", data.selling_price);
+      formData.append("image_url", data.image_url[0]);
+
+      const response = await instance.post(
+        "/items",
+        formData,
+        handleCloseModal(),
+        toast({
+          title: "Created Product",
+          description: "You have successfully Created Product.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      );
+      if (response.status === 200) {
+        reset();
+      }
+    } catch (error) {
+      toast({
+        title: "Failed to create product.",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
   return (
     <Box>
       <Box
@@ -254,6 +334,8 @@ const Product = () => {
                   <Th>Selling Price</Th>
                   <Th>Base Price</Th>
                   <Th>Image</Th>
+                  <Th>Edit</Th>
+                  <Th>Delete</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -268,8 +350,154 @@ const Product = () => {
                     <Td>{item.basePrice}</Td>
                     <Td>{item.sellingPrice}</Td>
                     <Image src={item.imageUrl} boxSize="50px" />
+                    <Td>
+                      <Button
+                        colorScheme="blue"
+                        onClick={() => handleEdit(item.id)}
+                        size={"md"}>
+                        <FiPlus />
+                        Edit
+                      </Button>
+                    </Td>
+                    <Td>
+                      <Button
+                        colorScheme="red"
+                        onClick={() => handleDeleteItems(item.id)}
+                        size={"md"}>
+                        <FiDelete />
+                        Delete
+                      </Button>
+                    </Td>
                   </Tr>
                 ))}
+                <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader textAlign="center">Edit Product</ModalHeader>
+                    <ModalBody>
+                      <form onSubmit={handleSubmit(onSubmit)}>
+                        <FormControl isInvalid={errors.categories_id} mb={4}>
+                          <FormLabel htmlFor="categories_id">
+                            Categories id:
+                          </FormLabel>
+                          <Input
+                            type="number"
+                            id="categories_id"
+                            {...register("categories_id", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Harga harus diisi.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={errors.name} mb={4}>
+                          <FormLabel htmlFor="name">Name:</FormLabel>
+                          <Input
+                            type="text"
+                            id="name"
+                            {...register("name", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Harga harus diisi.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={errors.SKU} mb={4}>
+                          <FormLabel htmlFor="SKU">SKU:</FormLabel>
+                          <Input
+                            type="text"
+                            id="SKU"
+                            {...register("SKU", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Harga harus diisi.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={errors.size} mb={4}>
+                          <FormLabel htmlFor="size">size:</FormLabel>
+                          <Input
+                            type="number"
+                            id="size"
+                            {...register("size", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Harga harus diisi.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={errors.weight} mb={4}>
+                          <FormLabel htmlFor="weight">weight:</FormLabel>
+                          <Input
+                            type="number"
+                            id="weight"
+                            {...register("weight", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Harga harus diisi.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={errors.description} mb={4}>
+                          <FormLabel htmlFor="description">
+                            Description:
+                          </FormLabel>
+                          <Input
+                            type="text"
+                            id="description"
+                            {...register("description", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Harga harus diisi.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={errors.base_price} mb={4}>
+                          <FormLabel htmlFor="base_price">
+                            Base Price:
+                          </FormLabel>
+                          <Input
+                            type="number"
+                            id="base_price"
+                            {...register("base_price", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Harga harus diisi.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={errors.selling_price} mb={4}>
+                          <FormLabel htmlFor="selling_price">
+                            Selling price:
+                          </FormLabel>
+                          <Input
+                            type="number"
+                            id="selling_price"
+                            {...register("selling_price", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Harga harus diisi.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl isInvalid={errors.image_url} mb={4}>
+                          <FormLabel htmlFor="image_url">Gambar:</FormLabel>
+                          <Input
+                            type="file"
+                            id="image_url"
+                            {...register("image_url", { required: true })}
+                          />
+                          <FormErrorMessage>
+                            Gambar harus diunggah.
+                          </FormErrorMessage>
+                        </FormControl>
+                        <Button
+                          type="submit"
+                          size={"md"}
+                          colorScheme="blue"
+                          mr={3}>
+                          Tambah product
+                        </Button>
+                        <Button size={"md"} onClick={handleCloseModal}>
+                          Cancel
+                        </Button>
+                      </form>
+                    </ModalBody>
+                    <ModalFooter></ModalFooter>
+                  </ModalContent>
+                </Modal>
               </Tbody>
             </Table>
           </TableContainer>
@@ -480,7 +708,7 @@ export const AddStockForm = () => {
 
   useEffect(() => {
     const fetchWarehouse = async () => {
-      const warehouse = await getAllWarehouse();
+      const warehouse = await getAllWarehouses();
       setWarehouse(warehouse);
     };
     fetchWarehouse();
@@ -518,16 +746,9 @@ export const AddStockForm = () => {
     const jsonData = JSON.stringify(data);
     console.log(data);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/items/stock",
+      const response = await instance.post(
+        "/items/stock",
         jsonData,
-        {
-          headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImZOYW1lIjoiSm9obiIsImxuYW1lIjoiRG9lIiwiaWF0IjoxNjg4NDc0MTc0fQ.XVjCXQTspbYuUEabpmFBja17eSe9w1FNplwLQpOjEmI",
-            "Content-Type": "application/json",
-          },
-        },
         handleCloseModal(),
         toast({
           title: "Created Product",
@@ -668,7 +889,7 @@ export const MoveStock = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   // id = id ? watch("source_warehouse_id") : 1;
-  console.log("INI ID ", id);
+  // console.log("INI ID ", id);
 
   // useEffect(() => {
   //   // if (id) {
@@ -698,7 +919,7 @@ export const MoveStock = () => {
 
   useEffect(() => {
     const fetchWarehouse = async () => {
-      const warehouse = await getAllWarehouse();
+      const warehouse = await getAllWarehouses();
       setWarehouse(warehouse);
     };
     fetchWarehouse();
@@ -728,16 +949,9 @@ export const MoveStock = () => {
     const jsonData = JSON.stringify(data);
     console.log(data);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/warehouses-stock/move-items",
+      const response = await instance.post(
+        "/warehouses-stock/move-items",
         jsonData,
-        {
-          headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImZOYW1lIjoiSm9obiIsImxuYW1lIjoiRG9lIiwiaWF0IjoxNjg4NDc0MTc0fQ.XVjCXQTspbYuUEabpmFBja17eSe9w1FNplwLQpOjEmI",
-            "Content-Type": "application/json",
-          },
-        },
         handleCloseModal(),
         toast({
           title: "Created Product",

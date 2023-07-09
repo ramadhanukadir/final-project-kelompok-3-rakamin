@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,12 +7,12 @@ import {
   Select,
   Stack,
   useToast,
-} from '@chakra-ui/react';
-import { useFieldArray, useForm, watch } from 'react-hook-form';
-import { DataContext } from '@/context/AllDataContext';
-import SelectField from '@/component/SelectField/SelectField';
-import InputField from '@/component/InputField/InputField';
-import { postOrders } from '@/api/fetch/orders';
+} from "@chakra-ui/react";
+import { useFieldArray, useForm, watch } from "react-hook-form";
+import { DataContext } from "@/context/AllDataContext";
+import SelectField from "@/component/SelectField/SelectField";
+import InputField from "@/component/InputField/InputField";
+import { postOrders } from "@/api/fetch/orders";
 
 const index = () => {
   const { customers, warehouses, warehouseId, setWarehouseId, warehouseItems } =
@@ -28,37 +28,37 @@ const index = () => {
   } = useForm();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'orders_items',
+    name: "orders_items",
   });
   const toast = useToast();
 
-  const id = watch('warehouses_id');
+  const id = watch("warehouses_id");
 
   useEffect(() => {
     setWarehouseId(parseInt(id));
   }, [id]);
 
-  console.log(fields, 'WAREHOUSE ITEMS');
+  console.log(fields, "WAREHOUSE ITEMS");
   const onSubmit = async (data) => {
     try {
       console.log(data);
       await postOrders(data);
       toast({
-        description: 'Success Order',
-        status: 'success',
+        description: "Success Order",
+        status: "success",
         duration: 3000,
         isClosable: true,
-        position: 'top',
+        position: "top",
       });
       reset();
       resetField();
     } catch (error) {
       toast({
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 3000,
         isClosable: true,
-        position: 'top',
+        position: "top",
       });
     }
   };
@@ -68,10 +68,10 @@ const index = () => {
         <form onSubmit={handleSubmit(onSubmit)} key={0}>
           <SelectField
             keyProp={1}
-            name={'warehouse'}
-            label={'Warehouse'}
-            register={register('warehouses_id', {
-              required: 'This is required',
+            name={"warehouse"}
+            label={"Warehouse"}
+            register={register("warehouses_id", {
+              required: "This is required",
             })}
             errors={errors.warehouse}
             mapping={warehouses}
@@ -80,10 +80,10 @@ const index = () => {
           />
           <SelectField
             keyProp={2}
-            name={'customer'}
-            label={'Customers'}
-            register={register('customers_id', {
-              required: 'This is required',
+            name={"customer"}
+            label={"Customers"}
+            register={register("customers_id", {
+              required: "This is required",
             })}
             errors={errors.customer}
             mapping={customers}
@@ -118,31 +118,30 @@ const index = () => {
                 name={`Items`}
                 mapping={warehouseItems}
                 option={(opt) =>
-                  opt.items.name + ', Stock Available: ' + opt.stock
+                  opt.items.name + ", Stock Available: " + opt.stock
                 }
                 value={(opt) => opt.items.id}
               />
               <InputField
                 keyProp={field.id}
                 name={`orders_items.${index}.quantity`}
-                label={'Quantity'}
+                label={"Quantity"}
                 register={register(`orders_items.${index}.quantity`, {
-                  required: 'required',
+                  required: "required",
                   min: 1,
                   max: warehouseItems[index].stock,
                 })}
                 errors={errors[`orders_items.${index}`]}
-                type={'number'}
+                type={"number"}
                 min={1}
                 max={warehouseItems[index].stock}
               />
               <Button
-                type='submit'
-                rounded={'lg'}
-                size={'lg'}
-                fontWeight={'Bold'}
-                onClick={() => remove(index)}
-              >
+                type="submit"
+                rounded={"lg"}
+                size={"lg"}
+                fontWeight={"Bold"}
+                onClick={() => remove(index)}>
                 Remove
               </Button>
             </>
@@ -150,33 +149,30 @@ const index = () => {
 
           <Stack
             spacing={{ base: 4, sm: 6 }}
-            direction={{ base: 'column', sm: 'row' }}
-          >
+            direction={{ base: "column", sm: "row" }}>
             <Button
-              type='submit'
-              rounded={'lg'}
-              size={'lg'}
-              fontWeight={'Bold'}
+              type="submit"
+              rounded={"lg"}
+              size={"lg"}
+              fontWeight={"Bold"}
               px={20}
-              colorScheme={'red'}
-              bg={'blue.400'}
-              _hover={{ bg: 'blue.500' }}
-              onClick={() => append({ items_id: '', quantity: '' })}
-              isDisabled={fields.length === warehouseItems.length}
-            >
+              colorScheme={"red"}
+              bg={"blue.400"}
+              _hover={{ bg: "blue.500" }}
+              onClick={() => append({ items_id: "", quantity: "" })}
+              isDisabled={fields.length === warehouseItems.length}>
               Add Product
             </Button>
             <Button
-              type='submit'
-              rounded={'lg'}
-              size={'lg'}
-              fontWeight={'Bold'}
+              type="submit"
+              rounded={"lg"}
+              size={"lg"}
+              fontWeight={"Bold"}
               px={20}
-              colorScheme={'red'}
-              bg={'blue.400'}
-              _hover={{ bg: 'blue.500' }}
-              isLoading={isSubmitting}
-            >
+              colorScheme={"red"}
+              bg={"blue.400"}
+              _hover={{ bg: "blue.500" }}
+              isLoading={isSubmitting}>
               Add Order
             </Button>
           </Stack>

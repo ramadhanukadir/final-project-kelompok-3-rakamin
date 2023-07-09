@@ -1,11 +1,10 @@
-
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from "react";
 import {
   getAllCustomer,
   getAllItems,
   getAllWarehouses,
   getWarehousesById,
-} from '@/api/fetch/orders';
+} from "@/api/fetch/orders";
 
 const AllDataContext = createContext();
 
@@ -21,6 +20,16 @@ const AllDataContextProvider = ({ children }) => {
   const fetchWarehouse = async () => {
     const data = await getAllWarehouses();
     setWarehouses(data);
+  };
+
+  const fetchItems = async () => {
+    const { data } = await getAllItems(1, "ASC", "name");
+    setProducts(data);
+  };
+
+  const fetchCustomers = async () => {
+    const { data } = await getAllCustomer();
+    setCustomers(data);
   };
 
   const fetchWarehouseById = async (warehouseId) => {
@@ -55,9 +64,11 @@ const AllDataContextProvider = ({ children }) => {
         setCategories,
         customers,
         setCustomers,
-      }}
-    >
+      }}>
       {children}
     </AllDataContext.Provider>
   );
 };
+
+export const DataContext = AllDataContext;
+export default AllDataContextProvider;
