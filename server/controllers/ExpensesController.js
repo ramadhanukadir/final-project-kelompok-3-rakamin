@@ -13,7 +13,7 @@ const postExpenses = async (req, res) => {
         users_id: id,
       }
     });
-   
+    
     if (!item) {
       return res.status(404).json({ message: 'Item Not Found' });
     }
@@ -21,7 +21,7 @@ const postExpenses = async (req, res) => {
 
     const warehousesStock = await Warehouses_Stock.findOne({
       where: { 
-        users_id: id, 
+        // users_id: id, 
         warehouses_id: warehouses_id, 
         items_id: items_id
       },
@@ -86,7 +86,7 @@ const updateExpenses = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    const warehousesStock = await Warehouses_Stock.findOne({
+    const warehousesStock = await Warehouses_Stocks.findOne({
       where: {
         users_id: users_id,
         warehouses_id: warehouses_id,

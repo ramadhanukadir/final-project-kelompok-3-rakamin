@@ -36,7 +36,7 @@ const getAllSupplier = async (req, res) => {
     const offset = (page - 1) * req.query.limit;
 
     const findAllSuppliers = await Suppliers.findAll({
-      attributes: { exclude: ["createdAt", "updateAt"] },
+      attributes: { exclude: ["createdAt", "updatedAt"] },
       limit: req.query.limit,
       offset,
     });
@@ -141,7 +141,7 @@ const deleteSuppliers = async (req, res) => {
       });
     }
     await Suppliers.destroy({
-      where: { id: req.params.id },
+      where: { id: id },
     });
     return res.status(200).json({
       succes: true,
@@ -150,6 +150,7 @@ const deleteSuppliers = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       message: "Delete Suppliers Failed",
+      error
     });
   }
 };

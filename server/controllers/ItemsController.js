@@ -182,7 +182,7 @@ const addStockItems = async (req, res) => {
 
       const findStock = await Warehouses_Stock.findOne({
         where: {
-          users_id: id,
+          // users_id: id,
           items_id: items_id,
           warehouses_id: warehouses_id,
         },
@@ -191,7 +191,7 @@ const addStockItems = async (req, res) => {
       if (!findStock) {
         await Warehouses_Stock.create(
           {
-            users_id: id,
+            // users_id: id,
             items_id,
             warehouses_id,
             stock,
@@ -227,7 +227,7 @@ const addStockItems = async (req, res) => {
           },
           {
             where: {
-              users_id: id,
+              // users_id: id,
               items_id: items_id,
               warehouses_id: warehouses_id,
             },

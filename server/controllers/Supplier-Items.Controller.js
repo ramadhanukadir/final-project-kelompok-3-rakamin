@@ -96,6 +96,12 @@ const getAllSupplierItems = async(req, res) => {
     try {
         const findAllSuppliersItems = await Suppliers_Items.findAll(  {
             attributes: {exclude: ['createdAt', 'updatedAt']},
+            include: [
+                {
+                  model: Items,
+                  attributes: { exclude: ['createdAt', 'updatedAt'] }
+                }
+              ] 
         })
 
         if(!findAllSuppliersItems) {

@@ -1,7 +1,12 @@
 import React from "react";
+import Report from "./expenses";
 
 const index = () => {
-  return <div>index</div>;
+  return (
+    <>
+    <Report/>
+    </>
+  )
 };
 
 export default index;
