@@ -16,11 +16,21 @@ export default function Page({ orderId }) {
     };
     fetchOrder();
   }, []);
+
+  console.log(order);
   return (
-    <p style={{ marginLeft: '550px' }}>
-      Post: {order.customer}
+    <>
+      <p style={{ marginLeft: '550px' }}>Cutomer: {order.customer}</p>
+      <p style={{ marginLeft: '550px' }}>Warehouse: {order.warehouse}</p>
+      {/* <p style={{ marginLeft: '550px' }}>
+        Total Revenue:{' '}
+        {order.totalRevenue.toLocaleString('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+        })}
+      </p> */}
       <button onClick={() => router.back()}>Back</button>
-    </p>
+    </>
   );
 }
 
