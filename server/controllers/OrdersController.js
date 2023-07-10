@@ -23,6 +23,7 @@ const getAllOrders = async (req, res) => {
       where: {
         users_id: id,
       },
+      order: [['createdAt', 'DESC']],
     });
     const warehouse = await Warehouses.findAll();
     const customer = await Customers.findAll();
