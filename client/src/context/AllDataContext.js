@@ -18,6 +18,7 @@ const AllDataContextProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [itemsId, setItemsId] = useState(0);
 
   const fetchCustomers = async () => {
     const { data } = await getAllCustomer();
@@ -52,7 +53,7 @@ const AllDataContextProvider = ({ children }) => {
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [isLogin, warehouseId]);
+  }, [isLogin, warehouseId, itemsId]);
 
   return (
     <AllDataContext.Provider
@@ -74,6 +75,8 @@ const AllDataContextProvider = ({ children }) => {
         orders,
         setOrders,
         fetchOrders,
+        itemsId,
+        setItemsId,
       }}
     >
       {children}
