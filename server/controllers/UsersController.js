@@ -102,9 +102,26 @@ const updateUsers = async (req, res) => {
   }
 };
 
+const getUserLogin = async (req, res) => {
+  try {
+    const { id } = req.loggedUser;
+    const user = await Users.findOne({
+      where: {
+        id,
+      },
+      attributes: { exclude: ['password', 'createdAt', 'updatedAt'] },
+    });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   loginUsers,
   createUsers,
   getUsersById,
   updateUsers,
+  getUserLogin,
 };
