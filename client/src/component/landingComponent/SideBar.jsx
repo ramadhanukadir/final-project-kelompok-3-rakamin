@@ -195,6 +195,13 @@ const SidebarContent = ({ onClose, ...rest }) => {
           to="/settings"
           onClick={() => handleItemClick("settings")}
         />
+        <SideItem
+          icon={FiSettings}
+          title="Customers"
+          active={activeItem === "/customers"}
+          to="/customers"
+          onClick={() => handleItemClick("customers")}
+        />
       </Flex>
     </Box>
   );

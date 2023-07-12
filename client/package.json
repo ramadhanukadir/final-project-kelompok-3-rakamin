@@ -13,7 +13,6 @@
     "@chakra-ui/react": "^2.7.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@faker-js/faker": "^8.0.2",
     "axios": "^1.4.0",
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.6",
@@ -25,5 +24,8 @@
     "react-hook-form": "^7.45.0",
     "react-icons": "^4.9.0",
     "react-swipeable": "^7.0.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.0.2"
   }
 }

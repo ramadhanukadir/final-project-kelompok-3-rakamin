@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/router'
 import {
   Table,
   Thead,
@@ -27,6 +28,7 @@ import { FiPlus, FiDelete, FiEdit, FiMove } from "react-icons/fi";
 import { instance } from "../../../modules/axios";
 import Link from "next/link";
 import { Link as ChakraLink } from "@chakra-ui/react";
+
 
 const SuppliersTable = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -67,6 +69,11 @@ const SuppliersTable = () => {
       console.error("Gagal mengambil data:", error);
     }
   };
+
+  
+
+
+  const router = useRouter();
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -285,7 +292,7 @@ const SuppliersTable = () => {
                 </Thead>
                 <Tbody>
                   {suppliers.map((supplier) => (
-                    <Tr key={supplier.id}>
+                    <Tr onClick={() => router.push(`/supplier/${supplier.id}`)} key={supplier.id}>
                       <Td>{supplier.id}</Td>
                       <Td>{supplier.name}</Td>
                       <Td>{supplier.address}</Td>
@@ -303,11 +310,11 @@ const SuppliersTable = () => {
                             openDeleteModal();
                           }}
                         />
-                        <Link href={"/"} passHref>
+                        {/* <Link onClick={"/"} passHref>
                           <ChakraLink>
                             <IconButton icon={<FiMove />} />
                           </ChakraLink>
-                        </Link>
+                        </Link> */}
                       </Td>
                     </Tr>
                   ))}

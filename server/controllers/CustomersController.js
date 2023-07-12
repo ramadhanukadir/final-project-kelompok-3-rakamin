@@ -2,7 +2,9 @@ const { Customers } = require("../models");
 
 const getAllCustomers = async (req, res) => {
   try {
-    const customers = await Customers.findAll();
+    const customers = await Customers.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
     return res.status(200).json({ data: customers });
   } catch (error) {
     console.log(error);
@@ -23,15 +25,16 @@ const createCustomers = async (req, res) => {
   try {
     const { users_id, full_name, address } = req.body;
     const customers = await Customers.create({
-      users_id,
+      // users_id,
       full_name,
       address,
     });
 
-    if (!users_id || !full_name || !address)
-      res.status(400).json({ message: "Bad request" });
+    if (users_id || !full_name || !address) {
+    return res.status(400).json({ message: "Bad request" });
+    }
 
-    res.status(201).json({ data: customers });
+   return res.status(201).json({ data: customers });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -1,5 +1,5 @@
 const db = require("../models");
-const { Expenses, Items, Warehouses_Stock } = db;
+const { Expenses, Items, Warehouses_Stock, Orders_Items } = db;
 
 const postExpenses = async (req, res) => {
   try {
@@ -86,7 +86,7 @@ const updateExpenses = async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    const warehousesStock = await Warehouses_Stocks.findOne({
+    const warehousesStock = await Warehouses_Stock.findOne({
       where: {
         users_id: users_id,
         warehouses_id: warehouses_id,
@@ -235,6 +235,29 @@ const deleteExpenses = async(req, res) => {
   }
 }
 
+const getAllitemsOrders = async (req, res) => {
+  try {
+    const findAllItems = await Orders_Items.findAll({
+      attributes: {exclude: ['updatedAt']}
+    })
+
+    if(!findAllItems) {
+      return res.status(404).json({message: 'Items Not Found'})
+    }
+
+     res.status(200).json({
+      success: true,
+      msg: "Data Item retrieved",
+      data: findAllItems
+    })
+  } catch (error) {
+    return res.send(400).json({
+      error,
+      msg:"Items Bad Request"
+    })
+  }
+}
+
 
 
 module.exports = {
@@ -242,5 +265,6 @@ module.exports = {
   getTotalExpenses,
   updateExpenses,
   getIdExpenses,
-  deleteExpenses
+  deleteExpenses,
+  getAllitemsOrders
 };
