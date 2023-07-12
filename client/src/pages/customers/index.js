@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Table,
@@ -74,20 +74,17 @@ const index = () => {
   };
   return (
     <>
-    
-    <Box maxW="7xl" mx={"auto"} px={{ base: 2, sm: 12, md: 17 }}>
-    
-    <Box>
-    <Box
-          display={"flex"}
-          flexDirection={"row"}
-          justifyContent={"space-between"}
-          py={"10"}
-        >
-          <Text fontWeight={"bold"} fontSize={"xl"}>
-            Customers
-          </Text>
-        </Box>
+      <Box maxW="7xl" mx={"auto"} px={{ base: 2, sm: 12, md: 17 }}>
+        <Box>
+          <Box
+            display={"flex"}
+            flexDirection={"row"}
+            justifyContent={"space-between"}
+            py={"10"}>
+            <Text fontWeight={"bold"} fontSize={"xl"}>
+              Customers
+            </Text>
+          </Box>
           <Box>
             <TableContainer>
               <Table variant="simple">
@@ -101,23 +98,17 @@ const index = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {customers.map((customer)=> (
-
-                      <Tr key={customer.id}>
+                  {customers.map((customer) => (
+                    <Tr key={customer.id}>
                       <Td>{customer.id}</Td>
                       <Td>{customer.users_id}</Td>
                       <Td>{customer.full_name}</Td>
                       <Td>{customer.address}</Td>
-                      
+
                       <Td>
-                        <IconButton icon={<FiPlus />}/>
-                        <IconButton
-                          icon={<FiEdit />}
-                          />
-                        <IconButton
-                          icon={<FiDelete />}
-                          
-                        />
+                        <IconButton icon={<FiPlus />} />
+                        <IconButton icon={<FiEdit />} />
+                        <IconButton icon={<FiDelete />} />
                         {/* <Link onClick={"/"} passHref>
                           <ChakraLink>
                             <IconButton icon={<FiMove />} />
@@ -125,8 +116,7 @@ const index = () => {
                         </Link> */}
                       </Td>
                     </Tr>
-                 
-                        ))}
+                  ))}
                 </Tbody>
               </Table>
             </TableContainer>
@@ -134,10 +124,7 @@ const index = () => {
         </Box>
       </Box>
     </>
-                      
-    
-
-  )
+  );
 };
 
 export default index;

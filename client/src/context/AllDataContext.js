@@ -1,12 +1,12 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from "react";
 import {
   getAllCustomer,
   getAllItems,
   getAllOrders,
   getAllWarehouses,
   getWarehousesById,
-} from '@/api/fetch/orders';
-import { fetchUser } from '@/api/fetch/auth';
+} from "@/api/fetch/orders";
+import { fetchUser } from "@/api/fetch/auth";
 
 const AllDataContext = createContext();
 
@@ -22,31 +22,30 @@ const AllDataContextProvider = ({ children }) => {
   const [itemsId, setItemsId] = useState(0);
   const [userLogin, setUserLogin] = useState({});
 
-  let access = '';
+  let access = "";
 
-  if (typeof window !== 'undefined') {
-    access = sessionStorage.getItem('token');
+  if (typeof window !== "undefined") {
+    access = sessionStorage.getItem("token");
   }
-
 
   const fetchUserLogin = async () => {
     const data = await fetchUser();
     setUserLogin(data);
   };
 
-  const fetchCustomers = async () => {
-    const { data } = await getAllCustomer();
-    setCustomers(data);
-  };
-
-  const fetchItems = async () => {
-    const { data } = await getAllItems(1, 'ASC', 'name');
-    setProducts(data);
-  };
-
   const fetchWarehouse = async () => {
     const data = await getAllWarehouses();
     setWarehouses(data);
+  };
+
+  const fetchItems = async () => {
+    const { data } = await getAllItems(1, "ASC", "name");
+    setProducts(data);
+  };
+
+  const fetchCustomers = async () => {
+    const { data } = await getAllCustomer();
+    setCustomers(data);
   };
 
   const fetchWarehouseById = async (warehouseId) => {
@@ -99,8 +98,7 @@ const AllDataContextProvider = ({ children }) => {
         setUserLogin,
         fetchUserLogin,
         access,
-      }}
-    >
+      }}>
       {children}
     </AllDataContext.Provider>
   );

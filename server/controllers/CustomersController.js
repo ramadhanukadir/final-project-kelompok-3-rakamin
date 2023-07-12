@@ -3,9 +3,10 @@ const { Customers } = require('../models');
 const getAllCustomers = async (req, res) => {
   try {
     const customers = await Customers.findAll();
+    if (!customers) res.status(404).json({ message: "Customers not found" });
     return res.status(200).json({ data: customers });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ error: error.message });
   }
 };
 

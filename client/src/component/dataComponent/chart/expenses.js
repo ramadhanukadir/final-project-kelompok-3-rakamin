@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 import { Pie } from "react-chartjs-2";
-import { instance } from "../../modules/axios/index";
+import { instance } from "@/modules/axios";
 import { Box, Text, Flex } from "@chakra-ui/react";
-import Dashboard from "../dashboard";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -90,7 +89,6 @@ const ExpensesChart = () => {
     <Box>
       <Pie data={data} />
       <Flex flexDir="column" my={4}>
-    
         <Flex justify="space-between" mb={2}>
           <Text color="gray.400">Profit</Text>
           <Text fontWeight="bold" fontSize="xl">
@@ -100,7 +98,7 @@ const ExpensesChart = () => {
             )}
           </Text>
         </Flex>
-      
+
         <Flex justify="space-between" mb={2}>
           <Text color="gray.400">Expenses</Text>
           <Text fontWeight="bold" fontSize="xl">
@@ -120,12 +118,7 @@ const ExpensesChart = () => {
             )}
           </Text>
         </Flex>
-
       </Flex>
-      
-
-
-    
     </Box>
   );
 };

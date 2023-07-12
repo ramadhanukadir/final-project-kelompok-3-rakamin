@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Box, Button, Container, Flex, VStack } from '@chakra-ui/react';
-import { DataContext } from '@/context/AllDataContext';
-import OrderForm from '@/component/OrderForm/OrderForm';
-import { useRouter } from 'next/router';
-import OrderList from '@/component/OrderList/OrderList';
-import { ArrowBackIcon } from '@chakra-ui/icons';
+import React, { useContext, useEffect, useState } from "react";
+import { Box, Button, Container, Flex, VStack } from "@chakra-ui/react";
+import { DataContext } from "@/context/AllDataContext";
+import OrderForm from "@/component/OrderForm/OrderForm";
+import { useRouter } from "next/router";
+import OrderList from "@/component/OrderList/OrderList";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 const index = () => {
   const { orders } = useContext(DataContext);
@@ -12,17 +12,16 @@ const index = () => {
   return (
     <VStack pt={16} zIndex={1}>
       <Flex
-        w={'100%'}
-        justifyContent={'space-between'}
-        alignSelf={'flex-end'}
-        zIndex={1}
-      >
-        <Button size={'sm'}>
+        w={"100%"}
+        justifyContent={"space-between"}
+        alignSelf={"flex-end"}
+        zIndex={1}>
+        <Button size={"sm"}>
           <ArrowBackIcon w={4} h={4} />
         </Button>
         <OrderForm />
       </Flex>
-      <Box w={'100%'}>
+      <Box w={"100%"}>
         <OrderList orders={orders} />
       </Box>
     </VStack>
