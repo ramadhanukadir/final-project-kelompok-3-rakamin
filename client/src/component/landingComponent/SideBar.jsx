@@ -152,11 +152,11 @@ const SidebarContent = ({ onClose, ...rest }) => {
         />
         <SideItem
           icon={FiLayout}
-          title="Report"
-          active={activeItem === "/report"}
+          title="Customers"
+          active={activeItem === "/customers"}
           // to='/report'
           onClick={() => {
-            handleItemClick("report"), router.push("/dashboard");
+            handleItemClick("report"), router.push("/customers");
           }}
         />
         <SideItem

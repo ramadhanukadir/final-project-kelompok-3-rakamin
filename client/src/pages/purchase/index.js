@@ -33,12 +33,13 @@ const index = () => {
   const toast = useToast();
 
   const id = watch("warehouses_id");
+  console.log(id);
 
   useEffect(() => {
     setWarehouseId(parseInt(id));
   }, [id]);
 
-  console.log(fields, "WAREHOUSE ITEMS");
+  console.log(warehouseItems, "WAREHOUSE ITEMS");
   const onSubmit = async (data) => {
     try {
       console.log(data);

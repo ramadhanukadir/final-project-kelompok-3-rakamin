@@ -33,7 +33,8 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import {
-  getAllCategories,
+  getAllItems,
+  getAllItemsById,
   getAllWarehouses,
   getAllWarehouseStock,
   getAllSuppliers,
@@ -55,6 +56,7 @@ import {
   FiMove,
 } from "react-icons/fi";
 import { Form, useForm } from "react-hook-form";
+import { useRouter } from "next/router";
 
 const Product = () => {
   const [product, setProduct] = useState([]);
@@ -64,25 +66,41 @@ const Product = () => {
     reset,
     register,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
+  const [detailItems, setDetailItems] = useState({});
   // const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const product = await getAllCategories();
+      const product = await getAllItems();
       setProduct(product);
     };
+    if (detailItems) {
+      setValue("name", detailItems.name);
+      setValue("SKU", detailItems.SKU);
+      setValue("size", detailItems.size);
+      setValue("weight", detailItems.weight);
+      setValue("description", detailItems.description);
+      setValue("base_price", detailItems.basePrice);
+      setValue("selling_price", detailItems.sellingPrice);
+    }
     fetchProduct();
-  }, []);
+  }, [detailItems]);
+  console.log(product);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
   const handleEdit = async (id) => {
-    const foundProduct = await updateItems(id);
+    const foundProduct = await getAllItemsById(id);
+    setDetailItems(foundProduct.data);
+
     if (foundProduct) {
       setEditItemId(id);
       setIsModalOpen(true);
@@ -124,8 +142,8 @@ const Product = () => {
       formData.append("selling_price", data.selling_price);
       formData.append("image_url", data.image_url[0]);
 
-      const response = await instance.post(
-        "/items",
+      const response = await instance.put(
+        `/items/${editItemId}`,
         formData,
         handleCloseModal(),
         toast({
@@ -341,7 +359,12 @@ const Product = () => {
               <Tbody>
                 {product?.data?.map((item) => (
                   <Tr key={item.id}>
-                    <Td>{item.SKU}</Td>
+                    <Td
+                      onClick={() => router.push(`/product/${item.id}`)}
+                      cursor={"pointer"}
+                      _hover={"black"}>
+                      {item.SKU}
+                    </Td>
                     <Td>{item.categoriesId}</Td>
                     <Td>{item.description}</Td>
                     <Td>{item.name}</Td>
@@ -716,7 +739,7 @@ export const AddStockForm = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      const items = await getAllCategories();
+      const items = await getAllItems();
       setItems(items);
     };
     fetchItems();
@@ -744,11 +767,15 @@ export const AddStockForm = () => {
 
   const onSubmit = async (data) => {
     const jsonData = JSON.stringify(data);
-    console.log(data);
     try {
       const response = await instance.post(
         "/items/stock",
         jsonData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
         handleCloseModal(),
         toast({
           title: "Created Product",
@@ -911,7 +938,7 @@ export const MoveStock = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      const items = await getAllCategories();
+      const items = await getAllItems();
       setItems(items);
     };
     fetchItems();
