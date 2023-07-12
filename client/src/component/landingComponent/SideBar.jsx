@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -24,6 +24,7 @@ import {
   MenuList,
   Image,
   Button,
+  useColorMode,
 } from "@chakra-ui/react";
 import {
   FiHome,
@@ -44,12 +45,22 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { useSwipeable } from "react-swipeable";
 import SideItem from "./SideItem";
-
+import { DataContext } from "@/context/AllDataContext";
 const SideBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
+  const { userLogin, setIsLogin } = useContext(DataContext);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    router.push("/");
+    setIsLogin(false);
+  };
 
   return (
-    <Box bg={useColorModeValue("gray.100", "gray.900")}>
+    <Box
+      bg={useColorModeValue("gray.100", "gray.900")}
+      flexBasis={{ base: "0px", md: "230px", lg: "230px", xl: "230px" }}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
@@ -68,120 +79,89 @@ const SideBar = () => {
       </Drawer>
 
       {/* mobilenav */}
-      <MobileNav onOpen={onOpen} />
+      <MobileNav user={userLogin} onOpen={onOpen} handleLogout={handleLogout} />
     </Box>
   );
 };
 
 const SidebarContent = ({ onClose, ...rest }) => {
-  const [activeItem, setActiveItem] = useState();
+  const [activeItem, setActiveItem] = useState("dashboard");
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  // const { colorMode } = useColorMode();
+  // const activeColor = colorMode === 'dark' ? '#7289da' : '#3bd1c7';
 
   const handleItemClick = (item) => {
     setActiveItem(item);
   };
 
-  const handleSwipe = (eventData) => {
-    if (eventData.deltaX > 100) {
-      setIsOpen(true);
-    } else if (eventData.deltaX < -100) {
-      setIsOpen(false);
-    }
-  };
+  // const handleSwipe = (eventData) => {
+  //   if (eventData.deltaX > 100) {
+  //     setIsOpen(true);
+  //   } else if (eventData.deltaX < -100) {
+  //     setIsOpen(false);
+  //   }
+  // };
 
-  const swipeableHandlers = useSwipeable({
-    onSwiped: handleSwipe,
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true,
-  });
+  // const swipeableHandlers = useSwipeable({
+  //   onSwiped: handleSwipe,
+  //   preventDefaultTouchmoveEvent: true,
+  //   trackMouse: true,
+  // });
 
   return (
     <Box
-      bg={useColorModeValue("#DFF6FE")}
-      borderRight="1px"
-      borderRightColor={useColorModeValue("gray.200", "gray.700")}
+      bg={useColorModeValue("white")}
+      boxShadow={"md"}
       w={{ base: "full", md: 60 }}
       h="full"
-      pos="fixed"
+      position="fixed"
       top="0"
       transition="left 0.3s"
-      left={isOpen ? "0" : "-40"}
+      left={isOpen ? "0" : "0"}
       zIndex={5}
-      {...rest}
-      {...swipeableHandlers}>
+      {...rest}>
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <Image
           src="/StocktrackrLogo-01.png"
           alt="logo"
-          width={150}
-          height={150}
+          width={"130px"}
+          height={"35px"}
         />
-        <IconButton
-          bg={"#1363DE"}
-          aria-label="Toggle Sidebar"
-          icon={isOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          onClick={() => setIsOpen(!isOpen)}
-        />
-
-        <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
-      <Flex
+      <VStack
+        // display={'flex'}
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
+        mt={5}
+        px={5}
+        gap={2}
         {...rest}>
         <SideItem
           navSize={""}
           icon={FiHome}
           title="Dashboard"
-          active={activeItem === "/dashboard"}
-          // to="/dashboard"
+          active={activeItem === "dashboard"}
+          activeColor={"#1363DF"}
           onClick={() => {
             handleItemClick("dashboard"), router.push("/dashboard");
           }}
         />
         <SideItem
-          icon={FiBarChart}
-          title="Business Summary"
-          active={activeItem === "/business"}
-          // to='/business'
-          onClick={() => {
-            handleItemClick("business"), router.push("/dashboard");
-          }}
-        />
-        <SideItem
-          icon={FiLayout}
-          title="Customers"
-          active={activeItem === "/customers"}
-          // to='/report'
-          onClick={() => {
-            handleItemClick("report"), router.push("/customers");
-          }}
-        />
-        <SideItem
           icon={FiCodesandbox}
           title="Category"
-          active={activeItem === "/category"}
-          // to='/category'
+          active={activeItem === "category"}
+          activeColor={"#1363DF"}
           onClick={() => {
             handleItemClick("category"), router.push("/category");
           }}
         />
         <SideItem
-          icon={FiPackage}
-          title="Selling"
-          active={activeItem === "/selling"}
-          // to='/selling'
-          onClick={() => {
-            handleItemClick("selling"), router.push("/dashboard");
-          }}
-        />
-        <SideItem
           icon={FiUser}
           title="Purchase"
-          active={activeItem === "/purchase"}
-          // to='/purchase'
+          active={activeItem === "purchase"}
+          activeColor={"#1363DF"}
           onClick={() => {
             handleItemClick("purchase"), router.push("/purchase");
           }}
@@ -189,8 +169,8 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiUser}
           title="Product"
-          active={activeItem === "/product"}
-          // to='/product'
+          active={activeItem === "product"}
+          activeColor={"#1363DF"}
           onClick={() => {
             handleItemClick("product"), router.push("/product");
           }}
@@ -198,36 +178,41 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiUser}
           title="Supplier"
-          active={activeItem === "/supplier"}
-          // to='/supplier'
+          active={activeItem === "supplier"}
+          activeColor={"#1363DF"}
           onClick={() => {
             handleItemClick("supplier"), router.push("/supplier");
           }}
         />
         <SideItem
-          icon={FiSettings}
-          title="Settings"
-          active={activeItem === "/settings"}
-          // to='/settings'
+          icon={FiUser}
+          title="Customers"
+          active={activeItem === "customers"}
+          activeColor={"#1363DF"}
           onClick={() => {
-            handleItemClick("settings"), router.push("/settings");
+            handleItemClick("customers"), router.push("/customers");
           }}
         />
-      </Flex>
+      </VStack>
     </Box>
   );
 };
 
-const MobileNav = ({ onOpen, ...rest }) => {
+const MobileNav = ({ user, handleLogout, onOpen, ...rest }) => {
   return (
     <Flex
-      ml={{ base: 0, md: 60 }}
+      // ml={{ base: 0, md: 60 }}
+      as={"nav"}
+      position={"fixed"}
+      top={0}
+      w={"full"}
+      height="60px"
       px={{ base: 4, md: 4 }}
-      height="20"
       alignItems="center"
-      bg={useColorModeValue("#1363DE")}
-      borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      bg={useColorModeValue("white")}
+      boxShadow={"md"}
+      // borderBottomWidth='1px'
+      // borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
       justifyContent={{ base: "space-between", md: "flex-end" }}
       {...rest}>
       <IconButton
@@ -260,20 +245,17 @@ const MobileNav = ({ onOpen, ...rest }) => {
               transition="all 0.3s"
               _focus={{ boxShadow: "none" }}>
               <HStack>
-                <Avatar
-                  size={"sm"}
-                  src={
-                    "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                  }
-                />
+                <Avatar size={"sm"} src={user?.image_url} />
                 <VStack
                   display={{ base: "none", md: "flex" }}
                   alignItems="flex-start"
                   spacing="1px"
                   ml="2">
-                  <Text fontSize="sm">Justina Clark</Text>
+                  <Text fontSize="sm">
+                    {`${user?.first_name}  ${user?.last_name}`}
+                  </Text>
                   <Text fontSize="xs" color="gray.600">
-                    Admin
+                    @{user?.username}
                   </Text>
                 </VStack>
                 <Box display={{ base: "none", md: "flex" }}>
@@ -283,12 +265,15 @@ const MobileNav = ({ onOpen, ...rest }) => {
             </MenuButton>
             <MenuList
               bg={useColorModeValue("white", "gray.900")}
-              borderColor={useColorModeValue("gray.200", "gray.700")}>
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Billing</MenuItem>
+              borderColor={useColorModeValue("gray.200", "gray.700")}
+              zIndex={"10"}>
+              <MenuItem zIndex={"10"}>Profile</MenuItem>
+              <MenuItem zIndex={"10"}>Settings</MenuItem>
+              <MenuItem zIndex={"10"}>Billing</MenuItem>
               <MenuDivider />
-              <MenuItem>Sign out</MenuItem>
+              <MenuItem onClick={handleLogout} zIndex={"10"}>
+                Sign out
+              </MenuItem>
             </MenuList>
           </Menu>
         </Flex>

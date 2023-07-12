@@ -1,4 +1,3 @@
-const { Transaction } = require('sequelize');
 const {
   Customers,
   Orders,
@@ -8,7 +7,6 @@ const {
   Items,
   sequelize,
 } = require('../models');
-const warehouses_stock = require('../models/warehouses_stock');
 const {
   mappingOrders,
   responseOrdersId,
@@ -18,7 +16,13 @@ const {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Orders.findAll();
+    const { id } = req.loggedUser;
+    const orders = await Orders.findAll({
+      where: {
+        users_id: id,
+      },
+      order: [['createdAt', 'DESC']],
+    });
     const warehouse = await Warehouses.findAll();
     const customer = await Customers.findAll();
     const response = mappingOrders(orders, warehouse, customer);
@@ -32,14 +36,20 @@ const getAllOrders = async (req, res) => {
 const getOrdersById = async (req, res) => {
   try {
     const order = await Orders.findByPk(req.params.id);
+
+    if (!order) return res.status(404).json({ message: 'Orders not found' });
+
     const customer = await Customers.findOne({
       where: { id: order.customers_id },
     });
     const warehouse = await Warehouses.findOne({
       where: { id: order.warehouses_id },
     });
+
     const items = await order.getItems();
     const orderDetail = mappingOrderDetail(items);
+
+    console.log(orderDetail);
     const totalRevenue = orderDetail.map((item) => {
       return item.totalPrice;
     });
@@ -48,7 +58,7 @@ const getOrdersById = async (req, res) => {
       customer,
       warehouse,
       totalRevenue,
-      convertDate(order.createdAt),
+      order.createdAt.toLocaleString('id-ID', convertDate),
       orderDetail
     );
 

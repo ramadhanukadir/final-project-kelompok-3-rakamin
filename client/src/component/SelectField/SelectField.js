@@ -1,10 +1,11 @@
+import { DataContext } from '@/context/AllDataContext';
 import {
   FormControl,
   FormErrorMessage,
   FormLabel,
   Select,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useContext } from 'react';
 
 function SelectField({
   register,
@@ -16,21 +17,20 @@ function SelectField({
   value,
   keyProp,
 }) {
+  const { setItemsId } = useContext(DataContext);
   return (
     <FormControl key={keyProp}>
       <FormLabel htmlFor={name}>{label}</FormLabel>
-      <Select
-        size='sm'
-        id={name}
-        variant='filled'
-        {...register}
-        // onChange={(e) => onChange(e.target.value)}
-      >
+      <Select size='sm' id={name} variant='filled' {...register}>
         <option value='' selected disabled>
           {`Select ${name}`}
         </option>
-        {mapping.map((opt) => (
-          <option key={value(opt)} value={value(opt)}>
+        {mapping.map((opt, index) => (
+          <option
+            key={value(opt)}
+            value={value(opt)}
+            onClick={() => setItemsId(parseInt(index))}
+          >
             {option(opt)}
           </option>
         ))}
