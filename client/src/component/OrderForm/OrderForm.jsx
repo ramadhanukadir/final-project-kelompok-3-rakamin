@@ -81,7 +81,7 @@ function OrderForm() {
 
   return (
     <>
-      <Button onClick={onOpen} leftIcon={<FiPlus />} zIndex={1}>
+      <Button onClick={onOpen} leftIcon={<FiPlus />}>
         Add Order
       </Button>
 
