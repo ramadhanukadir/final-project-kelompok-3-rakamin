@@ -28,6 +28,13 @@ import {
   Select,
   useToast,
   FormErrorMessage,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogBody,
+  AlertDialogCloseButton,
 } from '@chakra-ui/react';
 import { getAllWarehouses } from '@/modules/fetch';
 import { SearchIcon, EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
@@ -40,7 +47,8 @@ export default function Warehouse() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isSavePopupOpen, setIsSavePopupOpen] = useState(false);
-  const [editData, setEditData] = useState(null); // State untuk data yang ingin diedit
+  const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
 
   const {
     register,
@@ -84,25 +92,12 @@ export default function Warehouse() {
     }
   };
 
-  useEffect(() => {
-    if (editData) {
-      fetchCitiesByProvince(editData.province); // Mengambil data kota berdasarkan provinsi dari editData
-    }
-  }, [editData]);
-
   const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-  };
-
-  const handleEdit = (id) => {
-    const dataToEdit = warehouses.find((warehouse) => warehouse.id === id);
-    setEditData(dataToEdit);
-    openModal();
-    reset(dataToEdit); // Mengatur nilai awal form dengan data yang akan diedit
   };
 
   const onSubmit = async (data) => {
@@ -131,15 +126,9 @@ export default function Warehouse() {
         });
         return;
       }
-      if (editData) {
-        // Jika ada editData, artinya kita sedang dalam mode edit
-        // Kirim data yang akan diedit ke backend menggunakan axios atau metode penyimpanan data lainnya
-        await instance.put(`/warehouses/${editData.id}`, data);
-      } else {
-        // Jika tidak ada editData, artinya kita sedang dalam mode tambah
-        // Kirim data baru ke backend menggunakan axios atau metode penyimpanan data lainnya
-        await instance.post('/warehouses', data);
-      }
+
+      // Kirim data gudang ke backend
+      await instance.post('/warehouses', data);
 
       // Dapatkan data gudang terbaru dari backend
       const fetchedWarehouses = await getAllWarehouses();
@@ -156,22 +145,28 @@ export default function Warehouse() {
       // Reset form dan tutup modal
       reset();
       closeModal();
-      setEditData(null);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleDeleteWarehouse = async (warehouseId) => {
+  const handleDeleteWarehouse = (warehouseId) => {
+    setDeleteWarehouseId(warehouseId);
+    setIsDeleteConfirmationOpen(true);
+  };
+
+  const confirmDeleteWarehouse = async () => {
     try {
       // Kirim permintaan hapus data gudang ke backend menggunakan axios atau metode lainnya
-      await instance.delete(`/warehouses/${warehouseId}`);
+      await instance.delete(`/warehouses/${deleteWarehouseId}`);
 
       // Dapatkan data gudang terbaru dari backend
       const fetchedWarehouses = await getAllWarehouses();
       setWarehouse(fetchedWarehouses);
 
       // Tampilkan popup info bahwa data telah dihapus
+      setIsDeleteConfirmationOpen(false);
+      // setIsSavePopupOpen(true);
       setIsDeletePopupOpen(true);
 
       // Set timeout untuk menutup popup setelah beberapa detik
@@ -181,6 +176,10 @@ export default function Warehouse() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const cancelDeleteWarehouse = () => {
+    setIsDeleteConfirmationOpen(false);
   };
 
   return (
@@ -257,7 +256,7 @@ export default function Warehouse() {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add Warehouse</ModalHeader>
+          <ModalHeader> Add Warehouse</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -299,7 +298,7 @@ export default function Warehouse() {
 
               <ChakraFormControl>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input type="number" {...register('postalCode')} />
+                <Input type="number" {...register('postal_code')} />
               </ChakraFormControl>
 
               <ChakraFormControl isInvalid={errors.telephone} isRequired>
@@ -331,6 +330,27 @@ export default function Warehouse() {
           Data has been deleted.
         </Box>
       )}
+
+      <AlertDialog isOpen={isDeleteConfirmationOpen} onClose={cancelDeleteWarehouse}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Warehouse
+            </AlertDialogHeader>
+
+            <AlertDialogCloseButton />
+
+            <AlertDialogBody>Are you sure you want to delete this warehouse? This action is irreversible.</AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button onClick={cancelDeleteWarehouse}>Cancel</Button>
+              <Button colorScheme="red" ml={3} onClick={confirmDeleteWarehouse}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 }
