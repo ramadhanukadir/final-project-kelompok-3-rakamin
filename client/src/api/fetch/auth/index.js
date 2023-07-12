@@ -19,3 +19,12 @@ export const handleRegister = async (payload) => {
     throw new Error(error.response.data.message || 'Something went wrong');
   }
 };
+
+export const fetchUser = async () => {
+  try {
+    const { data } = await instance.get(`/user/me`);
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message || 'Something went wrong');
+  }
+};

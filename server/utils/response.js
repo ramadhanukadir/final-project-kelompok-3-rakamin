@@ -46,19 +46,21 @@ const responseCategoriesId = (categories, include) => {
   };
 };
 
-const convertDate = (param) => {
-  let date = new Date(param);
-  let formattedDate = `${date.getDate()}-${
-    date.getMonth() + 1
-  }-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
-  return formattedDate;
+const convertDate = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
 };
 
 const mappingOrders = (orders, warehouse, customer) => {
   return orders.map((order) => {
     const Warehouse = warehouse.find((item) => item.id === order.warehouses_id);
     const Customer = customer.find((item) => item.id === order.customers_id);
-    const date = convertDate(order.createdAt);
+    const date = order.createdAt.toLocaleString('id-ID', convertDate);
     return {
       id: order.id,
       warehouse: Warehouse.name,
@@ -100,6 +102,7 @@ const mappingOrderDetail = (items) => {
       quantity: item.Orders_Items.quantity,
       price: item.selling_price,
       totalPrice: item.Orders_Items.total_price,
+      image: item.image_url,
     };
   });
 };
