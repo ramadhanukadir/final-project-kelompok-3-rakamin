@@ -1,4 +1,4 @@
-const { Customers } = require("../models");
+const { Customers } = require('../models');
 
 const getAllCustomers = async (req, res) => {
   try {
@@ -6,12 +6,12 @@ const getAllCustomers = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const offset = (page - 1) * req.query.limit;
 
-    const findAllCustomers = await Customers.findAll({
+    const customers = await Customers.findAll({
       attributes: { exclude: ["createdAt", "updateAt"] },
       limit: req.query.limit,
       offset,
     });
-    if (findAllCustomers.length === 0) {
+    if (!customers) {
       return res.status(404).json({
         succes: false,
         message: "Data Customers Not Found",
@@ -24,22 +24,26 @@ const getAllCustomers = async (req, res) => {
       succes: true,
       msg: "Data Customers Retrieved",
       page,
-      totalItems: findAllCustomers.length,
+      totalItems: customers.length,
       totalPages,
-      dataCustomers: findAllCustomers,
+      dataCustomers: customers,
     });
   } catch (error) {
     res.status(400).json({
       message: "Failed Data Customers",
       error,
     });
+    
+    return res.status(200).json({ data: customers });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
 const getCustomersById = async (req, res) => {
   try {
     const customers = await Customers.findByPk(req.params.id);
-    if (!customers) res.status(404).json({ message: "Customers not found" });
+    if (!customers) res.status(404).json({ message: 'Customers not found' });
     return res.status(200).json({ data: customers });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -48,9 +52,10 @@ const getCustomersById = async (req, res) => {
 
 const createCustomers = async (req, res) => {
   try {
-    const { users_id, full_name, address } = req.body;
+    const { id } = req.loggedUser
+    const { full_name, address } = req.body;
     const customers = await Customers.create({
-      users_id,
+      users_id: id,
       full_name,
       address,
     });
@@ -58,7 +63,7 @@ const createCustomers = async (req, res) => {
     if (!users_id || !full_name || !address)
       res.status(400).json({ message: "Bad request" });
 
-    res.status(201).json({ data: customers });
+   return res.status(201).json({ data: customers });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -72,7 +77,7 @@ const updateCustomers = async (req, res) => {
       { users_id: id, full_name, address },
       { where: { id: req.params.id } }
     );
-    res.status(200).json({ message: "Successfully updated" });
+    res.status(200).json({ message: 'Successfully updated' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -81,9 +86,9 @@ const updateCustomers = async (req, res) => {
 const deleteCustomers = async (req, res) => {
   try {
     const customers = await Customers.destroy({ where: { id: req.params.id } });
-    if (!customers) res.status(404).json({ message: "something wrong" });
+    if (!customers) res.status(404).json({ message: 'something wrong' });
 
-    res.status(200).json({ message: "Successfully deleted" });
+    res.status(200).json({ message: 'Successfully deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
