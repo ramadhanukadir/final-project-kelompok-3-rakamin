@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Container,
@@ -24,9 +24,11 @@ import Image2 from '../image/cloud-01.png';
 import { useRouter } from 'next/router';
 import { handleLogin } from '@/api/fetch/auth';
 import InputField from '@/component/InputField/InputField';
+import { DataContext } from '@/context/AllDataContext';
 
 const login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { setIsLogin } = useContext(DataContext);
   const router = useRouter();
   const {
     register,
@@ -42,6 +44,7 @@ const login = () => {
   const onSubmit = async (data) => {
     try {
       await handleLogin(data);
+      console.log(data);
       toast({
         description: 'Login Success',
         status: 'success',
@@ -49,6 +52,7 @@ const login = () => {
         isClosable: true,
         position: 'top',
       });
+      setIsLogin(true);
       router.push('/dashboard');
     } catch (error) {
       toast({

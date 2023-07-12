@@ -1,4 +1,3 @@
-const { Transaction } = require("sequelize");
 const {
   Customers,
   Orders,
@@ -7,18 +6,23 @@ const {
   Orders_Items,
   Items,
   sequelize,
-} = require("../models");
-const warehouses_stock = require("../models/warehouses_stock");
+} = require('../models');
 const {
   mappingOrders,
   responseOrdersId,
   mappingOrderDetail,
   convertDate,
-} = require("./../utils/response");
+} = require('./../utils/response');
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Orders.findAll();
+    const { id } = req.loggedUser;
+    const orders = await Orders.findAll({
+      where: {
+        users_id: id,
+      },
+      order: [['createdAt', 'DESC']],
+    });
     const warehouse = await Warehouses.findAll();
     const customer = await Customers.findAll();
     const response = mappingOrders(orders, warehouse, customer);
@@ -32,14 +36,20 @@ const getAllOrders = async (req, res) => {
 const getOrdersById = async (req, res) => {
   try {
     const order = await Orders.findByPk(req.params.id);
+
+    if (!order) return res.status(404).json({ message: 'Orders not found' });
+
     const customer = await Customers.findOne({
       where: { id: order.customers_id },
     });
     const warehouse = await Warehouses.findOne({
       where: { id: order.warehouses_id },
     });
+
     const items = await order.getItems();
     const orderDetail = mappingOrderDetail(items);
+
+    console.log(orderDetail);
     const totalRevenue = orderDetail.map((item) => {
       return item.totalPrice;
     });
@@ -48,11 +58,11 @@ const getOrdersById = async (req, res) => {
       customer,
       warehouse,
       totalRevenue,
-      convertDate(order.createdAt),
+      order.createdAt.toLocaleString('id-ID', convertDate),
       orderDetail
     );
 
-    if (!order) return res.status(404).json({ message: "Orders not found" });
+    if (!order) return res.status(404).json({ message: 'Orders not found' });
 
     return res.status(200).json(response);
   } catch (error) {
@@ -69,8 +79,8 @@ const postOrders = async (req, res) => {
 
     const createOrders = await Orders.create(
       {
-        customers_id,
-        warehouses_id,
+        customers_id: parseInt(customers_id),
+        warehouses_id: parseInt(warehouses_id),
         users_id: id,
         total_revenue: 0,
       },
@@ -96,29 +106,29 @@ const postOrders = async (req, res) => {
       });
 
       if (!foundStock) {
-        return res.status(404).json({ message: "Stock not found" });
+        return res.status(404).json({ message: 'Stock not found' });
       }
 
       if (foundStock.stock < items.quantity) {
-        return res.status(400).json({ message: "Stock Insufficient" });
+        return res.status(400).json({ message: 'Stock Insufficient' });
       }
 
       const createItems = await Orders_Items.create(
         {
           orders_id: createOrders.id,
-          items_id: items.items_id,
-          quantity: items.quantity,
-          total_price: foundItems.selling_price * items.quantity,
+          items_id: parseInt(items.items_id),
+          quantity: parseInt(items.quantity),
+          total_price: foundItems.selling_price * parseInt(items.quantity),
         },
         { transaction: t }
       );
 
-      await foundStock.decrement("stock", {
-        by: items.quantity,
+      await foundStock.decrement('stock', {
+        by: parseInt(items.quantity),
         transaction: t,
       });
 
-      await createOrders.increment("total_revenue", {
+      await createOrders.increment('total_revenue', {
         by: createItems.total_price,
         transaction: t,
       });
@@ -128,22 +138,6 @@ const postOrders = async (req, res) => {
     res.status(201).json(createOrders);
   } catch (error) {
     await t.rollback();
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-const updateOrders = async (req, res) => {};
-
-const deleteOrders = async (req, res) => {
-  try {
-    await Items.destroy({
-      where: {
-        id: req.params.id,
-      },
-    });
-
-    return res.status(200).json({ message: "Successfully deleted" });
-  } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
