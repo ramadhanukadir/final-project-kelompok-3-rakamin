@@ -6,6 +6,7 @@ import {
   getAllWarehouses,
   getWarehousesById,
 } from '@/api/fetch/orders';
+import { fetchUser } from '@/api/fetch/auth';
 
 const AllDataContext = createContext();
 
@@ -19,6 +20,21 @@ const AllDataContextProvider = ({ children }) => {
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [itemsId, setItemsId] = useState(0);
+  const [userLogin, setUserLogin] = useState({});
+  const [token, setToken] = useState('');
+  let access = '';
+
+  if (typeof window !== 'undefined') {
+    access = sessionStorage.getItem('token');
+
+    // setToken(token);
+  }
+  console.log(access, 'TOKEN');
+
+  const fetchUserLogin = async () => {
+    const data = await fetchUser();
+    setUserLogin(data);
+  };
 
   const fetchCustomers = async () => {
     const { data } = await getAllCustomer();
@@ -46,14 +62,18 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (isLogin) {
-      fetchCustomers(), fetchItems(), fetchWarehouse(), fetchOrders();
+    if (access !== null) {
+      fetchCustomers(),
+        fetchItems(),
+        fetchWarehouse(),
+        fetchOrders(),
+        fetchUserLogin();
     }
 
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [isLogin, warehouseId, itemsId]);
+  }, [access, warehouseId, itemsId]);
 
   return (
     <AllDataContext.Provider
@@ -77,6 +97,10 @@ const AllDataContextProvider = ({ children }) => {
         fetchOrders,
         itemsId,
         setItemsId,
+        userLogin,
+        setUserLogin,
+        fetchUserLogin,
+        access,
       }}
     >
       {children}
