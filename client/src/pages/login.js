@@ -28,7 +28,7 @@ import { DataContext } from '@/context/AllDataContext';
 
 const login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { setIsLogin } = useContext(DataContext);
+  
   const router = useRouter();
   const {
     register,
@@ -52,7 +52,6 @@ const login = () => {
         isClosable: true,
         position: 'top',
       });
-      setIsLogin(true);
       router.push('/dashboard');
     } catch (error) {
       toast({
