@@ -102,6 +102,7 @@ const mappingOrderDetail = (items) => {
       quantity: item.Orders_Items.quantity,
       price: item.selling_price,
       totalPrice: item.Orders_Items.total_price,
+      image: item.image_url,
     };
   });
 };

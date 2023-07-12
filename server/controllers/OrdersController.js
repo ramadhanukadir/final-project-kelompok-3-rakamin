@@ -48,6 +48,8 @@ const getOrdersById = async (req, res) => {
 
     const items = await order.getItems();
     const orderDetail = mappingOrderDetail(items);
+
+    console.log(orderDetail);
     const totalRevenue = orderDetail.map((item) => {
       return item.totalPrice;
     });
