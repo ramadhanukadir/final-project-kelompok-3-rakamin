@@ -143,7 +143,7 @@ const deleteSuppliers = async (req, res) => {
       });
     }
     await Suppliers.destroy({
-      where: { id: req.params.id },
+      where: { id: id },
     });
     return res.status(200).json({
       succes: true,

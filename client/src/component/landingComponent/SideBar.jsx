@@ -172,18 +172,12 @@ const SidebarContent = ({ onClose, ...rest }) => {
             handleItemClick('business'), router.push('/dashboard');
           }}
         />
-        <SideItem
-          icon={FiLayout}
-          title='Report'
-          active={activeItem === '/report'}
-          onClick={() => {
-            handleItemClick('report'), router.push('/dashboard');
-          }}
-        />
+  
         <SideItem
           icon={FiCodesandbox}
           title='Category'
-          active={activeItem === '/category'}
+          active={activeItem === 'category'}
+          activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('category'), router.push('/dashboard');
           }}
@@ -191,7 +185,8 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiPackage}
           title='Selling'
-          active={activeItem === '/selling'}
+          active={activeItem === 'selling'}
+          activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('selling'), router.push('/dashboard');
           }}
@@ -208,7 +203,8 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiUser}
           title='Product'
-          active={activeItem === '/product'}
+          active={activeItem === 'product'}
+          activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('product'), router.push('/product');
           }}
@@ -216,17 +212,19 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiUser}
           title='Supplier'
-          active={activeItem === '/supplier'}
+          active={activeItem === 'supplier'}
+          activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('supplier'), router.push('/supplier');
           }}
         />
         <SideItem
-          icon={FiSettings}
-          title='Settings'
-          active={activeItem === '/settings'}
+          icon={FiUser}
+          title='Customers'
+          active={activeItem === 'customers'}
+          activeColor={'#1363DF'}
           onClick={() => {
-            handleItemClick('settings'), router.push('/settings');
+            handleItemClick('customers'), router.push('/customers');
           }}
         />
       </VStack>

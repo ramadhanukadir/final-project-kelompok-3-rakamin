@@ -56,7 +56,7 @@ const convertDate = {
   second: 'numeric',
 };
 
-const mappingOrders = (orders, warehouse, customer) => {
+const mappingOrders = (orders, warehouse, customer, revenue) => {
   return orders.map((order) => {
     const Warehouse = warehouse.find((item) => item.id === order.warehouses_id);
     const Customer = customer.find((item) => item.id === order.customers_id);
@@ -67,6 +67,7 @@ const mappingOrders = (orders, warehouse, customer) => {
       customer: Customer.full_name,
       totalRevenue: order.total_revenue,
       date: date,
+
     };
   });
 };

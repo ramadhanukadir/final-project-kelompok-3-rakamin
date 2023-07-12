@@ -21,15 +21,13 @@ const AllDataContextProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [itemsId, setItemsId] = useState(0);
   const [userLogin, setUserLogin] = useState({});
-  const [token, setToken] = useState('');
+
   let access = '';
 
   if (typeof window !== 'undefined') {
     access = sessionStorage.getItem('token');
-
-    // setToken(token);
   }
-  console.log(access, 'TOKEN');
+
 
   const fetchUserLogin = async () => {
     const data = await fetchUser();

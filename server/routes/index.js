@@ -8,9 +8,11 @@ const customerRoute = require('./customers');
 const warehousesRoute = require('./warehouses');
 const warehousesStockRoute = require('./warehousesStock');
 const suppliersRoute = require('./suppliers');
-const suppliersItemsRoute = require('./suppliersItems');
-const expensesRoute = require('./expensese');
-const authMiddleware = require('../middlewares/authMiddleware');
+
+const suppliersItemsRoute =require('./suppliersItems')
+const expensesRoute =require('./expense');
+const authMiddleware = require("../middlewares/authMiddleware");
+
 
 router.use('/users', userRoute);
 router.use(authMiddleware);
@@ -24,5 +26,7 @@ router.use('/customer', customerRoute);
 router.use('/suppliers', suppliersRoute);
 router.use('/suppliers-items', suppliersItemsRoute);
 router.use('/expense', expensesRoute);
+
+
 
 module.exports = router;
