@@ -20,7 +20,7 @@ function OrderList({ orders }) {
             <Th>Date</Th>
             <Th>Warehouse</Th>
             <Th>Customer</Th>
-            <Th>Total Revenue</Th>
+            <Th>Revenue</Th>
           </Tr>
         </Thead>
         <Tbody>
