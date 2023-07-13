@@ -16,6 +16,7 @@ const mappingItems = (items) => {
 const responseItemsId = (items) => {
   return {
     id: items.id,
+    categoriesId: items.categories_id,
     name: items.name,
     description: items.description,
     SKU: items.SKU,
@@ -30,7 +31,6 @@ const responseItemsId = (items) => {
 const mappingCategory = (categories) => {
   return categories.map((category) => ({
     id: category.id,
-    usersId: category.users_id,
     name: category.name,
     description: category.description,
   }));
@@ -67,7 +67,6 @@ const mappingOrders = (orders, warehouse, customer, revenue) => {
       customer: Customer.full_name,
       totalRevenue: order.total_revenue,
       date: date,
-
     };
   });
 };
