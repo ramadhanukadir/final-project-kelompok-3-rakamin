@@ -1,5 +1,5 @@
-import { getOrderById } from '@/api/fetch/orders';
-import { ArrowBackIcon } from '@chakra-ui/icons';
+import { getOrderById } from "@/api/fetch/orders";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -8,9 +8,9 @@ import {
   Image,
   Text,
   VStack,
-} from '@chakra-ui/react';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+} from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function Page({ orderId }) {
   const router = useRouter();
@@ -27,102 +27,100 @@ export default function Page({ orderId }) {
 
   return (
     <Flex
-      w={'100%'}
+      w={"100%"}
       marginTop={20}
-      flexDirection={'column'}
-      justifyContent={'flex-start'}
-      zIndex={1}
-    >
+      flexDirection={"column"}
+      justifyContent={"flex-start"}
+      zIndex={1}>
       <HStack>
-        <Button size={'sm'} w={'3'} onClick={() => router.back()}>
+        <Button size={"sm"} w={"3"} onClick={() => router.back()}>
           <ArrowBackIcon w={4} h={4} />
         </Button>
       </HStack>
-      <Flex direction={'column'}>
-        <Text fontSize='xl' fontWeight='bold'>
+      <Flex direction={"column"}>
+        <Text fontSize="xl" fontWeight="bold">
           Order Detail
         </Text>
-        <Flex direction={'row'} columnGap={'20px'}>
-          <Flex direction={'column'}>
+        <Flex direction={"row"} columnGap={"20px"}>
+          <Flex direction={"column"}>
             <Text>Cutomer </Text>
             <Text>Warehouse </Text>
             <Text>Total Revenue </Text>
             <Text>Date </Text>
           </Flex>
-          <Flex direction={'column'}>
+          <Flex direction={"column"}>
             <Text>: {order.customer}</Text>
             <Text>: {order.warehouse}</Text>
             <Text>
-              :{' '}
-              {order.totalRevenue?.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
+              :{" "}
+              {order.totalRevenue?.toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
               })}
             </Text>
             <Text>: {order.date}</Text>
           </Flex>
         </Flex>
         <VStack mt={6}>
-          <Text fontSize='md' fontWeight='bold'>
+          <Text fontSize="md" fontWeight="bold">
             Detail Product
           </Text>
           <Flex
-            alignSelf={'flex-start'}
-            w={'100%'}
+            alignSelf={"flex-start"}
+            w={"100%"}
             py={{ base: 2, md: 4 }}
             px={{ base: 4, md: 8 }}
-            border={'1px'}
-            borderColor={'gray.300'}
-            borderRadius={'lg'}
-          >
-            <HStack w={'100%'}>
+            border={"1px"}
+            borderColor={"gray.300"}
+            borderRadius={"lg"}>
+            <HStack w={"100%"}>
               {order?.items?.map((item) => (
                 <HStack
-                  display={'flex'}
-                  justifyContent={'space-between'}
-                  w={'100%'}
+                  display={"flex"}
+                  justifyContent={"space-between"}
+                  w={"100%"}
                   key={item.id}
                   // pb={{ base: 2, md: 3 }}
                   // borderBottom={{ base: 'none', md: '1px' }}
                 >
-                  <Flex flexDirection={'row'} gap={4}>
+                  <Flex flexDirection={"row"} gap={4}>
                     <Image
                       src={item.image}
-                      aspectRatio={'1/1'}
+                      aspectRatio={"1/1"}
                       w={12}
                       h={12}
-                      objectFit={'center'}
-                      borderRadius={'xl'}
+                      objectFit={"center"}
+                      borderRadius={"xl"}
                       // bg={'black'}
                     />
                     <Box>
-                      <Text fontSize={'sm'} fontWeight={'semibold'}>
+                      <Text fontSize={"sm"} fontWeight={"semibold"}>
                         {item.name}
                       </Text>
                       <HStack>
-                        <Text fontSize={'sm'} fontWeight={'light'}>
+                        <Text fontSize={"sm"} fontWeight={"light"}>
                           {item.quantity}
                         </Text>
-                        <Text fontSize={'sm'} fontWeight={'light'}>
+                        <Text fontSize={"sm"} fontWeight={"light"}>
                           x
                         </Text>
-                        <Text fontSize={'sm'} fontWeight={'light'}>
-                          {item.price.toLocaleString('id-ID', {
-                            style: 'currency',
-                            currency: 'IDR',
+                        <Text fontSize={"sm"} fontWeight={"light"}>
+                          {item.price.toLocaleString("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
                           })}
                         </Text>
                       </HStack>
                     </Box>
                   </Flex>
-                  <Flex flexDirection={'column'}>
-                    <Text fontSize={'sm'} fontWeight={'light'}>
+                  <Flex flexDirection={"column"}>
+                    <Text fontSize={"sm"} fontWeight={"light"}>
                       Total Price
                     </Text>
-                    <Text fontSize={'md'} fontWeight={'bold'}>
-                      {item.totalPrice.toLocaleString('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
+                    <Text fontSize={"md"} fontWeight={"bold"}>
+                      {item.totalPrice.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
                       })}
                     </Text>
                   </Flex>

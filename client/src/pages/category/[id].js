@@ -13,10 +13,11 @@ import {
   Td,
   Tbody,
   Image,
+  Button,
 } from "@chakra-ui/react";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 export default function Page({ categoryId }) {
-  console.log("INI NOMOR CATEGORY", categoryId);
   const router = useRouter();
   const [category, setCategory] = useState({});
 
@@ -27,11 +28,21 @@ export default function Page({ categoryId }) {
     };
     fetchCategory();
   }, []);
-  console.log("INI CATEGORY", category);
 
   return (
-    <Box>
+    <Box
+      margin={50}
+      marginTop={100}
+      display={"flex"}
+      flexDirection={"column"}
+      justifyContent={"center"}
+      alignItems={"center"}>
       {" "}
+      <Box display={"flex"} justifyContent={"start"} my={5}>
+        <Button size={"sm"} w={"3"} onClick={() => router.back()}>
+          <ArrowBackIcon w={4} h={4} />
+        </Button>
+      </Box>
       <TableContainer>
         <Table variant="simple">
           <Thead bg={"#DFF6FE"}>

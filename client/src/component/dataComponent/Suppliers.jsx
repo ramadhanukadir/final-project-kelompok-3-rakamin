@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
 import {
   Table,
   Thead,
@@ -25,12 +25,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { FiPlus, FiDelete, FiEdit, FiMove } from "react-icons/fi";
-import { instance } from "../../../modules/axios";
+import { instance } from "@/modules/axios";
 import Link from "next/link";
 import { Link as ChakraLink } from "@chakra-ui/react";
 
-
-const SuppliersTable = () => {
+const Suppliers = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState("");
@@ -69,9 +68,6 @@ const SuppliersTable = () => {
       console.error("Gagal mengambil data:", error);
     }
   };
-
-  
-
 
   const router = useRouter();
 
@@ -154,24 +150,12 @@ const SuppliersTable = () => {
           display={"flex"}
           flexDirection={"row"}
           justifyContent={"space-between"}
-          py={"10"}
-        >
+          py={"10"}>
           <Text fontWeight={"bold"} fontSize={"xl"}>
             Supplier
           </Text>
         </Box>
         <Box display={"flex"} flexDirection={"row"} gap={"5"}>
-          {/* <Button
-            size="sm"
-            bgColor={""}
-            leftIcon={<FiPlus />}
-            colorScheme="blue"
-            mb={10}
-            onClick={openModal}
-          >
-            Add Supplier
-          </Button> */}
-
           <Modal isOpen={isModalOpen} onClose={closeModal}>
             <ModalOverlay />
             <ModalContent>
@@ -268,8 +252,7 @@ const SuppliersTable = () => {
                 <Button
                   colorScheme="red"
                   mr={3}
-                  onClick={() => handleDelete(deleteSupplierId)}
-                >
+                  onClick={() => handleDelete(deleteSupplierId)}>
                   Delete
                 </Button>
                 <Button onClick={closeDeleteModal}>Cancel</Button>
@@ -292,8 +275,12 @@ const SuppliersTable = () => {
                 </Thead>
                 <Tbody>
                   {suppliers.map((supplier) => (
-                    <Tr onClick={() => router.push(`/supplier/${supplier.id}`)} key={supplier.id}>
-                      <Td>{supplier.id}</Td>
+                    <Tr>
+                      <Td
+                        onClick={() => router.push(`/supplier/${supplier.id}`)}
+                        key={supplier.id}>
+                        {supplier.id}
+                      </Td>
                       <Td>{supplier.name}</Td>
                       <Td>{supplier.address}</Td>
                       <Td>{supplier.telephone}</Td>
@@ -310,11 +297,6 @@ const SuppliersTable = () => {
                             openDeleteModal();
                           }}
                         />
-                        {/* <Link onClick={"/"} passHref>
-                          <ChakraLink>
-                            <IconButton icon={<FiMove />} />
-                          </ChakraLink>
-                        </Link> */}
                       </Td>
                     </Tr>
                   ))}
@@ -328,4 +310,4 @@ const SuppliersTable = () => {
   );
 };
 
-export default SuppliersTable
+export default Suppliers;

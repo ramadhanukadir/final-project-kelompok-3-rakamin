@@ -1,5 +1,4 @@
 import { instance } from "../axios";
-import axios from "axios";
 
 async function getAllItems() {
   try {
