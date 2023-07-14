@@ -73,7 +73,7 @@ const SideBar = () => {
         onClose={onClose}
         returnFocusOnClose={false}
         onOverlayClick={onClose}
-        size='full'
+        size='80%'
       >
         <DrawerContent>
           <SidebarContent onClose={onClose} />
