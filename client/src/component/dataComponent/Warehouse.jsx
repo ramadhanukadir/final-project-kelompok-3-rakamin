@@ -54,6 +54,14 @@ export default function Warehouse() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm();
+
   const handleEditWarehouse = async (warehouseId) => {
     try {
       const warehouse = await getWarehouseId(warehouseId);
@@ -121,13 +129,6 @@ export default function Warehouse() {
     }
   };
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
 
@@ -139,7 +140,15 @@ export default function Warehouse() {
       setWarehouse(warehouses);
     };
     fetchWarehouse();
-  }, []);
+    if (selectedWarehouse) {
+      setValue('name', selectedWarehouse.name);
+      setValue('address', selectedWarehouse.address);
+      setValue('province', selectedWarehouse.province);
+      setValue('city', selectedWarehouse.city);
+      setValue('postal_code', selectedWarehouse.postalCode);
+      setValue('telephone', selectedWarehouse.telephone);
+    }
+  }, [selectedWarehouse]);
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -283,7 +292,7 @@ export default function Warehouse() {
         </Box>
         <Box>
           <TableContainer>
-            <Table variant="simple" size="lg">
+            <Table variant="simple" size="sm">
               <Thead bg={'#DFF6FE'}>
                 <Tr>
                   <Th>Warehouse Name</Th>
@@ -435,7 +444,7 @@ export default function Warehouse() {
             <form onSubmit={handleSubmit(onEditSubmit)}>
               <ChakraFormControl>
                 <ChakraFormLabel>Name</ChakraFormLabel>
-                <Input defaultValue={selectedWarehouse?.name || ''} {...register('name')} />
+                <Input {...register('name')} />
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Address</ChakraFormLabel>
@@ -443,7 +452,7 @@ export default function Warehouse() {
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select id="province" defaultValue={selectedWarehouse?.province || ''} {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))}>
+                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))}>
                   <option value="">-Select Province-</option>
                   {provinces.map((province) => (
                     <option key={province.id} value={province.name} data-id={province.id}>
@@ -454,7 +463,7 @@ export default function Warehouse() {
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select id="city" defaultValue={selectedWarehouse?.city || ''} {...register('city', { required: true })}>
+                <Select id="city" {...register('city', { required: true })}>
                   <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
@@ -465,11 +474,11 @@ export default function Warehouse() {
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input defaultValue={selectedWarehouse?.postalCode || ''} {...register('postalCode')} />
+                <Input {...register('postal_code')} />
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input defaultValue={selectedWarehouse?.telephone || ''} {...register('telephone')} />
+                <Input {...register('telephone')} />
               </ChakraFormControl>
 
               <ModalFooter>
