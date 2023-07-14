@@ -156,19 +156,18 @@ const Categories = () => {
   };
 
   return (
-    <Box
-      display={"flex"}
-      flexDirection={"column"}
-      justifyContent={"center"}
-      alignItems={"center"}>
-      <Box display={"flex"} flexDirection={"row"} my={"10"}>
-        <InputCategory />
-      </Box>
-      <Box display={"flex"} flexDirection={"column"} justifyContent={"center"}>
-        <Text fontWeight={"bold"} fontSize={"2xl"} textAlign={"center"}>
-          Category List
-        </Text>
-
+    <Box maxW="7xl" mx={"auto"} px={{ base: 2, sm: 12, md: 17 }} mt={50}>
+      <Box>
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          justifyContent={"space-between"}
+          py={"10"}>
+          <Text fontWeight={"bold"} fontSize={"xl"}>
+            Category
+          </Text>
+          <InputCategory />
+        </Box>
         <Box>
           <TableContainer>
             <Table variant="simple">
@@ -322,8 +321,8 @@ export const InputCategory = () => {
 
   return (
     <Box>
-      <Button size="sm" leftIcon={<FiPlus />} onClick={handleOpenModal}>
-        Create Category
+      <Button size="sm" onClick={handleOpenModal}>
+        <FiPlus />
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
@@ -365,65 +364,5 @@ export const InputCategory = () => {
     </Box>
   );
 };
-
-// function Card({ name, description, image }) {
-//   return (
-//     <Box
-//       role={"group"}
-//       p={6}
-//       maxW={"330px"}
-//       w={"full"}
-//       bg={useColorModeValue("white", "gray.900")}
-//       boxShadow={"2xl"}
-//       rounded={"lg"}
-//       pos={"relative"}
-//       zIndex={1}>
-//       <Box
-//         rounded={"lg"}
-//         mt={-12}
-//         height={"230px"}
-//         pos={"relative"}
-//         _after={{
-//           transition: "all .3s ease",
-//           content: '""',
-//           w: "full",
-//           h: "full",
-//           pos: "absolute",
-//           top: 5,
-//           left: 0,
-//           backgroundImage: `url(${image})`,
-//           filter: "blur(15px)",
-//           zIndex: -1,
-//         }}
-//         _groupHover={{
-//           _after: {
-//             filter: "blur(20px)",
-//           },
-//         }}>
-//         <Image
-//           rounded={"lg"}
-//           height={230}
-//           width={282}
-//           src={image}
-//           objectFit={"cover"}
-//         />
-//       </Box>
-//       <Stack pt={10} align={"center"}>
-//         <Heading fontSize={"2xl"} fontFamily={"body"} fontWeight={500}>
-//           {name}
-//         </Heading>
-//         <Stack direction={"row"} align={"center"}>
-//           <Text fontWeight={"normal"} fontSize={"xl"}>
-//             {description}
-//           </Text>
-//         </Stack>
-//         <Stack direction={"row"} align={"center"}>
-//           <Button colorScheme="blue">Update</Button>
-//           <Button colorScheme="red">Delete</Button>
-//         </Stack>
-//       </Stack>
-//     </Box>
-//   );
-// }
 
 export default Categories;
