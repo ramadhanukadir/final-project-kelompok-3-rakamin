@@ -1,4 +1,5 @@
 import { getOrderById } from "@/api/fetch/orders";
+import { DataContext } from "@/context/AllDataContext";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -10,17 +11,16 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export default function Page({ orderId }) {
   const router = useRouter();
-  // const { id } = router.query;
-  const [order, setOrder] = useState({});
+  const { detailOrder, setDetailOrder } = useContext(DataContext);
 
   useEffect(() => {
     const fetchOrder = async () => {
       const data = await getOrderById(orderId);
-      setOrder(data);
+      setDetailOrder(data);
     };
     fetchOrder();
   }, []);
@@ -33,11 +33,11 @@ export default function Page({ orderId }) {
       justifyContent={"flex-start"}
       zIndex={1}>
       <HStack>
-        <Button size={"sm"} w={"3"} onClick={() => router.back()}>
+        <Button size={"sm"} w={"3"} onClick={() => router.back()} title="Back">
           <ArrowBackIcon w={4} h={4} />
         </Button>
       </HStack>
-      <Flex direction={"column"}>
+      <Flex direction={"column"} mt={4}>
         <Text fontSize="xl" fontWeight="bold">
           Order Detail
         </Text>
@@ -49,47 +49,42 @@ export default function Page({ orderId }) {
             <Text>Date </Text>
           </Flex>
           <Flex direction={"column"}>
-            <Text>: {order.customer}</Text>
-            <Text>: {order.warehouse}</Text>
+            <Text>: {detailOrder.customer}</Text>
+            <Text>: {detailOrder.warehouse}</Text>
             <Text>
               :{" "}
-              {order.totalRevenue?.toLocaleString("id-ID", {
+              {detailOrder.totalRevenue?.toLocaleString("id-ID", {
                 style: "currency",
                 currency: "IDR",
               })}
             </Text>
-            <Text>: {order.date}</Text>
+            <Text>: {detailOrder.date}</Text>
           </Flex>
         </Flex>
         <VStack mt={6}>
           <Text fontSize="md" fontWeight="bold">
             Detail Product
           </Text>
-          <Flex
-            alignSelf={"flex-start"}
-            w={"100%"}
-            py={{ base: 2, md: 4 }}
-            px={{ base: 4, md: 8 }}
-            border={"1px"}
-            borderColor={"gray.300"}
-            borderRadius={"lg"}>
-            <HStack w={"100%"}>
-              {order?.items?.map((item) => (
+          <Flex alignSelf={"flex-start"} w={"100%"}>
+            <Flex flexDirection={"column"} w={"100%"} gap={3}>
+              {detailOrder?.items?.map((item) => (
                 <HStack
                   display={"flex"}
                   justifyContent={"space-between"}
                   w={"100%"}
                   key={item.id}
-                  // pb={{ base: 2, md: 3 }}
-                  // borderBottom={{ base: 'none', md: '1px' }}
-                >
+                  py={{ base: 2, md: 3 }}
+                  px={{ base: 4, md: 6 }}
+                  border={"1px"}
+                  borderColor={"gray.300"}
+                  borderRadius={"lg"}>
                   <Flex flexDirection={"row"} gap={4}>
                     <Image
                       src={item.image}
                       aspectRatio={"1/1"}
                       w={12}
                       h={12}
-                      objectFit={"center"}
+                      objectFit={"contain"}
                       borderRadius={"xl"}
                       // bg={'black'}
                     />
@@ -113,11 +108,15 @@ export default function Page({ orderId }) {
                       </HStack>
                     </Box>
                   </Flex>
-                  <Flex flexDirection={"column"}>
-                    <Text fontSize={"sm"} fontWeight={"light"}>
+                  <Flex
+                    flexDirection={"column"}
+                    w={"13%"}
+                    alignItems={"flex-start"}
+                    pl={3}>
+                    <Text fontSize={"xs"} fontWeight={"normal"}>
                       Total Price
                     </Text>
-                    <Text fontSize={"md"} fontWeight={"bold"}>
+                    <Text fontSize={"sm"} fontWeight={"bold"}>
                       {item.totalPrice.toLocaleString("id-ID", {
                         style: "currency",
                         currency: "IDR",
@@ -126,7 +125,7 @@ export default function Page({ orderId }) {
                   </Flex>
                 </HStack>
               ))}
-            </HStack>
+            </Flex>
           </Flex>
         </VStack>
       </Flex>
@@ -139,39 +138,3 @@ export const getServerSideProps = async (ctx) => {
 
   return { props: { orderId: id } };
 };
-// export const getStaticPaths = async () => {
-//   const router = useRouter();
-//   const { id } = router.query;
-//   const { data } = await getOrderById(id);
-
-//   const paths = data.map((order) => ({
-//     params: { id: order.id.toString() },
-//   }));
-//   return {
-//     paths: paths,
-//     fallback: 'true',
-//   };
-// };
-
-// export const getStaticProps = async (context) => {
-//   try {
-//     const { id } = context.params;
-//     const { data } = await getOrderById(id);
-//     return {
-//       props: {
-//         order: data,
-//       },
-//       revalidate: 10,
-//     };
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-// export async function getStaticProps() {
-//   return {
-//     props: {
-//       name: 'John Doe',
-//     },
-//   };
-// }

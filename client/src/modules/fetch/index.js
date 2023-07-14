@@ -36,6 +36,15 @@ async function updateItems(id) {
   }
 }
 
+async function updateWarehouses(id) {
+  try {
+    const response = await instance.put(`/warehouses/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message || "Something went wrong");
+  }
+}
+
 async function getAllWarehouses() {
   try {
     const response = await instance.get("/warehouses");
@@ -66,7 +75,7 @@ async function getAllSuppliers() {
 async function getWarehouseId(id) {
   try {
     const response = await instance.get(`/warehouses/${id}`);
-    return response.data;
+    return response.data.warehouse;
   } catch (error) {
     throw new Error(error.response.data.message || "Something went Wrong");
   }
@@ -131,4 +140,5 @@ export {
   updateCategories,
   postCategories,
   deleteCategories,
+  updateWarehouses,
 };

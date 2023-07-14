@@ -1,10 +1,5 @@
 const { Warehouses, Items, Warehouses_Stock } = require('../models');
-const {
-  mappingWarehouses,
-  mappingItems,
-  responseItemsId,
-  responseWarehouseId,
-} = require('../utils/response');
+const { mappingWarehouses, mappingItems, responseItemsId, responseWarehouseId } = require('../utils/response');
 
 const getAllWarehouses = async (req, res) => {
   try {
@@ -12,6 +7,28 @@ const getAllWarehouses = async (req, res) => {
     const warehouses = await Warehouses.findAll({
       where: {
         users_id: id,
+      },
+    });
+
+    const response = mappingWarehouses(warehouses);
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const searchWarehousesByName = async (req, res) => {
+  const { id } = req.loggedUser;
+  const { searchValue } = req.query;
+
+  try {
+    const warehouses = await Warehouses.findAll({
+      where: {
+        users_id: id,
+        name: {
+          [Op.iLike]: `%${searchValue}%`, // Menggunakan Op.iLike untuk pencarian case-insensitive
+        },
       },
     });
 
@@ -34,8 +51,7 @@ const getWarehousesById = async (req, res) => {
       },
     });
 
-    if (!findWarehouse)
-      res.status(404).json({ message: 'Warehouses not found' });
+    if (!findWarehouse) res.status(404).json({ message: 'Warehouses not found' });
 
     const warehouse = responseWarehouseId(findWarehouse);
 
@@ -117,4 +133,5 @@ module.exports = {
   createWarehouses,
   deleteWarehouses,
   updateWarehouses,
+  searchWarehousesByName,
 };
