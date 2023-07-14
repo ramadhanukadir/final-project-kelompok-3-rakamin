@@ -56,7 +56,7 @@ const convertDate = {
   second: 'numeric',
 };
 
-const mappingOrders = (orders, warehouse, customer, revenue) => {
+const mappingOrders = (orders, warehouse, customer) => {
   return orders.map((order) => {
     const Warehouse = warehouse.find((item) => item.id === order.warehouses_id);
     const Customer = customer.find((item) => item.id === order.customers_id);
@@ -95,6 +95,23 @@ const responseWarehouseId = (warehouse) => {
   };
 };
 
+const mappingWarehouseStock = (warehouseStock, warehouse, items) => {
+  return warehouseStock.map((ws) => {
+    const findWarehouse = warehouse.find(
+      (item) => item.id === ws.warehouses_id
+    );
+    const findItem = items.find((item) => item.id === ws.items_id);
+    return {
+      id: ws.id,
+      warehouseId: ws.warehouses_id,
+      warehouseName: findWarehouse.name,
+      itemsId: ws.items_id,
+      itemsName: findItem.name,
+      stock: ws.stock,
+    };
+  });
+};
+
 const mappingOrderDetail = (items) => {
   return items.map((item) => {
     return {
@@ -123,6 +140,15 @@ const responseOrdersId = (
   };
 };
 
+const responseWarehouseStockId = (warehouseStock, warehouse, items) => {
+  return {
+    id: warehouseStock.id,
+    warehouse: warehouse.name,
+    items: items.name,
+    stock: warehouseStock.stock,
+  };
+};
+
 module.exports = {
   mappingItems,
   mappingOrders,
@@ -134,4 +160,6 @@ module.exports = {
   mappingOrderDetail,
   responseOrdersId,
   convertDate,
+  mappingWarehouseStock,
+  responseWarehouseStockId,
 };
