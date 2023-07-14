@@ -292,9 +292,9 @@ const SuppliersTable = () => {
                 </Thead>
                 <Tbody>
                   {suppliers.map((supplier) => (
-                    <Tr onClick={() => router.push(`/supplier/${supplier.id}`)} key={supplier.id}>
+                    <Tr  key={supplier.id}>
                       <Td>{supplier.id}</Td>
-                      <Td>{supplier.name}</Td>
+                      <Td onClick={() => router.push(`supplier/${supplier.id}`)}>{supplier.name}</Td>
                       <Td>{supplier.address}</Td>
                       <Td>{supplier.telephone}</Td>
                       <Td>

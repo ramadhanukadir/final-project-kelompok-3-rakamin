@@ -227,6 +227,15 @@ const SidebarContent = ({ onClose, ...rest }) => {
             handleItemClick('customers'), router.push('/customers');
           }}
         />
+        <SideItem
+          icon={FiUser}
+          title='Customers'
+          active={activeItem === 'report'}
+          activeColor={'#1363DF'}
+          onClick={() => {
+            handleItemClick('report'), router.push('/report');
+          }}
+        />
       </VStack>
     </Box>
   );
