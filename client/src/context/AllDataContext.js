@@ -1,12 +1,13 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from 'react';
 import {
   getAllCustomer,
   getAllItems,
   getAllOrders,
   getAllWarehouses,
   getWarehousesById,
-} from "@/api/fetch/orders";
-import { fetchUser } from "@/api/fetch/auth";
+} from '@/api/fetch/orders';
+import { fetchUser } from '@/api/fetch/auth';
+import { getAllCategories, getAllWarehousesStock } from '@/api/fetch';
 
 const AllDataContext = createContext();
 
@@ -19,13 +20,15 @@ const AllDataContextProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [detailOrder, setDetailOrder] = useState({});
   const [itemsId, setItemsId] = useState(0);
   const [userLogin, setUserLogin] = useState({});
+  const [warehouseStock, setWarehouseStock] = useState([]);
 
-  let access = "";
+  let access = '';
 
-  if (typeof window !== "undefined") {
-    access = sessionStorage.getItem("token");
+  if (typeof window !== 'undefined') {
+    access = sessionStorage.getItem('token');
   }
 
   const fetchUserLogin = async () => {
@@ -39,8 +42,13 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchItems = async () => {
-    const { data } = await getAllItems(1, "ASC", "name");
+    const { data } = await getAllItems(1, 'ASC', 'name');
     setProducts(data);
+  };
+
+  const fetchCategories = async () => {
+    const { data } = await getAllCategories();
+    setCategories(data);
   };
 
   const fetchCustomers = async () => {
@@ -49,13 +57,18 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchWarehouseById = async (warehouseId) => {
-    const data = await getWarehousesById(warehouseId);
-    setWarehouseItems(data.stockItems);
+    const { stockItems } = await getWarehousesById(warehouseId);
+    setWarehouseItems(stockItems);
   };
 
   const fetchOrders = async () => {
     const { data } = await getAllOrders();
     setOrders(data);
+  };
+
+  const fetchWarehousStock = async () => {
+    const data = await getAllWarehousesStock();
+    setWarehouseStock(data);
   };
 
   useEffect(() => {
@@ -64,13 +77,15 @@ const AllDataContextProvider = ({ children }) => {
         fetchItems(),
         fetchWarehouse(),
         fetchOrders(),
-        fetchUserLogin();
+        fetchUserLogin(),
+        fetchCategories(),
+        fetchWarehousStock();
     }
 
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [access, warehouseId, itemsId]);
+  }, [warehouseId, itemsId]);
 
   return (
     <AllDataContext.Provider
@@ -78,27 +93,23 @@ const AllDataContextProvider = ({ children }) => {
         isLogin,
         setIsLogin,
         warehouses,
-        setWarehouses,
         warehouseId,
         setWarehouseId,
         warehouseItems,
-        setWarehouseItems,
+        warehouseStock,
         products,
-        setProducts,
         categories,
-        setCategories,
         customers,
-        setCustomers,
         orders,
-        setOrders,
+        detailOrder,
+        setDetailOrder,
         fetchOrders,
         itemsId,
         setItemsId,
         userLogin,
-        setUserLogin,
-        fetchUserLogin,
         access,
-      }}>
+      }}
+    >
       {children}
     </AllDataContext.Provider>
   );

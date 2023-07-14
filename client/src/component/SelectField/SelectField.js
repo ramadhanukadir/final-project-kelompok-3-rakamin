@@ -19,10 +19,16 @@ function SelectField({
 }) {
   const { setItemsId } = useContext(DataContext);
   return (
-    <FormControl key={keyProp}>
+    <FormControl key={keyProp} isInvalid={errors}>
       <FormLabel htmlFor={name}>{label}</FormLabel>
-      <Select size='sm' id={name} variant='filled' {...register}>
-        <option value='' selected disabled>
+      <Select
+        size='sm'
+        id={name}
+        variant='outline'
+        borderRadius={'md'}
+        {...register}
+      >
+        <option value='' style={{ padding: '10px' }} selected disabled>
           {`Select ${name}`}
         </option>
         {mapping.map((opt, index) => (
