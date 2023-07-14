@@ -58,14 +58,14 @@ const Customers = () => {
 
   const fetchData = async () => {
     try {
-      const response = await instance.get("customer");
-      const { data } = response.data;
-      setCustomers(data);
+      const response = await instance.get("/customer?page=1&limit=5");
+      const { dataCustomers } = response.data;
+      setCustomers(dataCustomers);
     } catch (error) {
       console.error("Gagal mengambil data:", error);
     }
   };
-  //console.log(customers);
+  console.log(customers);
 
   useEffect(() => {
     if (detailItems) {
@@ -165,7 +165,7 @@ const Customers = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {customers.map((customer) => (
+                {customers?.map((customer) => (
                   <Tr key={customer.id}>
                     <Td
                       onClick={() => router.push(`/customers/${customer.id}`)}>
