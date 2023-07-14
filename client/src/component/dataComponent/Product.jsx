@@ -33,31 +33,10 @@ import {
   InputRightElement,
   Icon,
 } from '@chakra-ui/react';
-import {
-  getAllItems,
-  getAllItemsById,
-  getAllWarehouses,
-  getAllWarehouseStock,
-  getAllSuppliers,
-  getWarehouseId,
-  deleteItems,
-  updateItems,
-} from '@/modules/fetch';
+import { getAllItems, getAllItemsById, getAllWarehouses, getAllWarehouseStock, getAllSuppliers, getWarehouseId, deleteItems, updateItems } from '@/modules/fetch';
 //import { useNavigate } from "react-router-dom";
 import { WarningIcon, SearchIcon, ArrowForwardIcon } from '@chakra-ui/icons';
-import {
-  FiSearch,
-  FiUpload,
-  FiPlus,
-  FiArrowLeft,
-  FiArrowRight,
-  FiCircle,
-  FiArrowUpRight,
-  FiDelete,
-  FiMove,
-  FaRegEdit,
-  FiEdit,
-} from 'react-icons/fi';
+import { FiSearch, FiUpload, FiPlus, FiArrowLeft, FiArrowRight, FiCircle, FiArrowUpRight, FiDelete, FiMove, FaRegEdit, FiEdit } from 'react-icons/fi';
 import { Form, useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { DataContext } from '@/context/AllDataContext';
@@ -164,8 +143,8 @@ const Product = () => {
       formData.append('selling_price', data.selling_price);
       formData.append('image_url', data.image_url[0]);
 
-      const response = await instance.put(
-        `/items/${editItemId}`,
+      const response = await instance.post(
+        '/items',
         formData,
         handleCloseModal(),
         toast({
@@ -190,116 +169,68 @@ const Product = () => {
   };
   return (
     <Box>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        justifyContent={'space-between'}
-        py={'10'}
-      >
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'}>
         <Text fontWeight={'bold'} fontSize={'xl'}>
           Products
         </Text>
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
           <AddProductForm fetchProduct={fetchProduct()} />
           <AddStockForm fetchProduct={fetchProduct()} />
-          <MoveStock
-            warehouseStock={warehouseStock}
-            fetchProduct={fetchProduct()}
-          />
+          <MoveStock warehouseStock={warehouseStock} fetchProduct={fetchProduct()} />
         </Box>
       </Box>
       {/* <Box>
         <Box>
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            justifyContent={"space-between"}
-            mx={"2"}>
-            <Text fontWeight={"bold"} fontSize={"xl"}>
+          <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} mx={'2'}>
+            <Text fontWeight={'bold'} fontSize={'xl'}>
               Summary
             </Text>
-            <Text fontWeight={"bold"} color={"#1363DE"}>
+            <Text fontWeight={'bold'} color={'#1363DE'}>
               Product Categories
             </Text>
           </Box>
         </Box>
-        <Box
-          display={"flex"}
-          flexDirection={"center"}
-          justifyContent={"center"}
-          gap={"5"}>
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            alignItems={"center"}
-            px={"10"}
-            py={"5"}
-            borderWidth="1px"
-            rounded="lg"
-            shadow="lg">
+        <Box display={'flex'} flexDirection={'center'} justifyContent={'center'} gap={'5'}>
+          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
             <WarningIcon fontSize={30} />
-            <Box direction={"column"} px={"2"} py={"3"}>
-              <Text fontWeight={"bold"} fontSize={"2xl"}>
+            <Box direction={'column'} px={'2'} py={'3'}>
+              <Text fontWeight={'bold'} fontSize={'2xl'}>
                 28 Types
               </Text>
-              <Text fontWeight={"normal"} fontSize={"xl"}>
+              <Text fontWeight={'normal'} fontSize={'xl'}>
                 Available Stock
               </Text>
             </Box>
           </Box>
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            alignItems={"center"}
-            px={"10"}
-            py={"5"}
-            borderWidth="1px"
-            rounded="lg"
-            shadow="lg">
+          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
             <WarningIcon fontSize={30} />
-            <Box direction={"column"} px={"2"} py={"3"}>
-              <Text fontWeight={"bold"} fontSize={"2xl"}>
+            <Box direction={'column'} px={'2'} py={'3'}>
+              <Text fontWeight={'bold'} fontSize={'2xl'}>
                 28 Types
               </Text>
-              <Text fontWeight={"normal"} fontSize={"xl"}>
+              <Text fontWeight={'normal'} fontSize={'xl'}>
                 Available Stock
               </Text>
             </Box>
           </Box>
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            alignItems={"center"}
-            px={"10"}
-            py={"5"}
-            borderWidth="1px"
-            rounded="lg"
-            shadow="lg">
+          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
             <WarningIcon fontSize={30} />
-            <Box direction={"column"} px={"2"} py={"3"}>
-              <Text fontWeight={"bold"} fontSize={"2xl"}>
+            <Box direction={'column'} px={'2'} py={'3'}>
+              <Text fontWeight={'bold'} fontSize={'2xl'}>
                 28 Types
               </Text>
-              <Text fontWeight={"normal"} fontSize={"xl"}>
+              <Text fontWeight={'normal'} fontSize={'xl'}>
                 Available Stock
               </Text>
             </Box>
           </Box>
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            alignItems={"center"}
-            px={"10"}
-            py={"5"}
-            borderWidth="1px"
-            rounded="lg"
-            shadow="lg">
+          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
             <WarningIcon fontSize={30} />
-            <Box direction={"column"} px={"2"} py={"3"}>
-              <Text fontWeight={"bold"} fontSize={"2xl"}>
+            <Box direction={'column'} px={'2'} py={'3'}>
+              <Text fontWeight={'bold'} fontSize={'2xl'}>
                 28 Types
               </Text>
-              <Text fontWeight={"normal"} fontSize={"xl"}>
+              <Text fontWeight={'normal'} fontSize={'xl'}>
                 Available Stock
               </Text>
             </Box>
@@ -307,12 +238,7 @@ const Product = () => {
         </Box>
       </Box> */}
       <Box>
-        <Box
-          display={'flex'}
-          flexDirection={'row'}
-          alignItems={'center'}
-          justifyContent={'space-between'}
-        >
+        <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
           {/* <Box
             display={'row'}
             justifyContent={'start'}
@@ -350,18 +276,9 @@ const Product = () => {
           </Box> */}
           <Box display={'flex'} justifyContent={'end'}>
             <InputGroup>
-              <Input
-                placeholder='Masukkan kata kunci'
-                value='Search value'
-                onChange={''}
-                px={'8'}
-              />
-              <InputRightElement width='auto'>
-                <Button
-                  colorScheme='blue'
-                  onClick={''}
-                  leftIcon={<SearchIcon />}
-                >
+              <Input placeholder="Masukkan kata kunci" value="Search value" onChange={''} px={'8'} />
+              <InputRightElement width="auto">
+                <Button colorScheme="blue" onClick={''} leftIcon={<SearchIcon />}>
                   Cari
                 </Button>
               </InputRightElement>
@@ -371,7 +288,7 @@ const Product = () => {
 
         <Box>
           <TableContainer>
-            <Table variant='simple'>
+            <Table variant="simple">
               <Thead bg={'#DFF6FE'}>
                 <Tr>
                   <Th>Name</Th>
@@ -385,38 +302,26 @@ const Product = () => {
               </Thead>
               <Tbody>
                 {product?.map((item) => {
-                  const ws = warehouseStock.filter(
-                    (ws) => ws.itemsName === item.name
-                  );
+                  const ws = warehouseStock.filter((ws) => ws.itemsName === item.name);
                   // {warehouseName(item.id)}
                   return (
                     <Tr key={item.id}>
-                      <Td
-                        onClick={() => router.push(`/product/${item.id}`)}
-                        cursor={'pointer'}
-                      >
+                      <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'}>
                         {item.name}
                       </Td>
-                      <Td
-                        onClick={() => router.push(`/product/${item.id}`)}
-                        cursor={'pointer'}
-                      >
+                      <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'}>
                         {item.SKU}
                       </Td>
                       <Td>{categoriesName(item.categoriesId)}</Td>
                       <Td>
                         <Select>
                           {ws.map((wS) => {
-                            return (
-                              <option key={wS.id}>
-                                {`${wS.warehouseName}, Stock:  ${wS.stock}`}
-                              </option>
-                            );
+                            return <option key={wS.id}>{`${wS.warehouseName}, Stock:  ${wS.stock}`}</option>;
                           })}
                         </Select>
                       </Td>
                       <Td>{item.sellingPrice}</Td>
-                      <Image src={item.imageUrl} boxSize='50px' />
+                      <Image src={item.imageUrl} boxSize="50px" />
                       <Td>
                         <Icon
                           boxSize={5}
@@ -428,7 +333,7 @@ const Product = () => {
                             cursor: 'pointer',
                             color: '#4F709C',
                           }}
-                          title='Edit'
+                          title="Edit"
                         />
                         <Icon
                           boxSize={5}
@@ -439,7 +344,7 @@ const Product = () => {
                             cursor: 'pointer',
                             color: '#EF6262',
                           }}
-                          title='Delete'
+                          title="Delete"
                         />
                       </Td>
                     </Tr>
@@ -448,7 +353,7 @@ const Product = () => {
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader textAlign='center'>Edit Product</ModalHeader>
+                    <ModalHeader textAlign="center">Edit Product</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <SelectField
@@ -464,105 +369,48 @@ const Product = () => {
                           value={(opt) => opt.id}
                         />
                         <FormControl isInvalid={errors.name} mb={4}>
-                          <FormLabel htmlFor='name'>Name:</FormLabel>
-                          <Input
-                            type='text'
-                            id='name'
-                            {...register('name', { required: true })}
-                          />
-                          <FormErrorMessage>
-                            Harga harus diisi.
-                          </FormErrorMessage>
+                          <FormLabel htmlFor="name">Name:</FormLabel>
+                          <Input type="text" id="name" {...register('name', { required: true })} />
+                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.SKU} mb={4}>
-                          <FormLabel htmlFor='SKU'>SKU:</FormLabel>
-                          <Input
-                            type='text'
-                            id='SKU'
-                            {...register('SKU', { required: true })}
-                          />
-                          <FormErrorMessage>
-                            Harga harus diisi.
-                          </FormErrorMessage>
+                          <FormLabel htmlFor="SKU">SKU:</FormLabel>
+                          <Input type="text" id="SKU" {...register('SKU', { required: true })} />
+                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.size} mb={4}>
-                          <FormLabel htmlFor='size'>size:</FormLabel>
-                          <Input
-                            type='number'
-                            id='size'
-                            {...register('size', { required: true })}
-                          />
-                          <FormErrorMessage>
-                            Harga harus diisi.
-                          </FormErrorMessage>
+                          <FormLabel htmlFor="size">size:</FormLabel>
+                          <Input type="number" id="size" {...register('size', { required: true })} />
+                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.weight} mb={4}>
-                          <FormLabel htmlFor='weight'>weight:</FormLabel>
-                          <Input
-                            type='number'
-                            id='weight'
-                            {...register('weight', { required: true })}
-                          />
-                          <FormErrorMessage>
-                            Harga harus diisi.
-                          </FormErrorMessage>
+                          <FormLabel htmlFor="weight">weight:</FormLabel>
+                          <Input type="number" id="weight" {...register('weight', { required: true })} />
+                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.description} mb={4}>
-                          <FormLabel htmlFor='description'>
-                            Description:
-                          </FormLabel>
-                          <Input
-                            type='text'
-                            id='description'
-                            {...register('description', { required: true })}
-                          />
-                          <FormErrorMessage>
-                            Harga harus diisi.
-                          </FormErrorMessage>
+                          <FormLabel htmlFor="description">Description:</FormLabel>
+                          <Input type="text" id="description" {...register('description', { required: true })} />
+                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.base_price} mb={4}>
-                          <FormLabel htmlFor='base_price'>
-                            Base Price:
-                          </FormLabel>
-                          <Input
-                            type='number'
-                            id='base_price'
-                            {...register('base_price', { required: true })}
-                          />
-                          <FormErrorMessage>
-                            Harga harus diisi.
-                          </FormErrorMessage>
+                          <FormLabel htmlFor="base_price">Base Price:</FormLabel>
+                          <Input type="number" id="base_price" {...register('base_price', { required: true })} />
+                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.selling_price} mb={4}>
-                          <FormLabel htmlFor='selling_price'>
-                            Selling price:
-                          </FormLabel>
-                          <Input
-                            type='number'
-                            id='selling_price'
-                            {...register('selling_price', { required: true })}
-                          />
-                          <FormErrorMessage>
-                            Harga harus diisi.
-                          </FormErrorMessage>
+                          <FormLabel htmlFor="selling_price">Selling price:</FormLabel>
+                          <Input type="number" id="selling_price" {...register('selling_price', { required: true })} />
+                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                         </FormControl>
                         <FormControl mb={4}>
-                          <FormLabel htmlFor='image_url'>Gambar:</FormLabel>
-                          <Input
-                            type='file'
-                            id='image_url'
-                            {...register('image_url')}
-                          />
+                          <FormLabel htmlFor="image_url">Gambar:</FormLabel>
+                          <Input type="file" id="image_url" {...register('image_url')} />
                           {/* <FormErrorMessage>
                             Gambar harus diunggah.
                           </FormErrorMessage> */}
                         </FormControl>
-                        <Button
-                          type='submit'
-                          size={'md'}
-                          colorScheme='blue'
-                          mr={3}
-                        >
+                        <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
                           Update product
                         </Button>
                         <Button size={'md'} onClick={handleCloseModal}>
@@ -661,18 +509,13 @@ export const AddProductForm = ({ fetchProduct }) => {
 
   return (
     <Box>
-      <Button
-        size='sm'
-        bgColor={''}
-        leftIcon={<FiPlus />}
-        onClick={handleOpenModal}
-      >
+      <Button size="sm" bgColor={''} leftIcon={<FiPlus />} onClick={handleOpenModal}>
         Add Product
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Create Product</ModalHeader>
+          <ModalHeader textAlign="center">Create Product</ModalHeader>
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
@@ -698,78 +541,46 @@ export const AddProductForm = ({ fetchProduct }) => {
                   value={(opt) => opt.id}
                 />
                 <FormControl isInvalid={errors.name} mb={4}>
-                  <FormLabel htmlFor='name'>Name:</FormLabel>
-                  <Input
-                    type='text'
-                    id='name'
-                    {...register('name', { required: true })}
-                  />
+                  <FormLabel htmlFor="name">Name:</FormLabel>
+                  <Input type="text" id="name" {...register('name', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.SKU} mb={4}>
-                  <FormLabel htmlFor='SKU'>SKU:</FormLabel>
-                  <Input
-                    type='text'
-                    id='SKU'
-                    {...register('SKU', { required: true })}
-                  />
+                  <FormLabel htmlFor="SKU">SKU:</FormLabel>
+                  <Input type="text" id="SKU" {...register('SKU', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.size} mb={4}>
-                  <FormLabel htmlFor='size'>size:</FormLabel>
-                  <Input
-                    type='number'
-                    id='size'
-                    {...register('size', { required: true })}
-                  />
+                  <FormLabel htmlFor="size">size:</FormLabel>
+                  <Input type="number" id="size" {...register('size', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.weight} mb={4}>
-                  <FormLabel htmlFor='weight'>weight:</FormLabel>
-                  <Input
-                    type='number'
-                    id='weight'
-                    {...register('weight', { required: true })}
-                  />
+                  <FormLabel htmlFor="weight">weight:</FormLabel>
+                  <Input type="number" id="weight" {...register('weight', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.description} mb={4}>
-                  <FormLabel htmlFor='description'>Description:</FormLabel>
-                  <Input
-                    type='text'
-                    id='description'
-                    {...register('description', { required: true })}
-                  />
+                  <FormLabel htmlFor="description">Description:</FormLabel>
+                  <Input type="text" id="description" {...register('description', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.base_price} mb={4}>
-                  <FormLabel htmlFor='base_price'>Base Price:</FormLabel>
-                  <Input
-                    type='number'
-                    id='base_price'
-                    {...register('base_price', { required: true })}
-                  />
+                  <FormLabel htmlFor="base_price">Base Price:</FormLabel>
+                  <Input type="number" id="base_price" {...register('base_price', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.selling_price} mb={4}>
-                  <FormLabel htmlFor='selling_price'>Selling price:</FormLabel>
-                  <Input
-                    type='number'
-                    id='selling_price'
-                    {...register('selling_price', { required: true })}
-                  />
+                  <FormLabel htmlFor="selling_price">Selling price:</FormLabel>
+                  <Input type="number" id="selling_price" {...register('selling_price', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.image_url} mb={4}>
-                  <FormLabel htmlFor='image_url'>Gambar:</FormLabel>
-                  <Input
-                    type='file'
-                    id='image_url'
-                    {...register('image_url', { required: true })}
-                  />
+                  <FormLabel htmlFor="image_url">Gambar:</FormLabel>
+                  <Input type="file" id="image_url" {...register('image_url', { required: true })} />
                   <FormErrorMessage>Gambar harus diunggah.</FormErrorMessage>
                 </FormControl>
-                <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
+                <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
                   Tambah product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>
@@ -882,25 +693,19 @@ export const AddStockForm = ({ fetchProduct }) => {
 
   return (
     <Box>
-      <Button size='sm' leftIcon={<FiArrowRight />} onClick={handleOpenModal}>
+      <Button size="sm" leftIcon={<FiArrowRight />} onClick={handleOpenModal}>
         Add Stocks
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Stock Form</ModalHeader>
+          <ModalHeader textAlign="center">Stock Form</ModalHeader>
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Product</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='Items Id'
-                    onChange={handleChange}
-                    {...register('items_id', { required: true })}
-                  >
+                  <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('items_id', { required: true })}>
                     {items?.data?.map((product) => (
                       <option key={product.id} value={product.id}>
                         {product.name}
@@ -911,13 +716,7 @@ export const AddStockForm = ({ fetchProduct }) => {
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.warehouse_id}>
                   <FormLabel>Warehouse</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='warehouse_id'
-                    onChange={handleChange}
-                    {...register('warehouses_id', { required: true })}
-                  >
+                  <Select size="sm" variant="filled" name="warehouse_id" onChange={handleChange} {...register('warehouses_id', { required: true })}>
                     {warehouse.map((warehouses) => (
                       <option key={warehouses.id} value={warehouses.id}>
                         {warehouses.name}
@@ -928,25 +727,12 @@ export const AddStockForm = ({ fetchProduct }) => {
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.stock}>
                   <FormLabel>Stock</FormLabel>
-                  <Input
-                    size='sm'
-                    variant='filled'
-                    type='text'
-                    name='quantity'
-                    onChange={handleChange}
-                    {...register('stock', { required: true })}
-                  />
+                  <Input size="sm" variant="filled" type="text" name="quantity" onChange={handleChange} {...register('stock', { required: true })} />
                   <FormErrorMessage>Stock Harus Di Isi</FormErrorMessage>
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.suppliers_id}>
                   <FormLabel>Suppliers</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='vendor_id'
-                    onChange={handleChange}
-                    {...register('suppliers_id', { required: true })}
-                  >
+                  <Select size="sm" variant="filled" name="vendor_id" onChange={handleChange} {...register('suppliers_id', { required: true })}>
                     {suppliers?.dataSuppliers?.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>
                         {vendor.name}
@@ -956,7 +742,7 @@ export const AddStockForm = ({ fetchProduct }) => {
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>
 
-                <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
+                <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
                   Tambah product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>
@@ -1050,19 +836,14 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
 
   return (
     <Box>
-      <Button
-        size='sm'
-        bgColor={''}
-        leftIcon={<FiMove />}
-        onClick={handleOpenModal}
-      >
+      <Button size="sm" bgColor={''} leftIcon={<FiMove />} onClick={handleOpenModal}>
         Move Stocks
       </Button>
 
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center' fontSize='sm'>
+          <ModalHeader textAlign="center" fontSize="sm">
             Move Stock
           </ModalHeader>
           <ModalCloseButton />
@@ -1073,22 +854,12 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
                 {/* Mapping over products */}
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Select Product To move</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='Items Id'
-                    onChange={handleChange}
-                    {...register('items_id', { required: true })}
-                  >
-                    <option value='' selected disabled>
+                  <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('items_id', { required: true })}>
+                    <option value="" selected disabled>
                       Select Items
                     </option>
                     {items?.map((product) => (
-                      <option
-                        onClick={() => setItemsId(product.id)}
-                        key={product.id}
-                        value={product.id}
-                      >
+                      <option onClick={() => setItemsId(product.id)} key={product.id} value={product.id}>
                         {product.name}
                       </option>
                     ))}
@@ -1097,25 +868,15 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Select Source Warehouse</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='Items Id'
-                    onChange={handleChange}
-                    {...register('source_warehouse_id', { required: true })}
-                  >
-                    <option value='' selected disabled>
+                  <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('source_warehouse_id', { required: true })}>
+                    <option value="" selected disabled>
                       {' '}
                       Select Source Warehouse{' '}
                     </option>
                     {warehouseStock
                       ?.filter((ws) => ws.itemsId === itemsId)
                       .map((warehouses) => (
-                        <option
-                          key={warehouses.id}
-                          value={warehouses.warehouseId}
-                          onClick={() => setWarehouseId(warehouses.warehouseId)}
-                        >
+                        <option key={warehouses.id} value={warehouses.warehouseId} onClick={() => setWarehouseId(warehouses.warehouseId)}>
                           {`${warehouses.warehouseName}, Stock: ${warehouses.stock}`}
                         </option>
                       ))}
@@ -1124,23 +885,16 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.stock}>
                   <FormLabel>Stock</FormLabel>
-                  <Input
-                    size='sm'
-                    variant='filled'
-                    type='text'
-                    name='quantity'
-                    onChange={handleChange}
-                    {...register('stock', { required: true })}
-                  />
+                  <Input size="sm" variant="filled" type="text" name="quantity" onChange={handleChange} {...register('stock', { required: true })} />
                   <FormErrorMessage>Stock Harus Di Isi</FormErrorMessage>
                 </FormControl>
 
                 <FormControl mb={4} isInvalid={errors.suppliers_id}>
                   <FormLabel>Select Warehouse Destination</FormLabel>
                   <Select
-                    size='sm'
-                    variant='filled'
-                    name='Warehouse id'
+                    size="sm"
+                    variant="filled"
+                    name="Warehouse id"
                     onChange={handleChange}
                     {...register('destination_warehouse_id', {
                       required: true,
@@ -1157,7 +911,7 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>
 
-                <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
+                <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
                   Tambah product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>

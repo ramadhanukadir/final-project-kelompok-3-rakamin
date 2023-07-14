@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   Table,
   Thead,
@@ -23,38 +23,25 @@ import {
   IconButton,
   Text,
   useDisclosure,
-} from "@chakra-ui/react";
-import { FiPlus, FiDelete, FiEdit, FiMove } from "react-icons/fi";
-import { instance } from "../../../modules/axios";
-import Link from "next/link";
-import { Link as ChakraLink } from "@chakra-ui/react";
-
+} from '@chakra-ui/react';
+import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
+import { instance } from '../../../modules/axios';
+import Link from 'next/link';
+import { Link as ChakraLink } from '@chakra-ui/react';
 
 const SuppliersTable = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [telephone, setTelephone] = useState("");
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [telephone, setTelephone] = useState('');
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [currentSupplierId, setCurrentSupplierId] = useState("");
+  const [currentSupplierId, setCurrentSupplierId] = useState('');
   const [detail, setDetail] = useState({});
-  const {
-    isOpen: isModalOpen,
-    onOpen: openModal,
-    onClose: closeModal,
-  } = useDisclosure();
-  const {
-    isOpen: isUpdateModalOpen,
-    onOpen: openUpdateModal,
-    onClose: closeUpdateModal,
-  } = useDisclosure();
-  const {
-    isOpen: isDeleteModalOpen,
-    onOpen: openDeleteModal,
-    onClose: closeDeleteModal,
-  } = useDisclosure();
-  const [deleteSupplierId, setDeleteSupplierId] = useState("");
+  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
+  const { isOpen: isUpdateModalOpen, onOpen: openUpdateModal, onClose: closeUpdateModal } = useDisclosure();
+  const { isOpen: isDeleteModalOpen, onOpen: openDeleteModal, onClose: closeDeleteModal } = useDisclosure();
+  const [deleteSupplierId, setDeleteSupplierId] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -62,16 +49,13 @@ const SuppliersTable = () => {
 
   const fetchData = async () => {
     try {
-      const response = await instance.get("suppliers?page=1&limit=10");
+      const response = await instance.get('suppliers?page=1&limit=10');
       const { dataSuppliers } = response.data;
       setSuppliers(dataSuppliers);
     } catch (error) {
-      console.error("Gagal mengambil data:", error);
+      console.error('Gagal mengambil data:', error);
     }
   };
-
-  
-
 
   const router = useRouter();
 
@@ -93,9 +77,9 @@ const SuppliersTable = () => {
 
   const toggleCancelModal = () => {
     closeUpdateModal();
-    setName("");
-    setAddress("");
-    setTelephone("");
+    setName('');
+    setAddress('');
+    setTelephone('');
   };
 
   const handleCreate = async () => {
@@ -106,7 +90,7 @@ const SuppliersTable = () => {
         telephone: telephone,
       };
 
-      const response = await instance.post("suppliers", newSupplier);
+      const response = await instance.post('suppliers', newSupplier);
       const createdSupplier = response.data;
 
       setSuppliers([...suppliers, createdSupplier]);
@@ -114,7 +98,7 @@ const SuppliersTable = () => {
       closeModal();
       fetchData();
     } catch (error) {
-      console.error("Gagal membuat supplier:", error);
+      console.error('Gagal membuat supplier:', error);
     }
   };
 
@@ -130,37 +114,30 @@ const SuppliersTable = () => {
       closeUpdateModal();
       fetchData();
     } catch (error) {
-      console.error("Gagal memperbarui supplier:", error);
+      console.error('Gagal memperbarui supplier:', error);
     }
   };
 
   const handleDelete = async (id) => {
     try {
       await instance.delete(`suppliers/${id}`);
-      const updatedSuppliers = suppliers.filter(
-        (supplier) => supplier.id !== id
-      );
+      const updatedSuppliers = suppliers.filter((supplier) => supplier.id !== id);
       setSuppliers(updatedSuppliers);
       closeDeleteModal();
     } catch (error) {
-      console.error("Gagal menghapus supplier:", error);
+      console.error('Gagal menghapus supplier:', error);
     }
   };
 
   return (
     <>
       <Box>
-        <Box
-          display={"flex"}
-          flexDirection={"row"}
-          justifyContent={"space-between"}
-          py={"10"}
-        >
-          <Text fontWeight={"bold"} fontSize={"xl"}>
+        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'}>
+          <Text fontWeight={'bold'} fontSize={'xl'}>
             Supplier
           </Text>
         </Box>
-        <Box display={"flex"} flexDirection={"row"} gap={"5"}>
+        <Box display={'flex'} flexDirection={'row'} gap={'5'}>
           {/* <Button
             size="sm"
             bgColor={""}
@@ -175,34 +152,22 @@ const SuppliersTable = () => {
           <Modal isOpen={isModalOpen} onClose={closeModal}>
             <ModalOverlay />
             <ModalContent>
-              <Box display={"flex"} flexDirection={"row"} gap={"5"}>
+              <Box display={'flex'} flexDirection={'row'} gap={'5'}>
                 <ModalHeader>Tambah Supplier</ModalHeader>
               </Box>
               <ModalCloseButton />
               <ModalBody>
                 <FormControl>
                   <FormLabel>Nama:</FormLabel>
-                  <Input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
+                  <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
                 </FormControl>
                 <FormControl mt={4}>
                   <FormLabel>Alamat:</FormLabel>
-                  <Input
-                    type="text"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
+                  <Input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
                 </FormControl>
                 <FormControl mt={4}>
                   <FormLabel>Telepon:</FormLabel>
-                  <Input
-                    type="text"
-                    value={telephone}
-                    onChange={(e) => setTelephone(e.target.value)}
-                  />
+                  <Input type="text" value={telephone} onChange={(e) => setTelephone(e.target.value)} />
                 </FormControl>
               </ModalBody>
               <ModalFooter>
@@ -217,34 +182,22 @@ const SuppliersTable = () => {
           <Modal isOpen={isUpdateModalOpen} onClose={closeUpdateModal}>
             <ModalOverlay />
             <ModalContent>
-              <Box display={"flex"} flexDirection={"row"} gap={"5"}>
+              <Box display={'flex'} flexDirection={'row'} gap={'5'}>
                 <ModalHeader>Edit Supplier</ModalHeader>
               </Box>
               <ModalCloseButton />
               <ModalBody>
                 <FormControl>
                   <FormLabel>Nama:</FormLabel>
-                  <Input
-                    type="text"
-                    defaultValue={detail.name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
+                  <Input type="text" defaultValue={detail.name} onChange={(e) => setName(e.target.value)} />
                 </FormControl>
                 <FormControl mt={4}>
                   <FormLabel>Alamat:</FormLabel>
-                  <Input
-                    type="text"
-                    defaultValue={detail.address}
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
+                  <Input type="text" defaultValue={detail.address} onChange={(e) => setAddress(e.target.value)} />
                 </FormControl>
                 <FormControl mt={4}>
                   <FormLabel>Telepon:</FormLabel>
-                  <Input
-                    type="text"
-                    defaultValue={detail.telephone}
-                    onChange={(e) => setTelephone(e.target.value)}
-                  />
+                  <Input type="text" defaultValue={detail.telephone} onChange={(e) => setTelephone(e.target.value)} />
                 </FormControl>
               </ModalBody>
               <ModalFooter>
@@ -265,11 +218,7 @@ const SuppliersTable = () => {
                 <Text>Are you sure you want to delete this supplier?</Text>
               </ModalBody>
               <ModalFooter>
-                <Button
-                  colorScheme="red"
-                  mr={3}
-                  onClick={() => handleDelete(deleteSupplierId)}
-                >
+                <Button colorScheme="red" mr={3} onClick={() => handleDelete(deleteSupplierId)}>
                   Delete
                 </Button>
                 <Button onClick={closeDeleteModal}>Cancel</Button>
@@ -281,7 +230,7 @@ const SuppliersTable = () => {
           <Box>
             <TableContainer>
               <Table variant="simple">
-                <Thead bg={"#DFF6FE"}>
+                <Thead bg={'#DFF6FE'}>
                   <Tr>
                     <Th>ID</Th>
                     <Th>Name</Th>
@@ -292,17 +241,14 @@ const SuppliersTable = () => {
                 </Thead>
                 <Tbody>
                   {suppliers.map((supplier) => (
-                    <Tr onClick={() => router.push(`/supplier/${supplier.id}`)} key={supplier.id}>
+                    <Tr key={supplier.id}>
                       <Td>{supplier.id}</Td>
-                      <Td>{supplier.name}</Td>
+                      <Td onClick={() => router.push(`/supplier/${supplier.id}`)}>{supplier.name}</Td>
                       <Td>{supplier.address}</Td>
                       <Td>{supplier.telephone}</Td>
                       <Td>
                         <IconButton icon={<FiPlus />} onClick={openModal} />
-                        <IconButton
-                          icon={<FiEdit />}
-                          onClick={() => toggleUpdateModal(supplier.id)}
-                        />
+                        <IconButton icon={<FiEdit />} onClick={() => toggleUpdateModal(supplier.id)} />
                         <IconButton
                           icon={<FiDelete />}
                           onClick={() => {
@@ -328,4 +274,4 @@ const SuppliersTable = () => {
   );
 };
 
-export default SuppliersTable
+export default SuppliersTable;

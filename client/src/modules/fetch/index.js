@@ -1,12 +1,12 @@
-import { instance } from "../axios";
-import axios from "axios";
+import { instance } from '../axios';
+import axios from 'axios';
 
 async function getAllItems() {
   try {
-    const response = await instance.get("/items?page=1&q&sort=ASC&order=name");
+    const response = await instance.get('/items?page=1&q&sort=ASC&order=name');
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went wrong");
+    throw new Error(error.response.data.message || 'Something went wrong');
   }
 }
 
@@ -15,7 +15,7 @@ async function getAllItemsById(id) {
     const response = await instance.get(`/items/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went wrong");
+    throw new Error(error.response.data.message || 'Something went wrong');
   }
 }
 
@@ -24,7 +24,7 @@ async function deleteItems(id) {
     const response = await instance.delete(`/items/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went wrong");
+    throw new Error(error.response.data.message || 'Something went wrong');
   }
 }
 
@@ -33,52 +33,61 @@ async function updateItems(id) {
     const response = await instance.put(`/items/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went wrong");
+    throw new Error(error.response.data.message || 'Something went wrong');
+  }
+}
+
+async function updateWarehouses(id) {
+  try {
+    const response = await instance.put(`/warehouses/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message || 'Something went wrong');
   }
 }
 
 async function getAllWarehouses() {
   try {
-    const response = await instance.get("/warehouses");
+    const response = await instance.get('/warehouses');
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went wrong");
+    throw new Error(error.response.data.message || 'Something went wrong');
   }
 }
 
 async function getAllWarehouseStock() {
   try {
-    const response = await instance.get("/warehouses-stock");
+    const response = await instance.get('/warehouses-stock');
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went wrong");
+    throw new Error(error.response.data.message || 'Something went wrong');
   }
 }
 
 async function getAllSuppliers() {
   try {
-    const response = await instance.get("/suppliers?page=1&limit=1");
+    const response = await instance.get('/suppliers?page=1&limit=1');
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went wrong");
+    throw new Error(error.response.data.message || 'Something went wrong');
   }
 }
 
 async function getWarehouseId(id) {
   try {
     const response = await instance.get(`/warehouses/${id}`);
-    return response.data;
+    return response.data.warehouse;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 }
 
 async function getAllCategories() {
   try {
-    const response = await instance.get("/categories");
+    const response = await instance.get('/categories');
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 }
 
@@ -87,16 +96,16 @@ async function getCategoriesId(id) {
     const { data } = await instance.get(`/categories/${id}`);
     return data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 }
 
 async function postCategories() {
   try {
-    const response = await instance.post("/categories");
+    const response = await instance.post('/categories');
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 }
 
@@ -105,7 +114,7 @@ async function updateCategories(id) {
     const response = await instance.put(`/categories/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 }
 
@@ -114,7 +123,7 @@ async function deleteCategories(id) {
     const response = await instance.delete(`/categories/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 }
 
@@ -132,4 +141,5 @@ export {
   updateCategories,
   postCategories,
   deleteCategories,
+  updateWarehouses,
 };
