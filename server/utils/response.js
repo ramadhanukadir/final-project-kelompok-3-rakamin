@@ -16,6 +16,7 @@ const mappingItems = (items) => {
 const responseItemsId = (items) => {
   return {
     id: items.id,
+    categoriesId: items.categories_id,
     name: items.name,
     description: items.description,
     SKU: items.SKU,
@@ -30,7 +31,6 @@ const responseItemsId = (items) => {
 const mappingCategory = (categories) => {
   return categories.map((category) => ({
     id: category.id,
-    usersId: category.users_id,
     name: category.name,
     description: category.description,
   }));
@@ -56,7 +56,7 @@ const convertDate = {
   second: 'numeric',
 };
 
-const mappingOrders = (orders, warehouse, customer, revenue) => {
+const mappingOrders = (orders, warehouse, customer) => {
   return orders.map((order) => {
     const Warehouse = warehouse.find((item) => item.id === order.warehouses_id);
     const Customer = customer.find((item) => item.id === order.customers_id);
@@ -67,7 +67,6 @@ const mappingOrders = (orders, warehouse, customer, revenue) => {
       customer: Customer.full_name,
       totalRevenue: order.total_revenue,
       date: date,
-
     };
   });
 };
@@ -94,6 +93,23 @@ const responseWarehouseId = (warehouse) => {
     postalCode: warehouse.postal_code,
     telephone: warehouse.telephone,
   };
+};
+
+const mappingWarehouseStock = (warehouseStock, warehouse, items) => {
+  return warehouseStock.map((ws) => {
+    const findWarehouse = warehouse.find(
+      (item) => item.id === ws.warehouses_id
+    );
+    const findItem = items.find((item) => item.id === ws.items_id);
+    return {
+      id: ws.id,
+      warehouseId: ws.warehouses_id,
+      warehouseName: findWarehouse.name,
+      itemsId: ws.items_id,
+      itemsName: findItem.name,
+      stock: ws.stock,
+    };
+  });
 };
 
 const mappingOrderDetail = (items) => {
@@ -124,6 +140,15 @@ const responseOrdersId = (
   };
 };
 
+const responseWarehouseStockId = (warehouseStock, warehouse, items) => {
+  return {
+    id: warehouseStock.id,
+    warehouse: warehouse.name,
+    items: items.name,
+    stock: warehouseStock.stock,
+  };
+};
+
 module.exports = {
   mappingItems,
   mappingOrders,
@@ -135,4 +160,6 @@ module.exports = {
   mappingOrderDetail,
   responseOrdersId,
   convertDate,
+  mappingWarehouseStock,
+  responseWarehouseStockId,
 };

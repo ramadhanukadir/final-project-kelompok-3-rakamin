@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { instance } from '@/modules/axios';
 import {
   Button,
@@ -31,17 +31,19 @@ import {
   useToast,
   InputGroup,
   InputRightElement,
+  Icon,
 } from '@chakra-ui/react';
 import { getAllItems, getAllItemsById, getAllWarehouses, getAllWarehouseStock, getAllSuppliers, getWarehouseId, deleteItems, updateItems } from '@/modules/fetch';
 //import { useNavigate } from "react-router-dom";
 import { WarningIcon, SearchIcon, ArrowForwardIcon } from '@chakra-ui/icons';
-import { FiSearch, FiUpload, FiPlus, FiArrowLeft, FiArrowRight, FiCircle, FiArrowUpRight, FiDelete, FiMove } from 'react-icons/fi';
+import { FiSearch, FiUpload, FiPlus, FiArrowLeft, FiArrowRight, FiCircle, FiArrowUpRight, FiDelete, FiMove, FaRegEdit, FiEdit } from 'react-icons/fi';
 import { Form, useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
+import { DataContext } from '@/context/AllDataContext';
+import SelectField from '../SelectField/SelectField';
 
 const Product = () => {
-  const [product, setProduct] = useState([]);
-
+  const toast = useToast();
   const {
     handleSubmit,
     reset,
@@ -50,18 +52,23 @@ const Product = () => {
     watch,
     setValue,
   } = useForm();
+  const { categories, warehouseStock } = useContext(DataContext);
+  const [product, setProduct] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
+  const [warehouse, setWarehouse] = useState([]);
   // const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
 
+  const fetchProduct = async () => {
+    const { data } = await getAllItems();
+    setProduct(data);
+  };
+
   useEffect(() => {
-    const fetchProduct = async () => {
-      const product = await getAllItems();
-      setProduct(product);
-    };
     if (detailItems) {
+      setValue('categories_id', detailItems.categoriesId);
       setValue('name', detailItems.name);
       setValue('SKU', detailItems.SKU);
       setValue('size', detailItems.size);
@@ -72,7 +79,6 @@ const Product = () => {
     }
     fetchProduct();
   }, [detailItems]);
-  console.log(product);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -88,23 +94,37 @@ const Product = () => {
     }
   };
 
+  const categoriesName = (id) => {
+    const categoryName = categories.find((item) => item.id === id);
+    return categoryName?.name;
+  };
+
+  // useEffect(() => {
+  //   const warehouseName = () => {
+  //     const data = warehouseStock.filter((item) => item.items_id === 1);
+  //     setWarehouse(data);
+  //   };
+  //   warehouseName();
+  // }, []);
+
   const handleDeleteItems = async (id) => {
     try {
       await deleteItems(id);
       handleCloseModal(),
         toast({
           title: 'Delete Product',
-          description: 'You have successfully Created Product.',
+          description: 'Successfully Delete Product.',
           status: 'success',
           duration: 3000,
           isClosable: true,
         });
+      fetchProduct();
     } catch (error) {
       toast({
         title: 'Failed to delete product.',
         description: error.message,
         status: 'error',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
       });
     }
@@ -135,9 +155,8 @@ const Product = () => {
           isClosable: true,
         })
       );
-      if (response.status === 200) {
-        reset();
-      }
+      reset();
+      fetchProduct();
     } catch (error) {
       toast({
         title: 'Failed to create product.',
@@ -155,12 +174,12 @@ const Product = () => {
           Products
         </Text>
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
-          <AddProductForm />
-          <AddStockForm />
-          <MoveStock />
+          <AddProductForm fetchProduct={fetchProduct()} />
+          <AddStockForm fetchProduct={fetchProduct()} />
+          <MoveStock warehouseStock={warehouseStock} fetchProduct={fetchProduct()} />
         </Box>
       </Box>
-      <Box>
+      {/* <Box>
         <Box>
           <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} mx={'2'}>
             <Text fontWeight={'bold'} fontSize={'xl'}>
@@ -217,20 +236,44 @@ const Product = () => {
             </Box>
           </Box>
         </Box>
-      </Box>
+      </Box> */}
       <Box>
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Box display={'row'} justifyContent={'start'} alignItems={'center'} gap={'10'} my={'5'}>
-            <Button px={8} bg={'#DFF6FE'} color={'black'} rounded={'md'} _active={{ bg: '#1363DE' }}>
+          {/* <Box
+            display={'row'}
+            justifyContent={'start'}
+            alignItems={'center'}
+            gap={'10'}
+            my={'5'}
+          >
+            <Button
+              px={8}
+              bg={'#DFF6FE'}
+              color={'black'}
+              rounded={'md'}
+              _active={{ bg: '#1363DE' }}
+            >
               Goods & Services
             </Button>
-            <Button px={8} bg={'#1363DE'} color={'white'} rounded={'md'} _active={{ bg: '#DFF6FE' }}>
+            <Button
+              px={8}
+              bg={'#1363DE'}
+              color={'white'}
+              rounded={'md'}
+              _active={{ bg: '#DFF6FE' }}
+            >
               Stock Adjustment
             </Button>
-            <Button px={8} bg={'#DFF6FE'} color={'black'} rounded={'md'} _active={{ bg: '#1363DE' }}>
+            <Button
+              px={8}
+              bg={'#DFF6FE'}
+              color={'black'}
+              rounded={'md'}
+              _active={{ bg: '#1363DE' }}
+            >
               Need Approval
             </Button>
-          </Box>
+          </Box> */}
           <Box display={'flex'} justifyContent={'end'}>
             <InputGroup>
               <Input placeholder="Masukkan kata kunci" value="Search value" onChange={''} px={'8'} />
@@ -248,58 +291,83 @@ const Product = () => {
             <Table variant="simple">
               <Thead bg={'#DFF6FE'}>
                 <Tr>
-                  <Th>SKU</Th>
-                  <Th>Categories Id</Th>
-                  <Th>Description</Th>
                   <Th>Name</Th>
-                  <Th>Item Size</Th>
-                  <Th>Item Weight</Th>
-                  <Th>Selling Price</Th>
+                  <Th>SKU</Th>
+                  <Th>Categories</Th>
+                  <Th>Warehouse</Th>
                   <Th>Base Price</Th>
                   <Th>Image</Th>
-                  <Th>Edit</Th>
-                  <Th>Delete</Th>
+                  <Th>Action</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {product?.data?.map((item) => (
-                  <Tr key={item.id}>
-                    <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'} _hover={'black'}>
-                      {item.SKU}
-                    </Td>
-                    <Td>{item.categoriesId}</Td>
-                    <Td>{item.description}</Td>
-                    <Td>{item.name}</Td>
-                    <Td>{item.size}</Td>
-                    <Td>{item.weight}</Td>
-                    <Td>{item.basePrice}</Td>
-                    <Td>{item.sellingPrice}</Td>
-                    <Image src={item.imageUrl} boxSize="50px" />
-                    <Td>
-                      <Button colorScheme="blue" onClick={() => handleEdit(item.id)} size={'md'}>
-                        <FiPlus />
-                        Edit
-                      </Button>
-                    </Td>
-                    <Td>
-                      <Button colorScheme="red" onClick={() => handleDeleteItems(item.id)} size={'md'}>
-                        <FiDelete />
-                        Delete
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
+                {product?.map((item) => {
+                  const ws = warehouseStock.filter((ws) => ws.itemsName === item.name);
+                  // {warehouseName(item.id)}
+                  return (
+                    <Tr key={item.id}>
+                      <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'}>
+                        {item.name}
+                      </Td>
+                      <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'}>
+                        {item.SKU}
+                      </Td>
+                      <Td>{categoriesName(item.categoriesId)}</Td>
+                      <Td>
+                        <Select>
+                          {ws.map((wS) => {
+                            return <option key={wS.id}>{`${wS.warehouseName}, Stock:  ${wS.stock}`}</option>;
+                          })}
+                        </Select>
+                      </Td>
+                      <Td>{item.sellingPrice}</Td>
+                      <Image src={item.imageUrl} boxSize="50px" />
+                      <Td>
+                        <Icon
+                          boxSize={5}
+                          color={'#06283D'}
+                          onClick={() => handleEdit(item.id)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#4F709C',
+                          }}
+                          title="Edit"
+                        />
+                        <Icon
+                          boxSize={5}
+                          color={'red'}
+                          onClick={() => handleDeleteItems(item.id)}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#EF6262',
+                          }}
+                          title="Delete"
+                        />
+                      </Td>
+                    </Tr>
+                  );
+                })}
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
                     <ModalHeader textAlign="center">Edit Product</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
-                        <FormControl isInvalid={errors.categories_id} mb={4}>
-                          <FormLabel htmlFor="categories_id">Categories id:</FormLabel>
-                          <Input type="number" id="categories_id" {...register('categories_id', { required: true })} />
-                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                        </FormControl>
+                        <SelectField
+                          // keyProp={1}
+                          name={'categories'}
+                          label={'Categories'}
+                          register={register('categories_id', {
+                            required: 'This is required',
+                          })}
+                          errors={errors.categories_id}
+                          mapping={categories}
+                          option={(opt) => opt.name}
+                          value={(opt) => opt.id}
+                        />
                         <FormControl isInvalid={errors.name} mb={4}>
                           <FormLabel htmlFor="name">Name:</FormLabel>
                           <Input type="text" id="name" {...register('name', { required: true })} />
@@ -335,13 +403,15 @@ const Product = () => {
                           <Input type="number" id="selling_price" {...register('selling_price', { required: true })} />
                           <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                         </FormControl>
-                        <FormControl isInvalid={errors.image_url} mb={4}>
+                        <FormControl mb={4}>
                           <FormLabel htmlFor="image_url">Gambar:</FormLabel>
-                          <Input type="file" id="image_url" {...register('image_url', { required: true })} />
-                          <FormErrorMessage>Gambar harus diunggah.</FormErrorMessage>
+                          <Input type="file" id="image_url" {...register('image_url')} />
+                          {/* <FormErrorMessage>
+                            Gambar harus diunggah.
+                          </FormErrorMessage> */}
                         </FormControl>
                         <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
-                          Tambah product
+                          Update product
                         </Button>
                         <Button size={'md'} onClick={handleCloseModal}>
                           Cancel
@@ -360,13 +430,16 @@ const Product = () => {
   );
 };
 
-export const AddProductForm = () => {
+export const AddProductForm = ({ fetchProduct }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm();
+  const { categories } = useContext(DataContext);
+
+  console.log(categories, 'categories');
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -404,6 +477,7 @@ export const AddProductForm = () => {
 
         reset();
       }
+      fetchProduct();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -445,11 +519,27 @@ export const AddProductForm = () => {
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
-                <FormControl isInvalid={errors.categories_id} mb={4}>
-                  <FormLabel htmlFor="categories_id">Categories id:</FormLabel>
-                  <Input type="number" id="categories_id" {...register('categories_id', { required: true })} />
+                {/* <FormControl isInvalid={errors.categories_id} mb={4}>
+                  <FormLabel htmlFor='categories_id'>Categories id:</FormLabel>
+                  <Input
+                    type='number'
+                    id='categories_id'
+                    {...register('categories_id', { required: true })}
+                  />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                </FormControl>
+                </FormControl> */}
+                <SelectField
+                  // keyProp={1}
+                  name={'categories'}
+                  label={'Categories'}
+                  register={register('categories_id', {
+                    required: 'This is required',
+                  })}
+                  errors={errors.categories_id}
+                  mapping={categories}
+                  option={(opt) => opt.name}
+                  value={(opt) => opt.id}
+                />
                 <FormControl isInvalid={errors.name} mb={4}>
                   <FormLabel htmlFor="name">Name:</FormLabel>
                   <Input type="text" id="name" {...register('name', { required: true })} />
@@ -505,7 +595,7 @@ export const AddProductForm = () => {
   );
 };
 
-export const AddStockForm = () => {
+export const AddStockForm = ({ fetchProduct }) => {
   const {
     register,
     handleSubmit,
@@ -548,12 +638,12 @@ export const AddStockForm = () => {
     setValue('category', selectedValue);
   };
 
-  React.useEffect(() => {
-    setValue('items_id', 1);
-    setValue('warehouses_id', 1);
-    setValue('suppliers_id', 1);
-    setValue('stock', 1);
-  }, [setValue]);
+  // React.useEffect(() => {
+  //   setValue('items_id', 1);
+  //   setValue('warehouses_id', 1);
+  //   setValue('suppliers_id', 1);
+  //   setValue('stock', 1);
+  // }, [setValue]);
 
   const onSubmit = async (data) => {
     const jsonData = JSON.stringify(data);
@@ -580,6 +670,7 @@ export const AddStockForm = () => {
 
         reset();
       }
+      fetchProduct();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -666,7 +757,7 @@ export const AddStockForm = () => {
   );
 };
 
-export const MoveStock = () => {
+export const MoveStock = ({ warehouseStock, fetchProduct }) => {
   const {
     register,
     handleSubmit,
@@ -677,37 +768,16 @@ export const MoveStock = () => {
   } = useForm();
   const [items, setItems] = useState([]);
   const [warehouse, setWarehouse] = useState([]);
-  const [warehouseItems, setWarehouseItems] = useState([]);
-  const id = watch('source_warehouse_id');
-  const [warehouseId, setWarehouseId] = useState(id);
+  // const { warehouseStock } = useContext(DataContext);
+  const [warehouseId, setWarehouseId] = useState(0);
+  const [itemsId, setItemsId] = useState(0);
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
-  // id = id ? watch("source_warehouse_id") : 1;
-  // console.log("INI ID ", id);
-
-  // useEffect(() => {
-  //   // if (id) {
-  //   //setWarehouseId(id);
-  //   // } else {
-  //   //   setWarehouseId(1);
-  //   // }
-
-  //   const fetchItems = async () => {
-  //     const items = await getWarehouseId(warehouseId);
-  //     // setWarehouseItems(items.stockItems);
-  //     console.log(items);
-  //   };
-  //   fetchItems();
-  //   // setWarehouseId(id);
-  // }, [warehouseId]);
-
-  // console.log(warehouseItems);
-
   useEffect(() => {
     const fetchItems = async () => {
-      const items = await getAllItems();
-      setItems(items);
+      const { data } = await getAllItems();
+      setItems(data);
     };
     fetchItems();
   }, []);
@@ -733,20 +803,11 @@ export const MoveStock = () => {
     setValue('category', selectedValue);
   };
 
-  React.useEffect(() => {
-    setValue('items_id', 1);
-    setValue('source_warehouse_id', 1);
-    setValue('stock', 1);
-    setValue('destination_warehouse_id', 1);
-  }, [setValue]);
-
   const onSubmit = async (data) => {
-    const jsonData = JSON.stringify(data);
-    console.log(data);
     try {
       const response = await instance.post(
         '/warehouses-stock/move-items',
-        jsonData,
+        data,
         handleCloseModal(),
         toast({
           title: 'Created Product',
@@ -758,14 +819,14 @@ export const MoveStock = () => {
       );
       if (response.status === 200) {
         console.log('Produk berhasil ditambahkan!');
-
         reset();
       }
+      fetchProduct();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
         title: 'Failed to create product.',
-        description: err.message,
+        description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -794,8 +855,11 @@ export const MoveStock = () => {
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Select Product To move</FormLabel>
                   <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('items_id', { required: true })}>
-                    {items?.data?.map((product) => (
-                      <option key={product.id} value={product.id}>
+                    <option value="" selected disabled>
+                      Select Items
+                    </option>
+                    {items?.map((product) => (
+                      <option onClick={() => setItemsId(product.id)} key={product.id} value={product.id}>
                         {product.name}
                       </option>
                     ))}
@@ -803,22 +867,21 @@ export const MoveStock = () => {
                   <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.items_id}>
-                  <FormLabel>Select Product To move</FormLabel>
+                  <FormLabel>Select Source Warehouse</FormLabel>
                   <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('source_warehouse_id', { required: true })}>
-                    {/* {items
-                      .find((product) => product.id === selectedProductId)
-                      .warehouse.map((warehouses) => (
-                        <option key={warehouses.id} value={warehouses.id}>
-                          {warehouses.name}
+                    <option value="" selected disabled>
+                      {' '}
+                      Select Source Warehouse{' '}
+                    </option>
+                    {warehouseStock
+                      ?.filter((ws) => ws.itemsId === itemsId)
+                      .map((warehouses) => (
+                        <option key={warehouses.id} value={warehouses.warehouseId} onClick={() => setWarehouseId(warehouses.warehouseId)}>
+                          {`${warehouses.warehouseName}, Stock: ${warehouses.stock}`}
                         </option>
-                      ))} */}
-                    {warehouse.map((warehouses) => (
-                      <option key={warehouses.id} value={warehouses.id}>
-                        {warehouses.name}
-                      </option>
-                    ))}
+                      ))}
                   </Select>
-                  <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
+                  <FormErrorMessage>This is required</FormErrorMessage>
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.stock}>
                   <FormLabel>Stock</FormLabel>
@@ -827,7 +890,7 @@ export const MoveStock = () => {
                 </FormControl>
 
                 <FormControl mb={4} isInvalid={errors.suppliers_id}>
-                  <FormLabel>Select warehouse destination</FormLabel>
+                  <FormLabel>Select Warehouse Destination</FormLabel>
                   <Select
                     size="sm"
                     variant="filled"
@@ -837,11 +900,13 @@ export const MoveStock = () => {
                       required: true,
                     })}
                   >
-                    {warehouse.map((warehouses) => (
-                      <option key={warehouses.id} value={warehouses.id}>
-                        {warehouses.name}
-                      </option>
-                    ))}
+                    {warehouse
+                      .filter((ws) => ws.id !== warehouseId)
+                      .map((warehouses) => (
+                        <option key={warehouses.id} value={warehouses.id}>
+                          {warehouses.name}
+                        </option>
+                      ))}
                   </Select>
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>

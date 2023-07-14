@@ -192,7 +192,7 @@ const addStockItems = async (req, res) => {
           {
             items_id,
             warehouses_id,
-            stock,
+            stock: parseInt(stock),
           },
           { transaction: t }
         );
@@ -201,8 +201,8 @@ const addStockItems = async (req, res) => {
             users_id: id,
             items_id,
             warehouses_id,
-            stock_update: stock,
-            total_expenses: findItems.base_price * stock,
+            stock_update: parseInt(stock),
+            total_expenses: findItems.base_price * parseInt(stock),
           },
           { transaction: t }
         );
@@ -221,7 +221,7 @@ const addStockItems = async (req, res) => {
       } else {
         await Warehouses_Stock.update(
           {
-            stock: findStock.stock + stock,
+            stock: findStock.stock + parseInt(stock),
           },
           {
             where: {
@@ -237,8 +237,8 @@ const addStockItems = async (req, res) => {
             items_id,
             warehouses_id,
             suppliers_id,
-            stock_update: stock,
-            total_expenses: findItems.base_price * stock,
+            stock_update: parseInt(stock),
+            total_expenses: findItems.base_price * parseInt(stock),
           },
           { transaction: t }
         );
