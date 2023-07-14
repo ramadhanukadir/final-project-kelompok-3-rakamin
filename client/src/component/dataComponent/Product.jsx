@@ -64,7 +64,6 @@ import { DataContext } from '@/context/AllDataContext';
 import SelectField from '../SelectField/SelectField';
 
 const Product = () => {
-  const [product, setProduct] = useState([]);
   const toast = useToast();
   const {
     handleSubmit,
@@ -75,6 +74,7 @@ const Product = () => {
     setValue,
   } = useForm();
   const { categories, warehouseStock } = useContext(DataContext);
+  const [product, setProduct] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
@@ -83,11 +83,9 @@ const Product = () => {
   const router = useRouter();
 
   const fetchProduct = async () => {
-    const product = await getAllItems();
-    setProduct(product);
+    const { data } = await getAllItems();
+    setProduct(data);
   };
-
-  console.log(warehouseStock, '<<<');
 
   useEffect(() => {
     if (detailItems) {
@@ -122,20 +120,13 @@ const Product = () => {
     return categoryName?.name;
   };
 
-  useEffect(() => {
-    const warehouseName = () => {
-      const data = warehouseStock.filter((item) => item.items_id === 1);
-      setWarehouse(data);
-    };
-    warehouseName();
-  }, []);
-
-  const warehouseName = (id) => {
-    const data = warehouseStock.filter((item) => item.items_id === id);
-    setWarehouse(data);
-  };
-
-  console.log(warehouse, '<<<');
+  // useEffect(() => {
+  //   const warehouseName = () => {
+  //     const data = warehouseStock.filter((item) => item.items_id === 1);
+  //     setWarehouse(data);
+  //   };
+  //   warehouseName();
+  // }, []);
 
   const handleDeleteItems = async (id) => {
     try {
@@ -209,9 +200,12 @@ const Product = () => {
           Products
         </Text>
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
-          <AddProductForm />
-          <AddStockForm />
-          <MoveStock />
+          <AddProductForm fetchProduct={fetchProduct()} />
+          <AddStockForm fetchProduct={fetchProduct()} />
+          <MoveStock
+            warehouseStock={warehouseStock}
+            fetchProduct={fetchProduct()}
+          />
         </Box>
       </Box>
       {/* <Box>
@@ -383,60 +377,74 @@ const Product = () => {
                   <Th>Name</Th>
                   <Th>SKU</Th>
                   <Th>Categories</Th>
-                  <Th>Selling Price</Th>
+                  <Th>Warehouse</Th>
                   <Th>Base Price</Th>
                   <Th>Image</Th>
                   <Th>Action</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {product?.data?.map((item) => (
+                {product?.map((item) => {
+                  const ws = warehouseStock.filter(
+                    (ws) => ws.itemsName === item.name
+                  );
                   // {warehouseName(item.id)}
-                  <Tr key={item.id}>
-                    <Td
-                      onClick={() => router.push(`/product/${item.id}`)}
-                      cursor={'pointer'}
-                    >
-                      {item.name}
-                    </Td>
-                    <Td
-                      onClick={() => router.push(`/product/${item.id}`)}
-                      cursor={'pointer'}
-                    >
-                      {item.SKU}
-                    </Td>
-                    <Td>{categoriesName(item.categoriesId)}</Td>
-
-                    <Td>{item.basePrice}</Td>
-                    <Td>{item.sellingPrice}</Td>
-                    <Image src={item.imageUrl} boxSize='50px' />
-                    <Td>
-                      <Icon
-                        boxSize={5}
-                        color={'#06283D'}
-                        onClick={() => handleEdit(item.id)}
-                        as={FiEdit}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title='Edit'
-                      />
-                      <Icon
-                        boxSize={5}
-                        color={'red'}
-                        onClick={() => handleDeleteItems(item.id)}
-                        as={FiDelete}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#EF6262',
-                        }}
-                        title='Delete'
-                      />
-                    </Td>
-                  </Tr>
-                ))}
+                  return (
+                    <Tr key={item.id}>
+                      <Td
+                        onClick={() => router.push(`/product/${item.id}`)}
+                        cursor={'pointer'}
+                      >
+                        {item.name}
+                      </Td>
+                      <Td
+                        onClick={() => router.push(`/product/${item.id}`)}
+                        cursor={'pointer'}
+                      >
+                        {item.SKU}
+                      </Td>
+                      <Td>{categoriesName(item.categoriesId)}</Td>
+                      <Td>
+                        <Select>
+                          {ws.map((wS) => {
+                            return (
+                              <option key={wS.id}>
+                                {`${wS.warehouseName}, Stock:  ${wS.stock}`}
+                              </option>
+                            );
+                          })}
+                        </Select>
+                      </Td>
+                      <Td>{item.sellingPrice}</Td>
+                      <Image src={item.imageUrl} boxSize='50px' />
+                      <Td>
+                        <Icon
+                          boxSize={5}
+                          color={'#06283D'}
+                          onClick={() => handleEdit(item.id)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#4F709C',
+                          }}
+                          title='Edit'
+                        />
+                        <Icon
+                          boxSize={5}
+                          color={'red'}
+                          onClick={() => handleDeleteItems(item.id)}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#EF6262',
+                          }}
+                          title='Delete'
+                        />
+                      </Td>
+                    </Tr>
+                  );
+                })}
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
@@ -574,7 +582,7 @@ const Product = () => {
   );
 };
 
-export const AddProductForm = () => {
+export const AddProductForm = ({ fetchProduct }) => {
   const {
     register,
     handleSubmit,
@@ -621,6 +629,7 @@ export const AddProductForm = () => {
 
         reset();
       }
+      fetchProduct();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -775,7 +784,7 @@ export const AddProductForm = () => {
   );
 };
 
-export const AddStockForm = () => {
+export const AddStockForm = ({ fetchProduct }) => {
   const {
     register,
     handleSubmit,
@@ -818,12 +827,12 @@ export const AddStockForm = () => {
     setValue('category', selectedValue);
   };
 
-  React.useEffect(() => {
-    setValue('items_id', 1);
-    setValue('warehouses_id', 1);
-    setValue('suppliers_id', 1);
-    setValue('stock', 1);
-  }, [setValue]);
+  // React.useEffect(() => {
+  //   setValue('items_id', 1);
+  //   setValue('warehouses_id', 1);
+  //   setValue('suppliers_id', 1);
+  //   setValue('stock', 1);
+  // }, [setValue]);
 
   const onSubmit = async (data) => {
     const jsonData = JSON.stringify(data);
@@ -850,6 +859,7 @@ export const AddStockForm = () => {
 
         reset();
       }
+      fetchProduct();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -961,7 +971,7 @@ export const AddStockForm = () => {
   );
 };
 
-export const MoveStock = () => {
+export const MoveStock = ({ warehouseStock, fetchProduct }) => {
   const {
     register,
     handleSubmit,
@@ -972,37 +982,16 @@ export const MoveStock = () => {
   } = useForm();
   const [items, setItems] = useState([]);
   const [warehouse, setWarehouse] = useState([]);
-  const [warehouseItems, setWarehouseItems] = useState([]);
-  const id = watch('source_warehouse_id');
-  const [warehouseId, setWarehouseId] = useState(id);
+  // const { warehouseStock } = useContext(DataContext);
+  const [warehouseId, setWarehouseId] = useState(0);
+  const [itemsId, setItemsId] = useState(0);
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
-  // id = id ? watch("source_warehouse_id") : 1;
-  // console.log("INI ID ", id);
-
-  // useEffect(() => {
-  //   // if (id) {
-  //   //setWarehouseId(id);
-  //   // } else {
-  //   //   setWarehouseId(1);
-  //   // }
-
-  //   const fetchItems = async () => {
-  //     const items = await getWarehouseId(warehouseId);
-  //     // setWarehouseItems(items.stockItems);
-  //     console.log(items);
-  //   };
-  //   fetchItems();
-  //   // setWarehouseId(id);
-  // }, [warehouseId]);
-
-  // console.log(warehouseItems);
-
   useEffect(() => {
     const fetchItems = async () => {
-      const items = await getAllItems();
-      setItems(items);
+      const { data } = await getAllItems();
+      setItems(data);
     };
     fetchItems();
   }, []);
@@ -1028,16 +1017,7 @@ export const MoveStock = () => {
     setValue('category', selectedValue);
   };
 
-  React.useEffect(() => {
-    setValue('items_id', 1);
-    setValue('source_warehouse_id', 1);
-    setValue('stock', 1);
-    setValue('destination_warehouse_id', 1);
-  }, [setValue]);
-
   const onSubmit = async (data) => {
-    // const jsonData = JSON.stringify(data);
-    console.log(data, '>>>>>>>');
     try {
       const response = await instance.post(
         '/warehouses-stock/move-items',
@@ -1053,9 +1033,9 @@ export const MoveStock = () => {
       );
       if (response.status === 200) {
         console.log('Produk berhasil ditambahkan!');
-
         reset();
       }
+      fetchProduct();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -1100,8 +1080,15 @@ export const MoveStock = () => {
                     onChange={handleChange}
                     {...register('items_id', { required: true })}
                   >
-                    {items?.data?.map((product) => (
-                      <option key={product.id} value={product.id}>
+                    <option value='' selected disabled>
+                      Select Items
+                    </option>
+                    {items?.map((product) => (
+                      <option
+                        onClick={() => setItemsId(product.id)}
+                        key={product.id}
+                        value={product.id}
+                      >
                         {product.name}
                       </option>
                     ))}
@@ -1109,7 +1096,7 @@ export const MoveStock = () => {
                   <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.items_id}>
-                  <FormLabel>Select Product To move</FormLabel>
+                  <FormLabel>Select Source Warehouse</FormLabel>
                   <Select
                     size='sm'
                     variant='filled'
@@ -1117,20 +1104,23 @@ export const MoveStock = () => {
                     onChange={handleChange}
                     {...register('source_warehouse_id', { required: true })}
                   >
-                    {/* {items
-                      .find((product) => product.id === selectedProductId)
-                      .warehouse.map((warehouses) => (
-                        <option key={warehouses.id} value={warehouses.id}>
-                          {warehouses.name}
+                    <option value='' selected disabled>
+                      {' '}
+                      Select Source Warehouse{' '}
+                    </option>
+                    {warehouseStock
+                      ?.filter((ws) => ws.itemsId === itemsId)
+                      .map((warehouses) => (
+                        <option
+                          key={warehouses.id}
+                          value={warehouses.warehouseId}
+                          onClick={() => setWarehouseId(warehouses.warehouseId)}
+                        >
+                          {`${warehouses.warehouseName}, Stock: ${warehouses.stock}`}
                         </option>
-                      ))} */}
-                    {warehouse.map((warehouses) => (
-                      <option key={warehouses.id} value={warehouses.id}>
-                        {warehouses.name}
-                      </option>
-                    ))}
+                      ))}
                   </Select>
-                  <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
+                  <FormErrorMessage>This is required</FormErrorMessage>
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.stock}>
                   <FormLabel>Stock</FormLabel>
@@ -1146,7 +1136,7 @@ export const MoveStock = () => {
                 </FormControl>
 
                 <FormControl mb={4} isInvalid={errors.suppliers_id}>
-                  <FormLabel>Select warehouse destination</FormLabel>
+                  <FormLabel>Select Warehouse Destination</FormLabel>
                   <Select
                     size='sm'
                     variant='filled'
@@ -1156,11 +1146,13 @@ export const MoveStock = () => {
                       required: true,
                     })}
                   >
-                    {warehouse.map((warehouses) => (
-                      <option key={warehouses.id} value={warehouses.id}>
-                        {warehouses.name}
-                      </option>
-                    ))}
+                    {warehouse
+                      .filter((ws) => ws.id !== warehouseId)
+                      .map((warehouses) => (
+                        <option key={warehouses.id} value={warehouses.id}>
+                          {warehouses.name}
+                        </option>
+                      ))}
                   </Select>
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>
