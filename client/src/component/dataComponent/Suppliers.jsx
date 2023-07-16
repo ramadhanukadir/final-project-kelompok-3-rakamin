@@ -54,6 +54,7 @@ const Suppliers = () => {
     onClose: closeDeleteModal,
   } = useDisclosure();
   const [deleteSupplierId, setDeleteSupplierId] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     fetchData();
@@ -68,8 +69,6 @@ const Suppliers = () => {
       console.error("Gagal mengambil data:", error);
     }
   };
-
-  const router = useRouter();
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -86,6 +85,7 @@ const Suppliers = () => {
     setCurrentSupplierId(id);
     openUpdateModal();
   };
+  console.log(setDetail);
 
   const toggleCancelModal = () => {
     closeUpdateModal();
@@ -145,7 +145,7 @@ const Suppliers = () => {
 
   return (
     <>
-      <Box>
+      <Box marginTop={"100"}>
         <Box
           display={"flex"}
           flexDirection={"row"}
@@ -154,6 +154,7 @@ const Suppliers = () => {
           <Text fontWeight={"bold"} fontSize={"xl"}>
             Supplier
           </Text>
+          <IconButton icon={<FiPlus />} onClick={openModal} />
         </Box>
         <Box display={"flex"} flexDirection={"row"} gap={"5"}>
           <Modal isOpen={isModalOpen} onClose={closeModal}>
@@ -275,17 +276,15 @@ const Suppliers = () => {
                 </Thead>
                 <Tbody>
                   {suppliers.map((supplier) => (
-                    <Tr>
+                    <Tr key={supplier.id}>
                       <Td
-                        onClick={() => router.push(`/supplier/${supplier.id}`)}
-                        key={supplier.id}>
+                        onClick={() => router.push(`/supplier/${supplier.id}`)}>
                         {supplier.id}
                       </Td>
                       <Td>{supplier.name}</Td>
                       <Td>{supplier.address}</Td>
                       <Td>{supplier.telephone}</Td>
                       <Td>
-                        <IconButton icon={<FiPlus />} onClick={openModal} />
                         <IconButton
                           icon={<FiEdit />}
                           onClick={() => toggleUpdateModal(supplier.id)}

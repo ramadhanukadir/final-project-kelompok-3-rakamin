@@ -1,14 +1,15 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from "react";
 import {
   getAllCustomer,
   getAllItems,
   getAllOrders,
   getAllWarehouses,
   getWarehousesById,
-} from '@/api/fetch/orders';
-import { fetchUser } from '@/api/fetch/auth';
-import { getAllCategories, getAllWarehousesStock } from '@/api/fetch';
-
+} from "@/api/fetch/orders";
+import { fetchUser } from "@/api/fetch/auth";
+//import { getAllCategories, getAllWarehousesStock } from "@/api/fetch";
+import { getAllCategories } from "@/api/fetch/category";
+import { getAllWarehousesStock } from "@/api/fetch/warehouses";
 const AllDataContext = createContext();
 
 const AllDataContextProvider = ({ children }) => {
@@ -25,10 +26,10 @@ const AllDataContextProvider = ({ children }) => {
   const [userLogin, setUserLogin] = useState({});
   const [warehouseStock, setWarehouseStock] = useState([]);
 
-  let access = '';
+  let access = "";
 
-  if (typeof window !== 'undefined') {
-    access = sessionStorage.getItem('token');
+  if (typeof window !== "undefined") {
+    access = sessionStorage.getItem("token");
   }
 
   const fetchUserLogin = async () => {
@@ -42,7 +43,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchItems = async () => {
-    const { data } = await getAllItems(1, 'ASC', 'name');
+    const { data } = await getAllItems(1, "ASC", "name");
     setProducts(data);
   };
 
@@ -66,7 +67,7 @@ const AllDataContextProvider = ({ children }) => {
     setOrders(data);
   };
 
-  const fetchWarehousStock = async () => {
+  const fetchWarehousesStock = async () => {
     const data = await getAllWarehousesStock();
     setWarehouseStock(data);
   };
@@ -79,7 +80,7 @@ const AllDataContextProvider = ({ children }) => {
         fetchOrders(),
         fetchUserLogin(),
         fetchCategories(),
-        fetchWarehousStock();
+        fetchWarehousesStock();
     }
 
     if (warehouseId > 0) {
@@ -108,8 +109,7 @@ const AllDataContextProvider = ({ children }) => {
         setItemsId,
         userLogin,
         access,
-      }}
-    >
+      }}>
       {children}
     </AllDataContext.Provider>
   );
