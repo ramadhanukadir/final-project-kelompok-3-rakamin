@@ -1,30 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { instance } from '../../modules/axios/index';
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  FormControl,
-  FormLabel,
-  Input,
-  Box,
-  TableContainer,
-  IconButton,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { instance } from "../../modules/axios/index";
 
 const fetchDetail = async (id) => {
   try {
@@ -49,15 +25,10 @@ export default function Page({ suppliersId }) {
     };
     detailSuppliers();
   }, []);
-
   console.log(details);
-
   return (
     <>
-      <Box>
-    
-      <Text style={{ marginLeft: '600px' }}>aaaa {suppliersId}</Text>
-      </Box>
+      <h1 style={{ marginLeft: "600px" }}>aaaa {suppliersId}</h1>
     </>
   );
 }
@@ -65,4 +36,4 @@ export default function Page({ suppliersId }) {
 export const getServerSideProps = (ctx) => {
   const { id } = ctx.query;
   return { props: { suppliersId: id } };
-}
+};

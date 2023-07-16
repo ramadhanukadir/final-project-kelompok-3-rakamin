@@ -12,7 +12,7 @@ import {
 const Landing = () => {
   return (
     <>
-      {/* <Navbar /> */}
+      <Navbar />
       <Hero />
       <AccountingSystem />
       <TableLanding />

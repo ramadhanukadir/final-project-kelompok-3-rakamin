@@ -7,6 +7,8 @@ import {
   getWarehousesById,
 } from '@/api/fetch/orders';
 import { fetchUser } from '@/api/fetch/auth';
+import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/fetch/chart';
+import { getAllCategories, getAllWarehousesStock } from '@/api/fetch';
 
 const AllDataContext = createContext();
 
@@ -19,8 +21,13 @@ const AllDataContextProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [detailOrder, setDetailOrder] = useState({});
   const [itemsId, setItemsId] = useState(0);
   const [userLogin, setUserLogin] = useState({});
+  const [warehouseStock, setWarehouseStock] = useState([]);
+  const [orderData, setOrderData] = useState([]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
   let access = '';
 
@@ -28,20 +35,9 @@ const AllDataContextProvider = ({ children }) => {
     access = sessionStorage.getItem('token');
   }
 
-
   const fetchUserLogin = async () => {
     const data = await fetchUser();
     setUserLogin(data);
-  };
-
-  const fetchCustomers = async () => {
-    const { data } = await getAllCustomer();
-    setCustomers(data);
-  };
-
-  const fetchItems = async () => {
-    const { data } = await getAllItems(1, 'ASC', 'name');
-    setProducts(data);
   };
 
   const fetchWarehouse = async () => {
@@ -49,9 +45,24 @@ const AllDataContextProvider = ({ children }) => {
     setWarehouses(data);
   };
 
+  const fetchItems = async () => {
+    const { data } = await getAllItems(1, 'ASC', 'name');
+    setProducts(data);
+  };
+
+  const fetchCategories = async () => {
+    const { data } = await getAllCategories();
+    setCategories(data);
+  };
+
+  const fetchCustomers = async () => {
+    const { data } = await getAllCustomer();
+    setCustomers(data);
+  };
+
   const fetchWarehouseById = async (warehouseId) => {
-    const data = await getWarehousesById(warehouseId);
-    setWarehouseItems(data.stockItems);
+    const { stockItems } = await getWarehousesById(warehouseId);
+    setWarehouseItems(stockItems);
   };
 
   const fetchOrders = async () => {
@@ -59,19 +70,45 @@ const AllDataContextProvider = ({ children }) => {
     setOrders(data);
   };
 
+  const fetchWarehousStock = async () => {
+    const data = await getAllWarehousesStock();
+    setWarehouseStock(data);
+  };
+
+  const fetchOrderItems = async () => {
+    const data = await getAllOrdersItems();
+    setOrderData(data);
+  };
+  
+  const fetchExpenses = async () => {
+   const data = await getAllExpenses() 
+   setTotalExpenses(data.data.totalExpenses);
+  };
+
+  const fetchRevenue = async () => {
+    const data  = await getAllRevenue();
+    const revenueSum = data.reduce((sum, revenue) => sum + revenue.totalRevenue, 0);
+    setTotalRevenue(revenueSum);
+   };
+
   useEffect(() => {
     if (access !== null) {
       fetchCustomers(),
         fetchItems(),
         fetchWarehouse(),
         fetchOrders(),
-        fetchUserLogin();
+        fetchUserLogin(),
+        fetchCategories(),
+        fetchWarehousStock();
+        fetchOrderItems();
+        fetchExpenses();
+        fetchRevenue();
     }
 
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [access, warehouseId, itemsId]);
+  }, [warehouseId, itemsId]);
 
   return (
     <AllDataContext.Provider
@@ -79,26 +116,24 @@ const AllDataContextProvider = ({ children }) => {
         isLogin,
         setIsLogin,
         warehouses,
-        setWarehouses,
         warehouseId,
         setWarehouseId,
         warehouseItems,
-        setWarehouseItems,
+        warehouseStock,
         products,
-        setProducts,
         categories,
-        setCategories,
         customers,
-        setCustomers,
         orders,
-        setOrders,
+        detailOrder,
+        setDetailOrder,
         fetchOrders,
         itemsId,
         setItemsId,
         userLogin,
-        setUserLogin,
-        fetchUserLogin,
         access,
+        orderData,
+        totalExpenses,
+        totalRevenue
       }}
     >
       {children}

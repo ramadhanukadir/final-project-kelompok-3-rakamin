@@ -1,10 +1,10 @@
+import Categories from "@/component/dataComponent/Categories";
 import React from "react";
-import Customers from "@/component/dataComponent/Customers";
 
 const index = () => {
   return (
     <div>
-      <Customers />
+      <Categories />
     </div>
   );
 };
