@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { Warehouses, Items, Warehouses_Stock } = require('../models');
 const { mappingWarehouses, mappingItems, responseItemsId, responseWarehouseId } = require('../utils/response');
 
@@ -8,6 +9,7 @@ const getAllWarehouses = async (req, res) => {
       where: {
         users_id: id,
       },
+      order: [['createdAt', 'DESC']],
     });
 
     const response = mappingWarehouses(warehouses);
@@ -27,7 +29,7 @@ const searchWarehousesByName = async (req, res) => {
       where: {
         users_id: id,
         name: {
-          [Op.iLike]: `%${searchValue}%`, // Menggunakan Op.iLike untuk pencarian case-insensitive
+          [Op.iLike]: `%${searchValue}%`, // Gunakan Op.iLike untuk pencarian yang tidak case-sensitive
         },
       },
     });

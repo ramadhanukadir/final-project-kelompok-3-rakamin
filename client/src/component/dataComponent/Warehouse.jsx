@@ -37,7 +37,7 @@ import {
   AlertDialogCloseButton,
   useDisclosure,
 } from '@chakra-ui/react';
-import { getAllWarehouses, getWarehouseId, updateWarehouses } from '@/modules/fetch';
+import { getAllWarehouses, getWarehouseId } from '@/modules/fetch';
 import { SearchIcon, EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
 import { Center } from '@chakra-ui/react';
 import { FiPlus } from 'react-icons/fi';
@@ -54,6 +54,28 @@ export default function Warehouse() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
 
+  const [searchInput, setSearchInput] = useState('');
+  const [filteredWarehouses, setFilteredWarehouses] = useState([]);
+
+  const handleSearchInputChange = (event) => {
+    setSearchInput(event.target.value);
+  };
+
+  const filterWarehouses = () => {
+    if (searchInput.trim() === '') {
+      // If search input is empty, show all warehouses
+      setFilteredWarehouses(warehouses);
+    } else {
+      // Filter warehouses by checking if the warehouse name includes the search input
+      const filtered = warehouses.filter((warehouse) => warehouse.name.toLowerCase().includes(searchInput.trim().toLowerCase()));
+      setFilteredWarehouses(filtered);
+    }
+  };
+
+  useEffect(() => {
+    filterWarehouses();
+  }, [searchInput, warehouses]);
+
   const {
     register,
     handleSubmit,
@@ -67,11 +89,14 @@ export default function Warehouse() {
       const warehouse = await getWarehouseId(warehouseId);
       console.log(warehouse);
 
-      // Set data gudang yang akan diedit ke dalam state
-      setIsModalOpen(false);
-      setSelectedWarehouse(warehouse);
-      reset();
-      setIsEditModalOpen(true);
+      // Pastikan properti "city" ada dalam objek "warehouse"
+      if (warehouse.city) {
+        // Set data gudang yang akan diedit ke dalam state
+        setIsModalOpen(false);
+        setSelectedWarehouse(warehouse);
+        reset();
+        setIsEditModalOpen(true);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -140,6 +165,7 @@ export default function Warehouse() {
       setWarehouse(warehouses);
     };
     fetchWarehouse();
+
     if (selectedWarehouse) {
       setValue('name', selectedWarehouse.name);
       setValue('address', selectedWarehouse.address);
@@ -155,7 +181,6 @@ export default function Warehouse() {
       try {
         const response = await axios.get('https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB');
         setProvinces(response.data.data);
-        // console.log(response.data.data);
       } catch (error) {
         console.log(error);
       }
@@ -265,7 +290,7 @@ export default function Warehouse() {
 
   return (
     <Box>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'}>
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'} mt={10}>
         <Text fontWeight={'bold'} fontSize={'xl'}>
           Warehouses
         </Text>
@@ -281,9 +306,9 @@ export default function Warehouse() {
           <Box display={'row'} justifyContent={'start'} alignItems={'center'} gap={'10'} my={'5'}></Box>
           <Box display={'flex'} justifyContent={'end'} mb={2}>
             <InputGroup>
-              <Input placeholder="Masukkan kata kunci" value="Search value" onChange={''} px={'8'} />
+              <Input placeholder="Nama Gudang.." value={searchInput} onChange={handleSearchInputChange} px={'8'} />
               <InputRightElement width="auto">
-                <Button colorScheme="blue" onClick={''} leftIcon={<SearchIcon />}>
+                <Button colorScheme="blue" onClick={filterWarehouses} leftIcon={<SearchIcon />}>
                   Cari
                 </Button>
               </InputRightElement>
@@ -307,14 +332,13 @@ export default function Warehouse() {
                 </Tr>
               </Thead>
               <Tbody>
-                {warehouses.map((warehouse) => (
+                {filteredWarehouses.map((warehouse) => (
                   <Tr key={warehouse.id}>
                     <Td>{warehouse.name}</Td>
                     <Td style={{ width: '400px', whiteSpace: 'normal' }}>{warehouse.address}</Td>
                     <Td>{warehouse.province}</Td>
                     {/* <Td>{warehouse.city.split('-')[1]}</Td> */}
                     <Td>{warehouse.city}</Td>
-
                     <Td>{warehouse.postalCode}</Td>
                     <Td>{warehouse.telephone}</Td>
                     <Td>
@@ -448,11 +472,17 @@ export default function Warehouse() {
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Address</ChakraFormLabel>
-                <Textarea defaultValue={selectedWarehouse?.address || ''} {...register('address')} />
+                <Textarea {...register('address')} />
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))}>
+                <Select
+                  id="province"
+                  {...register('province', { required: true })}
+                  onChange={(e) => {
+                    fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'));
+                  }}
+                >
                   <option value="">-Select Province-</option>
                   {provinces.map((province) => (
                     <option key={province.id} value={province.name} data-id={province.id}>
