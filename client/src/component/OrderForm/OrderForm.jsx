@@ -47,12 +47,14 @@ function OrderForm() {
   const toast = useToast();
   const router = useRouter();
   const id = watch('warehouses_id');
+
   useEffect(() => {
     setWarehouseId(parseInt(id));
     if (access === null) {
       router.push('/login');
     }
   }, [id, itemsId]);
+
   const onSubmit = async (data) => {
     try {
       await postOrders(data);

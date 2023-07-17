@@ -2,11 +2,15 @@ const { Customers } = require('../models');
 
 const getAllCustomers = async (req, res) => {
   try {
+    const { id } = req.loggedUser;
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     const offset = (page - 1) * req.query.limit;
 
     const customers = await Customers.findAll({
+      where: {
+        users_id: id,
+      },
       attributes: { exclude: ['createdAt', 'updateAt'] },
       limit: req.query.limit,
       offset,
@@ -60,7 +64,8 @@ const createCustomers = async (req, res) => {
       address,
     });
 
-    if (!users_id || !full_name || !address) res.status(400).json({ message: 'Bad request' });
+    if (!users_id || !full_name || !address)
+      res.status(400).json({ message: 'Bad request' });
 
     return res.status(201).json({ data: customers });
   } catch (error) {
@@ -72,7 +77,10 @@ const updateCustomers = async (req, res) => {
   try {
     const { id } = req.loggedUser;
     const { full_name, address } = req.body;
-    await Customers.update({ users_id: id, full_name, address }, { where: { id: req.params.id } });
+    await Customers.update(
+      { users_id: id, full_name, address },
+      { where: { id: req.params.id } }
+    );
     res.status(200).json({ message: 'Successfully updated' });
   } catch (error) {
     res.status(500).json({ error: error.message });
