@@ -18,8 +18,8 @@ import {
 import { ArrowBackIcon } from "@chakra-ui/icons";
 
 export default function Page({ categoryId }) {
-  const router = useRouter();
   const [category, setCategory] = useState({});
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCategory = async () => {

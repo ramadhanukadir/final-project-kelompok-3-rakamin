@@ -41,6 +41,7 @@ import {
   FiSearch,
   FiUpload,
   FiPlus,
+  FiEdit,
   FiArrowLeft,
   FiArrowRight,
   FiCircle,
@@ -190,15 +191,17 @@ const Categories = () => {
 
                     <Td>
                       <Button
-                        colorScheme="blue"
+                        color="blue"
+                        bg={"transparent"}
                         onClick={() => handleEdit(item.id)}
                         size={"md"}>
-                        <FiPlus />
+                        <FiEdit />
                       </Button>
                     </Td>
                     <Td>
                       <Button
-                        colorScheme="red"
+                        color="red"
+                        bg={"transparent"}
                         onClick={() => handleDeleteItems(item.id)}
                         size={"md"}>
                         <FiDelete />

@@ -36,7 +36,7 @@ import { FiPlus, FiDelete, FiEdit, FiMove } from "react-icons/fi";
 import { instance } from "../../modules/axios/index";
 import { useRouter } from "next/router";
 import { useFieldArray, useForm, watch } from "react-hook-form";
-import { fetchData } from "@/api/fetch/supplier";
+import { fetchData } from "@/api/fetch/suppliers";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);

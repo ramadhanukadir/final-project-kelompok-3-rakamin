@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from "react";
 import {
   getAllCustomer,
   getAllItems,
@@ -29,10 +29,10 @@ const AllDataContextProvider = ({ children }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
 
-  let access = '';
+  let access = "";
 
-  if (typeof window !== 'undefined') {
-    access = sessionStorage.getItem('token');
+  if (typeof window !== "undefined") {
+    access = sessionStorage.getItem("token");
   }
 
   const fetchUserLogin = async () => {
@@ -46,7 +46,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchItems = async () => {
-    const { data } = await getAllItems(1, 'ASC', 'name');
+    const { data } = await getAllItems(1, "ASC", "name");
     setProducts(data);
   };
 
@@ -70,7 +70,7 @@ const AllDataContextProvider = ({ children }) => {
     setOrders(data);
   };
 
-  const fetchWarehousStock = async () => {
+  const fetchWarehousesStock = async () => {
     const data = await getAllWarehousesStock();
     setWarehouseStock(data);
   };
@@ -135,7 +135,6 @@ const AllDataContextProvider = ({ children }) => {
         totalExpenses,
         totalRevenue
       }}
-    >
       {children}
     </AllDataContext.Provider>
   );
