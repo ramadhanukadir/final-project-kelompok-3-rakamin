@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from 'react';
 import {
   getAllCustomer,
   getAllItems,
@@ -7,8 +7,13 @@ import {
   getWarehousesById,
 } from '@/api/fetch/orders';
 import { fetchUser } from '@/api/fetch/auth';
-import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/fetch/chart';
-import { getAllCategories, getAllWarehousesStock } from '@/api/fetch';
+import {
+  getAllExpenses,
+  getAllOrdersItems,
+  getAllRevenue,
+} from '@/api/fetch/chart';
+import { getAllCategories } from '@/api/fetch/category';
+import { getAllWarehousesStock } from '@/api/fetch/warehouses';
 
 const AllDataContext = createContext();
 
@@ -28,11 +33,12 @@ const AllDataContextProvider = ({ children }) => {
   const [orderData, setOrderData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [activeItem, setActiveItem] = useState('dashboard');
 
-  let access = "";
+  let access = '';
 
-  if (typeof window !== "undefined") {
-    access = sessionStorage.getItem("token");
+  if (typeof window !== 'undefined') {
+    access = sessionStorage.getItem('token');
   }
 
   const fetchUserLogin = async () => {
@@ -46,7 +52,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchItems = async () => {
-    const { data } = await getAllItems(1, "ASC", "name");
+    const { data } = await getAllItems(1, 'ASC', 'name');
     setProducts(data);
   };
 
@@ -79,17 +85,20 @@ const AllDataContextProvider = ({ children }) => {
     const data = await getAllOrdersItems();
     setOrderData(data);
   };
-  
+
   const fetchExpenses = async () => {
-   const data = await getAllExpenses() 
-   setTotalExpenses(data.data.totalExpenses);
+    const data = await getAllExpenses();
+    setTotalExpenses(data.data.totalExpenses);
   };
 
   const fetchRevenue = async () => {
-    const data  = await getAllRevenue();
-    const revenueSum = data.reduce((sum, revenue) => sum + revenue.totalRevenue, 0);
+    const data = await getAllRevenue();
+    const revenueSum = data.reduce(
+      (sum, revenue) => sum + revenue.totalRevenue,
+      0
+    );
     setTotalRevenue(revenueSum);
-   };
+  };
 
   useEffect(() => {
     if (access !== null) {
@@ -99,16 +108,16 @@ const AllDataContextProvider = ({ children }) => {
         fetchOrders(),
         fetchUserLogin(),
         fetchCategories(),
-        fetchWarehousStock();
-        fetchOrderItems();
-        fetchExpenses();
-        fetchRevenue();
+        fetchWarehousesStock();
+      fetchOrderItems();
+      fetchExpenses();
+      fetchRevenue();
     }
 
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [warehouseId, itemsId]);
+  }, [access, warehouseId, itemsId]);
 
   return (
     <AllDataContext.Provider
@@ -133,8 +142,12 @@ const AllDataContextProvider = ({ children }) => {
         access,
         orderData,
         totalExpenses,
-        totalRevenue
+        totalRevenue,
+        activeItem,
+        setActiveItem,
+        fetchUserLogin,
       }}
+    >
       {children}
     </AllDataContext.Provider>
   );
