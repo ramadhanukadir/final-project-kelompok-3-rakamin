@@ -5,11 +5,11 @@ import {
   getAllOrders,
   getAllWarehouses,
   getWarehousesById,
-} from "@/api/fetch/orders";
-import { fetchUser } from "@/api/fetch/auth";
-//import { getAllCategories, getAllWarehousesStock } from "@/api/fetch";
-import { getAllCategories } from "@/api/fetch/category";
-import { getAllWarehousesStock } from "@/api/fetch/warehouses";
+} from '@/api/fetch/orders';
+import { fetchUser } from '@/api/fetch/auth';
+import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/fetch/chart';
+import { getAllCategories, getAllWarehousesStock } from '@/api/fetch';
+
 const AllDataContext = createContext();
 
 const AllDataContextProvider = ({ children }) => {
@@ -25,6 +25,9 @@ const AllDataContextProvider = ({ children }) => {
   const [itemsId, setItemsId] = useState(0);
   const [userLogin, setUserLogin] = useState({});
   const [warehouseStock, setWarehouseStock] = useState([]);
+  const [orderData, setOrderData] = useState([]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
   let access = "";
 
@@ -72,6 +75,22 @@ const AllDataContextProvider = ({ children }) => {
     setWarehouseStock(data);
   };
 
+  const fetchOrderItems = async () => {
+    const data = await getAllOrdersItems();
+    setOrderData(data);
+  };
+  
+  const fetchExpenses = async () => {
+   const data = await getAllExpenses() 
+   setTotalExpenses(data.data.totalExpenses);
+  };
+
+  const fetchRevenue = async () => {
+    const data  = await getAllRevenue();
+    const revenueSum = data.reduce((sum, revenue) => sum + revenue.totalRevenue, 0);
+    setTotalRevenue(revenueSum);
+   };
+
   useEffect(() => {
     if (access !== null) {
       fetchCustomers(),
@@ -80,7 +99,10 @@ const AllDataContextProvider = ({ children }) => {
         fetchOrders(),
         fetchUserLogin(),
         fetchCategories(),
-        fetchWarehousesStock();
+        fetchWarehousStock();
+        fetchOrderItems();
+        fetchExpenses();
+        fetchRevenue();
     }
 
     if (warehouseId > 0) {
@@ -109,7 +131,10 @@ const AllDataContextProvider = ({ children }) => {
         setItemsId,
         userLogin,
         access,
-      }}>
+        orderData,
+        totalExpenses,
+        totalRevenue
+      }}
       {children}
     </AllDataContext.Provider>
   );

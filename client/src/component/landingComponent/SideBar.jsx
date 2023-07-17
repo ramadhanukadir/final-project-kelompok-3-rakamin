@@ -50,6 +50,7 @@ const SideBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const { userLogin, setIsLogin } = useContext(DataContext);
+  console.log('name', userLogin);
 
   const handleLogout = () => {
     sessionStorage.clear();

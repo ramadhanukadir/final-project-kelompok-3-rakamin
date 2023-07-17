@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Flex,
   Heading,
@@ -35,19 +35,20 @@ import {
 } from "react-icons/fi";
 import MyChart from "../component/dataComponent/chart/LineChart";
 import ExpensesChart from "@/component/dataComponent/chart/expenses";
+import { DataContext } from "@/context/AllDataContext";
+import { formatter } from "@/modules/formatter";
 
 export default function Dashboard() {
   const [display, changeDisplay] = useState("hide");
+  const {userLogin} = useContext(DataContext);
+
+  const {orderData} = useContext(DataContext);
+
+
 
   return (
-    <Flex flexDir={["column", "column", "row"]} overflow="hidden">
-      {/* Column 1 */}
-      <Flex
-        w={["100%", "100%", "10%", "15%", "15%"]}
-        flexDir="column"
-        alignItems="center"></Flex>
-
-      {/* Column 2 */}
+    <Flex flexDir={["row", "row", "row"]} overflow="hidden" marginTop={50}>
+      
       <Flex
         w={["100%", "100%", "60%", "60%", "55%"]}
         p="3%"
@@ -57,15 +58,11 @@ export default function Dashboard() {
         <Heading fontWeight="normal" mb={4} letterSpacing="tight">
           Welcome back,{" "}
           <Flex display="inline-flex" fontWeight="bold">
-            Calvin
+            {userLogin.first_name}
           </Flex>
         </Heading>
-        <Text color="gray" fontSize="sm">
-          My Balance
-        </Text>
-        <Text fontWeight="bold" fontSize="2xl">
-          $5,750.20
-        </Text>
+      
+    
         <MyChart />
         <Flex justifyContent="space-between" mt={8}>
           <Flex align="flex-end">
@@ -76,7 +73,7 @@ export default function Dashboard() {
               Apr 2021
             </Text>
           </Flex>
-          <IconButton icon={<FiCalendar />} />
+         
         </Flex>
         <Flex flexDir="column">
           <Flex overflow="auto">
@@ -84,155 +81,52 @@ export default function Dashboard() {
               <Thead>
                 <Tr color="gray">
                   <Th>Name of transaction</Th>
-                  <Th>Category</Th>
-                  <Th isNumeric>Cashback</Th>
-                  <Th isNumeric>Amount</Th>
+                  <Th>Quantity</Th>
+                  <Th isNumeric>Price</Th>
+                  <Th isNumeric>Total Price</Th>
                 </Tr>
               </Thead>
-              <Tbody>
-                <Tr>
-                  <Td>
-                    <Flex align="center">
-                      <Avatar size="sm" mr={2} src="amazon.jpeg" />
-                      <Flex flexDir="column">
-                        <Heading size="sm" letterSpacing="tight">
-                          Amazon
-                        </Heading>
-                        <Text fontSize="sm" color="gray">
-                          Apr 24, 2021 at 1:40pm
-                        </Text>
-                      </Flex>
-                    </Flex>
-                  </Td>
-                  <Td>Electronic Devices</Td>
-                  <Td isNumeric>+$2</Td>
-                  <Td isNumeric>
-                    <Text fontWeight="bold" display="inline-table">
-                      -$242
-                    </Text>
-                    .00
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td>
-                    <Flex align="center">
-                      <Avatar size="sm" mr={2} src="starbucks.png" />
-                      <Flex flexDir="column">
-                        <Heading size="sm" letterSpacing="tight">
-                          Starbucks
-                        </Heading>
-                        <Text fontSize="sm" color="gray">
-                          Apr 22, 2021 at 2:43pm
-                        </Text>
-                      </Flex>
-                    </Flex>
-                  </Td>
-                  <Td>Cafe and restaurant</Td>
-                  <Td isNumeric>+$23</Td>
-                  <Td isNumeric>
-                    <Text fontWeight="bold" display="inline-table">
-                      -$32
-                    </Text>
-                    .00
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td>
-                    <Flex align="center">
-                      <Avatar size="sm" mr={2} src="youtube.png" />
-                      <Flex flexDir="column">
-                        <Heading size="sm" letterSpacing="tight">
-                          YouTube
-                        </Heading>
-                        <Text fontSize="sm" color="gray">
-                          Apr 13, 2021 at 11:23am
-                        </Text>
-                      </Flex>
-                    </Flex>
-                  </Td>
-                  <Td>Social Media</Td>
-                  <Td isNumeric>+$4</Td>
-                  <Td isNumeric>
-                    <Text fontWeight="bold" display="inline-table">
-                      -$112
-                    </Text>
-                    .00
-                  </Td>
-                </Tr>
-                {display == "show" && (
+              
+               <Tbody>
+                {orderData.map((order) => (
+                <>
+                   {display == "show" && (
+                    
                   <>
-                    <Tr>
-                      <Td>
-                        <Flex align="center">
-                          <Avatar size="sm" mr={2} src="amazon.jpeg" />
-                          <Flex flexDir="column">
-                            <Heading size="sm" letterSpacing="tight">
-                              Amazon
-                            </Heading>
-                            <Text fontSize="sm" color="gray">
-                              Apr 12, 2021 at 9:40pm
-                            </Text>
-                          </Flex>
-                        </Flex>
-                      </Td>
-                      <Td>Electronic Devices</Td>
-                      <Td isNumeric>+$2</Td>
-                      <Td isNumeric>
-                        <Text fontWeight="bold" display="inline-table">
-                          -$242
+                <Tr key={order.orders_id}>
+                  <Td>
+                    <Flex align="center">
+                      <Avatar size="sm" mr={2} src={order.Item.image_url} />
+                      <Flex flexDir="column">
+                        <Heading size="sm" letterSpacing="tight">
+                          {order.Item.name}
+                        </Heading>
+                        <Text fontSize="sm" color="gray">
+                        {new Date(order.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Jakarta' })}
                         </Text>
-                        .00
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex align="center">
-                          <Avatar size="sm" mr={2} src="starbucks.png" />
-                          <Flex flexDir="column">
-                            <Heading size="sm" letterSpacing="tight">
-                              Starbucks
-                            </Heading>
-                            <Text fontSize="sm" color="gray">
-                              Apr 10, 2021 at 2:10pm
-                            </Text>
-                          </Flex>
-                        </Flex>
-                      </Td>
-                      <Td>Cafe and restaurant</Td>
-                      <Td isNumeric>+$23</Td>
-                      <Td isNumeric>
-                        <Text fontWeight="bold" display="inline-table">
-                          -$32
-                        </Text>
-                        .00
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex align="center">
-                          <Avatar size="sm" mr={2} src="youtube.png" />
-                          <Flex flexDir="column">
-                            <Heading size="sm" letterSpacing="tight">
-                              YouTube
-                            </Heading>
-                            <Text fontSize="sm" color="gray">
-                              Apr 7, 2021 at 9:03am
-                            </Text>
-                          </Flex>
-                        </Flex>
-                      </Td>
-                      <Td>Social Media</Td>
-                      <Td isNumeric>+$4</Td>
-                      <Td isNumeric>
-                        <Text fontWeight="bold" display="inline-table">
-                          -$112
-                        </Text>
-                        .00
-                      </Td>
-                    </Tr>
+                      </Flex>
+                    </Flex>
+                  </Td>
+                  <Td>{order.quantity}</Td>
+                  <Td isNumeric>                    
+                  <Text fontWeight="bold" display="inline-table">
+                     IDR
+                    </Text>{formatter.format(order.Item.selling_price)}</Td>
+                  <Td isNumeric>
+                    <Text fontWeight="bold" display="inline-table">
+                     IDR
+                    </Text>
+                     {formatter.format(order.total_price)}
+                    
+                  </Td>
+                </Tr>       
                   </>
-                )}
-              </Tbody>
+                  )}
+              </>
+                  ))}
+              </Tbody> 
+
+
             </Table>
           </Flex>
           <Flex align="center">
@@ -258,12 +152,16 @@ export default function Dashboard() {
         bgColor="#F5F5F5"
         p="3%"
         flexDir="column"
-        overflow="auto"
-        minW={[null, null, "300px", "300px", "400px"]}>
-        <Flex alignContent="center"></Flex>
+        // overflow="auto"
+        minW={[null, null, "100px", "100px", "100px"]}>
+        
         <Heading letterSpacing="tight">Orders</Heading>
         <ExpensesChart />
+      
       </Flex>
+
+     
+      
     </Flex>
   );
 }

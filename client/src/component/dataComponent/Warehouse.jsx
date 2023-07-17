@@ -318,9 +318,9 @@ export default function Warehouse() {
                     <Td>{warehouse.postalCode}</Td>
                     <Td>{warehouse.telephone}</Td>
                     <Td>
-                      <Button colorScheme="yellow" onClick={() => handleDeleteItems(warehouse.id)} size={'sm'} ml={2} variant="outline">
+                      {/* <Button colorScheme="yellow" onClick={() => handleDeleteItems(warehouse.id)} size={'sm'} ml={2} variant="outline">
                         <ViewIcon />
-                      </Button>
+                      </Button> */}
                       <Button colorScheme="blue" onClick={() => handleEditWarehouse(warehouse.id)} size={'sm'} ml={2} variant="outline">
                         <EditIcon />
                       </Button>
