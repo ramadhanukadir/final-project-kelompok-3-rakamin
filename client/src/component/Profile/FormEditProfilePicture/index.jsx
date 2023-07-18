@@ -1,5 +1,6 @@
 import { updateUserLogin } from '@/api/fetch/auth';
 import InputField from '@/component/InputField/InputField';
+import { DataContext } from '@/context/AllDataContext';
 import {
   Button,
   Modal,
@@ -10,26 +11,42 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-function FormEditProfilePicture({ userLogin }) {
+function FormEditProfilePicture() {
+  const { fetchUserLogin } = useContext(DataContext);
   const {
     handleSubmit,
     formState: { errors, isSubmitting },
     control,
   } = useForm();
 
+  const toast = useToast();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
-      // await updateUserLogin(data);
-      alert('SUCCESS');
+      const formData = new FormData();
+      formData.append('image_url', data.image_url);
+      await updateUserLogin(formData);
+      toast({
+        title: 'Successfully Update Profile Picture',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      fetchUserLogin();
     } catch (error) {
-      alert(error.message);
+      toast({
+        title: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -51,13 +68,14 @@ function FormEditProfilePicture({ userLogin }) {
                   return (
                     <InputField
                       {...field}
+                      label={'Picture'}
                       value={value?.fileName}
                       onChange={(event) => {
                         onChange(event.target.files[0]);
                       }}
                       type='file'
                       id='picture'
-                      errors={errors.image}
+                      errors={errors.image_url}
                     />
                   );
                 }}
