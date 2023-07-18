@@ -1,4 +1,4 @@
-import { instance } from './../../../modules/axios';
+import { instance } from '@/modules/axios';
 
 export const handleLogin = async (payload) => {
   try {

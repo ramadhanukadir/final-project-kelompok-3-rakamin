@@ -1,12 +1,11 @@
-import { instance } from "./../../../modules/axios";
+import { instance } from '@/modules/axios';
 
-export const getCustomers = async () => {
+export const getAllCustomer = async () => {
   try {
-    const response = await instance.get("customer");
-    const { data } = response.data;
-    return data;
+    const { data } = await instance.get('/customer?page=1&limit=5');
+    return data.dataCustomers;
   } catch (error) {
-    console.error("Gagal mengambil data:", error);
+    throw new Error(error.response.data.message);
   }
 };
 
@@ -15,7 +14,7 @@ export const getCustomersById = async (id) => {
     const { data } = await instance.get(`/customer/${id}`);
     return data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 };
 
@@ -24,7 +23,7 @@ export const editCustomersById = async (id) => {
     const { data } = await instance.put(`/customer/${id}`);
     return data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 };
 
@@ -33,6 +32,6 @@ export const deleteCustomersById = async (id) => {
     const { data } = await instance.delete(`/customer/${id}`);
     return data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Something went Wrong");
+    throw new Error(error.response.data.message || 'Something went Wrong');
   }
 };
