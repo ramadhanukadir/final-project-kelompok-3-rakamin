@@ -8,3 +8,12 @@ export const getAllWarehousesStock = async () => {
     throw new Error(error.response.data.message);
   }
 };
+
+export const getIdWarehousesStock = async ({ id }) => {
+  try {
+    const { data } = await instance.get(`/warehouses-stock/${id}`);
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};

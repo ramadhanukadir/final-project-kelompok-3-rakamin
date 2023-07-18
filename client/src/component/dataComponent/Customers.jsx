@@ -58,9 +58,8 @@ const Customers = () => {
 
   const fetchData = async () => {
     try {
-      const response = await instance.get("/customer?page=1&limit=5");
-      const { dataCustomers } = response.data;
-      setCustomers(dataCustomers);
+      const { data } = await instance.get("/customer?page=1&limit=5");
+      setCustomers(data);
     } catch (error) {
       console.error("Gagal mengambil data:", error);
     }
@@ -68,6 +67,7 @@ const Customers = () => {
   console.log(customers);
 
   useEffect(() => {
+    fetchData();
     if (detailItems) {
       setValue("users_id", detailItems.users_id);
       setValue("full_name", detailItems.full_name);
@@ -150,7 +150,7 @@ const Customers = () => {
           <Text fontWeight={"bold"} fontSize={"xl"}>
             Customers
           </Text>
-          <InputCustomers />
+          <InputCustomers fetchData={fetchData} />
         </Box>
         <Box>
           <TableContainer>
@@ -165,7 +165,7 @@ const Customers = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {customers?.map((customer) => (
+                {customers?.dataCustomers?.map((customer) => (
                   <Tr key={customer.id}>
                     <Td
                       onClick={() => router.push(`/customers/${customer.id}`)}>
@@ -178,10 +178,16 @@ const Customers = () => {
                     <Td>
                       <IconButton
                         icon={<FiEdit />}
+                        colorScheme={"blue"}
+                        variant={"outline"}
+                        ml={2}
                         onClick={() => handleEdit(customer.id)}
                       />
                       <IconButton
                         icon={<FiDelete />}
+                        colorScheme={"red"}
+                        variant={"outline"}
+                        ml={2}
                         onClick={() => handleDelete(customer.id)}
                       />
                     </Td>
@@ -250,7 +256,7 @@ const Customers = () => {
   );
 };
 
-export const InputCustomers = () => {
+export const InputCustomers = ({ fetchData }) => {
   const {
     register,
     handleSubmit,
@@ -263,21 +269,24 @@ export const InputCustomers = () => {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post("/customer", data);
-      handleCloseModal(),
+      await instance.post(
+        `/customer`,
+        data,
+        handleCloseModal(),
         toast({
           title: "Created Product",
           description: "You have successfully Created Product.",
           status: "success",
           duration: 3000,
           isClosable: true,
-        });
-      fetchData();
+        })
+      );
       reset();
+      fetchData();
     } catch (error) {
       toast({
         title: "Failed to create product.",
-        description: err.message,
+        description: error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -336,7 +345,7 @@ export const InputCustomers = () => {
                     id="address"
                     {...register("address", { required: true })}
                   />
-                  <FormErrorMessage>Description Harus Di isi</FormErrorMessage>
+                  <FormErrorMessage>Address Harus Di isi</FormErrorMessage>
                 </FormControl>
 
                 <Button type="submit" size={"md"} colorScheme="blue" mr={3}>

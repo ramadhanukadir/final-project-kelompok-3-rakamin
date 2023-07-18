@@ -14,6 +14,7 @@ import {
   Heading,
   Grid,
   useColorModeValue,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 
@@ -21,6 +22,7 @@ export default function Page({ supplierId }) {
   const [supplier, setSupplier] = useState({});
   const [supplierItems, setSupplierItems] = useState([]);
   const router = useRouter();
+  const columns = useBreakpointValue({ base: 1, md: 3 });
 
   useEffect(() => {
     const fetchSupplier = async () => {
@@ -104,7 +106,7 @@ export default function Page({ supplierId }) {
           <Flex direction={"column"}></Flex>
           <VStack mt={6}>
             <Text fontSize="md" fontWeight="bold">
-              Detail Order
+              Detail Supplier
             </Text>
             <Flex
               alignSelf={"flex-start"}
@@ -121,11 +123,15 @@ export default function Page({ supplierId }) {
                   w={"100%"}>
                   <Flex flexDirection={"row"} gap={4}>
                     <Box>
-                      <Grid templateColumns="repeat(4, 1fr)" gap={4} w={"100%"}>
+                      <Grid
+                        templateColumns={`repeat(${columns}, 1fr)`}
+                        gap={4}
+                        w={"100%"}
+                        justifyContent={"center"}>
                         {filteredItems?.map((item) => (
                           <Box
                             role={"group"}
-                            p={6}
+                            p={5}
                             maxW={"330px"}
                             w={"full"}
                             bg={useColorModeValue("white", "gray.900")}
@@ -136,7 +142,7 @@ export default function Page({ supplierId }) {
                             key={item.Item.id}>
                             <Box
                               rounded={"lg"}
-                              mt={-12}
+                              mt={15}
                               height={"230px"}
                               pos={"relative"}
                               _after={{
@@ -159,7 +165,7 @@ export default function Page({ supplierId }) {
                               <Image
                                 rounded={"lg"}
                                 height={230}
-                                width={282}
+                                width={250}
                                 src={item.Item.image_url}
                                 objectFit={"cover"}
                               />

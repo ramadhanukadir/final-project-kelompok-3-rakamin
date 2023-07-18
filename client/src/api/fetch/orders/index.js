@@ -8,6 +8,14 @@ export const getAllCustomer = async () => {
     throw new Error(error.response.data.message);
   }
 };
+export const getAllSuppliers = async () => {
+  try {
+    const data = await instance.get("/suppliers?page=1&limit=1");
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
 
 export const getAllItems = async (page, sort, order, q = "") => {
   try {

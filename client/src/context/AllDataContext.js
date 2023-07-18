@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import {
   getAllCustomer,
+  getAllSuppliers,
   getAllItems,
   getAllOrders,
   getAllWarehouses,
@@ -20,6 +21,7 @@ const AllDataContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [detailOrder, setDetailOrder] = useState({});
   const [itemsId, setItemsId] = useState(0);
@@ -57,6 +59,11 @@ const AllDataContextProvider = ({ children }) => {
     setCustomers(data);
   };
 
+  const fetchSuppliers = async () => {
+    const { data } = await getAllSuppliers();
+    setSuppliers(data);
+  };
+
   const fetchWarehouseById = async (warehouseId) => {
     const { stockItems } = await getWarehousesById(warehouseId);
     setWarehouseItems(stockItems);
@@ -75,6 +82,7 @@ const AllDataContextProvider = ({ children }) => {
   useEffect(() => {
     if (access !== null) {
       fetchCustomers(),
+        fetchSuppliers(),
         fetchItems(),
         fetchWarehouse(),
         fetchOrders(),
@@ -101,6 +109,7 @@ const AllDataContextProvider = ({ children }) => {
         products,
         categories,
         customers,
+        suppliers,
         orders,
         detailOrder,
         setDetailOrder,

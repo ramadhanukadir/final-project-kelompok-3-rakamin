@@ -32,6 +32,8 @@ import {
   InputGroup,
   InputRightElement,
   Icon,
+  PageSelect,
+  Flex,
 } from "@chakra-ui/react";
 import {
   getAllItems,
@@ -120,14 +122,6 @@ const Product = () => {
     return categoryName?.name;
   };
 
-  // useEffect(() => {
-  //   const warehouseName = () => {
-  //     const data = warehouseStock.filter((item) => item.items_id === 1);
-  //     setWarehouse(data);
-  //   };
-  //   warehouseName();
-  // }, []);
-
   const handleDeleteItems = async (id) => {
     try {
       await deleteItems(id);
@@ -204,122 +198,14 @@ const Product = () => {
           <MoveStock warehouseStock={warehouseStock} />
         </Box>
       </Box>
-      {/* <Box>
-        <Box>
-          <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} mx={'2'}>
-            <Text fontWeight={'bold'} fontSize={'xl'}>
-              Summary
-            </Text>
-            <Text fontWeight={'bold'} color={'#1363DE'}>
-              Product Categories
-            </Text>
-          </Box>
-        </Box>
-        <Box display={'flex'} flexDirection={'center'} justifyContent={'center'} gap={'5'}>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
-            <WarningIcon fontSize={30} />
-            <Box direction={'column'} px={'2'} py={'3'}>
-              <Text fontWeight={'bold'} fontSize={'2xl'}>
-                28 Types
-              </Text>
-              <Text fontWeight={'normal'} fontSize={'xl'}>
-                Available Stock
-              </Text>
-            </Box>
-          </Box>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
-            <WarningIcon fontSize={30} />
-            <Box direction={'column'} px={'2'} py={'3'}>
-              <Text fontWeight={'bold'} fontSize={'2xl'}>
-                28 Types
-              </Text>
-              <Text fontWeight={'normal'} fontSize={'xl'}>
-                Available Stock
-              </Text>
-            </Box>
-          </Box>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
-            <WarningIcon fontSize={30} />
-            <Box direction={'column'} px={'2'} py={'3'}>
-              <Text fontWeight={'bold'} fontSize={'2xl'}>
-                28 Types
-              </Text>
-              <Text fontWeight={'normal'} fontSize={'xl'}>
-                Available Stock
-              </Text>
-            </Box>
-          </Box>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
-            <WarningIcon fontSize={30} />
-            <Box direction={'column'} px={'2'} py={'3'}>
-              <Text fontWeight={'bold'} fontSize={'2xl'}>
-                28 Types
-              </Text>
-              <Text fontWeight={'normal'} fontSize={'xl'}>
-                Available Stock
-              </Text>
-            </Box>
-          </Box>
-        </Box>
-      </Box> */}
       <Box>
         <Box
           display={"flex"}
           flexDirection={"row"}
           alignItems={"center"}
           justifyContent={"space-between"}>
-          {/* <Box
-            display={'row'}
-            justifyContent={'start'}
-            alignItems={'center'}
-            gap={'10'}
-            my={'5'}
-          >
-            <Button
-              px={8}
-              bg={'#DFF6FE'}
-              color={'black'}
-              rounded={'md'}
-              _active={{ bg: '#1363DE' }}
-            >
-              Goods & Services
-            </Button>
-            <Button
-              px={8}
-              bg={'#1363DE'}
-              color={'white'}
-              rounded={'md'}
-              _active={{ bg: '#DFF6FE' }}
-            >
-              Stock Adjustment
-            </Button>
-            <Button
-              px={8}
-              bg={'#DFF6FE'}
-              color={'black'}
-              rounded={'md'}
-              _active={{ bg: '#1363DE' }}
-            >
-              Need Approval
-            </Button>
-          </Box> */}
-          <Box display={"flex"} justifyContent={"end"}>
-            <InputGroup>
-              <Input
-                placeholder="Masukkan kata kunci"
-                value="Search value"
-                onChange={""}
-                px={"8"}
-              />
-              <InputRightElement width="auto">
-                <Button
-                  colorScheme="blue"
-                  onClick={""}
-                  leftIcon={<SearchIcon />}>
-                  Cari
-                </Button>
-              </InputRightElement>
-            </InputGroup>
+          <Box display={"flex"} justifyContent={"start"} my={10}>
+            <FilterForm product={product} />
           </Box>
         </Box>
 
@@ -506,9 +392,6 @@ const Product = () => {
                             id="image_url"
                             {...register("image_url")}
                           />
-                          {/* <FormErrorMessage>
-                            Gambar harus diunggah.
-                          </FormErrorMessage> */}
                         </FormControl>
                         <Button
                           type="submit"
@@ -627,17 +510,7 @@ export const AddProductForm = ({ fetchProduct }) => {
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
-                {/* <FormControl isInvalid={errors.categories_id} mb={4}>
-                  <FormLabel htmlFor='categories_id'>Categories id:</FormLabel>
-                  <Input
-                    type='number'
-                    id='categories_id'
-                    {...register('categories_id', { required: true })}
-                  />
-                  <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                </FormControl> */}
                 <SelectField
-                  // keyProp={1}
                   name={"categories"}
                   label={"Categories"}
                   register={register("categories_id", {
@@ -777,13 +650,6 @@ export const AddStockForm = ({ fetchProduct }) => {
     const selectedValue = event.target.value;
     setValue("category", selectedValue);
   };
-
-  // React.useEffect(() => {
-  //   setValue('items_id', 1);
-  //   setValue('warehouses_id', 1);
-  //   setValue('suppliers_id', 1);
-  //   setValue('stock', 1);
-  // }, [setValue]);
 
   const onSubmit = async (data) => {
     const jsonData = JSON.stringify(data);
@@ -930,7 +796,7 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
   } = useForm();
   const [items, setItems] = useState([]);
   const [warehouse, setWarehouse] = useState([]);
-  // const { warehouseStock } = useContext(DataContext);
+
   const [warehouseId, setWarehouseId] = useState(0);
   const [itemsId, setItemsId] = useState(0);
   const toast = useToast();
@@ -1103,6 +969,168 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
 
                 <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
                   Tambah product
+                </Button>
+                <Button size={"md"} onClick={handleCloseModal}>
+                  Cancel
+                </Button>
+              </form>
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Box>
+  );
+};
+
+export const FilterForm = ({ product }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [sku, setSku] = useState(0);
+  const [itemsId, setItemsId] = useState(0);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+    watch,
+  } = useForm();
+
+  console.log("INI PRODUCT", product);
+
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  };
+
+  const handleChange = (event) => {
+    const selectedValue = event.target.value;
+    setValue("category", selectedValue);
+  };
+
+  // function handleSubmit(e) {
+  //   e.preventDefault();
+  //   setFilters(updatedFilters);
+  //   handleApplyFilters();
+  //   handleCloseModal();
+  // }
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await instance.post(
+        "/warehouses-stock/move-items",
+        data,
+        handleCloseModal(),
+        toast({
+          title: "Created Product",
+          description: "You have successfully Created Product.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      );
+      if (response.status === 200) {
+        console.log("Produk berhasil ditambahkan!");
+        reset();
+      }
+      fetchProduct();
+    } catch (error) {
+      console.error("Terjadi kesalahan saat mengirim permintaan:", error);
+      toast({
+        title: "Failed to create product.",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  return (
+    <Box>
+      <Button
+        size="sm"
+        bgColor={""}
+        leftIcon={<FiSearch />}
+        onClick={handleOpenModal}>
+        Search Stock
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={handleCloseModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader textAlign="center" fontSize="sm">
+            Search
+          </ModalHeader>
+          <ModalCloseButton />
+
+          <ModalBody>
+            <VStack>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                {/* Mapping over products */}
+                <FormControl mb={4} isInvalid={errors.items_id}>
+                  <FormLabel>Select Product To move</FormLabel>
+                  <Select
+                    size="sm"
+                    variant="filled"
+                    name="Items Id"
+                    onChange={handleChange}
+                    {...register("items_id", { required: true })}>
+                    <option value="" selected disabled>
+                      Select Items
+                    </option>
+                    {product.map((product) => {
+                      return (
+                        <option
+                          onClick={() => setItemsId(product.id)}
+                          key={product.id}
+                          value={product.id}>
+                          {product.name}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                  <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
+                </FormControl>
+                <FormControl mb={4} isInvalid={errors.items_id}>
+                  <FormLabel>Select Source Warehouse</FormLabel>
+                  <Select
+                    size="sm"
+                    variant="filled"
+                    name="Items Id"
+                    onChange={handleChange}
+                    {...register("source_warehouse_id", { required: true })}>
+                    <option value="" selected disabled>
+                      {" "}
+                      Select Source SKU{" "}
+                    </option>
+                    {product.map((product) => {
+                      return (
+                        <option
+                          onClick={() => setItemsId(product.id)}
+                          key={product.id}
+                          value={product.id}>
+                          {product.SKU}
+                        </option>
+                      );
+                    })}
+                    {/* {product
+                      ?.filter((ws) => ws.itemsId === itemsId)
+                      .map((product) => (
+                        <option
+                          key={product.id}
+                          value={product.sku}
+                          onClick={() => setSku(product.id)}>
+                          {`${product.SKU}`}
+                        </option>
+                      ))} */}
+                  </Select>
+                  <FormErrorMessage>This is required</FormErrorMessage>
+                </FormControl>
+                <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
+                  Cari product
                 </Button>
                 <Button size={"md"} onClick={handleCloseModal}>
                   Cancel
