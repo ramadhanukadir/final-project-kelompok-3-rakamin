@@ -1,4 +1,4 @@
-import { updateUserLogin } from '@/api/fetch/auth';
+import { updateUserLogin } from '@/api/auth';
 import InputField from '@/component/InputField/InputField';
 import { DataContext } from '@/context/AllDataContext';
 import {
