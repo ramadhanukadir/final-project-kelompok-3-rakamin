@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   getAllCustomer,
   getCustomersById,
   editCustomersById,
   deleteCustomersById,
-} from '@/api/customers';
+} from "@/api/customers";
 import {
   Table,
   Thead,
@@ -31,12 +31,12 @@ import {
   useDisclosure,
   useToast,
   VStack,
-} from '@chakra-ui/react';
-import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
-import { instance } from '../../modules/axios/index';
-import { useRouter } from 'next/router';
-import { useFieldArray, useForm, watch } from 'react-hook-form';
-import { fetchData } from '@/api/suppliers';
+} from "@chakra-ui/react";
+import { FiPlus, FiDelete, FiEdit, FiMove } from "react-icons/fi";
+import { instance } from "../../modules/axios/index";
+import { useRouter } from "next/router";
+import { useFieldArray, useForm, watch } from "react-hook-form";
+import { fetchData } from "@/api/suppliers";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
@@ -58,20 +58,21 @@ const Customers = () => {
 
   const fetchData = async () => {
     try {
-      const response = await instance.get('/customer?page=1&limit=5');
+      const response = await instance.get("/customer?page=1&limit=5");
       const { dataCustomers } = response.data;
       setCustomers(dataCustomers);
     } catch (error) {
-      console.error('Gagal mengambil data:', error);
+      console.error("Gagal mengambil data:", error);
     }
   };
   console.log(customers);
 
   useEffect(() => {
+    fetchData();
     if (detailItems) {
-      setValue('users_id', detailItems.users_id);
-      setValue('full_name', detailItems.full_name);
-      setValue('address', detailItems.address);
+      setValue("users_id", detailItems.users_id);
+      setValue("full_name", detailItems.full_name);
+      setValue("address", detailItems.address);
     }
     fetchData();
   }, [detailItems, isModalOpen]);
@@ -93,18 +94,18 @@ const Customers = () => {
       await deleteCustomersById(id);
       handleCloseModal();
       toast({
-        title: 'Delete Product',
-        description: 'You have successfully Created Product.',
-        status: 'success',
+        title: "Delete Product",
+        description: "You have successfully Created Product.",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
       fetchData();
     } catch (error) {
       toast({
-        title: 'Failed to delete product.',
+        title: "Failed to delete product.",
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -116,9 +117,9 @@ const Customers = () => {
       await instance.put(`/customer/${editCustomersId}`, data);
       handleCloseModal();
       toast({
-        title: 'Updated Customer',
-        description: 'You have successfully Updated Customers.',
-        status: 'success',
+        title: "Updated Customer",
+        description: "You have successfully Updated Customers.",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
@@ -126,9 +127,9 @@ const Customers = () => {
       reset();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: "Failed to create product.",
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -140,23 +141,22 @@ const Customers = () => {
   };
 
   return (
-    <Box maxW='7xl' mx={'auto'} px={{ base: 2, sm: 12, md: 17 }} mt={50}>
+    <Box maxW="7xl" mx={"auto"} px={{ base: 2, sm: 12, md: 17 }} mt={50}>
       <Box>
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          py={'10'}
-        >
-          <Text fontWeight={'bold'} fontSize={'xl'}>
+          display={"flex"}
+          flexDirection={"row"}
+          justifyContent={"space-between"}
+          py={"10"}>
+          <Text fontWeight={"bold"} fontSize={"xl"}>
             Customers
           </Text>
-          <InputCustomers />
+          <InputCustomers fetchData={fetchData} />
         </Box>
         <Box>
           <TableContainer>
-            <Table variant='simple'>
-              <Thead bg={'#DFF6FE'}>
+            <Table variant="simple">
+              <Thead bg={"#DFF6FE"}>
                 <Tr>
                   <Th>ID</Th>
                   <Th>Users Id</Th>
@@ -166,24 +166,28 @@ const Customers = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {customers?.map((customer) => (
+                {customers.map((customer) => (
                   <Tr key={customer.id}>
                     <Td
-                      onClick={() => router.push(`/customers/${customer.id}`)}
-                    >
+                      onClick={() => router.push(`/customers/${customer.id}`)}>
                       {customer.id}
                     </Td>
                     <Td>{customer.users_id}</Td>
                     <Td>{customer.full_name}</Td>
                     <Td>{customer.address}</Td>
-
                     <Td>
                       <IconButton
                         icon={<FiEdit />}
+                        colorScheme={"blue"}
+                        variant={"outline"}
+                        ml={2}
                         onClick={() => handleEdit(customer.id)}
                       />
                       <IconButton
                         icon={<FiDelete />}
+                        colorScheme={"red"}
+                        variant={"outline"}
+                        ml={2}
                         onClick={() => handleDelete(customer.id)}
                       />
                     </Td>
@@ -192,51 +196,50 @@ const Customers = () => {
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
+                    <ModalHeader textAlign="center">Edit Customers</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <FormControl isInvalid={errors.users_id} mb={4}>
-                          <FormLabel htmlFor='users_id'>Users Id:</FormLabel>
+                          <FormLabel htmlFor="users_id">Users Id:</FormLabel>
                           <Input
-                            type='number'
-                            id='user_id'
-                            {...register('users_id', { required: true })}
+                            type="number"
+                            id="user_id"
+                            {...register("users_id", { required: true })}
                           />
                           <FormErrorMessage>
                             UsersId Harus Di Isi
                           </FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.full_name} mb={4}>
-                          <FormLabel htmlFor='full_name'>Full Name</FormLabel>
+                          <FormLabel htmlFor="full_name">Full Name</FormLabel>
                           <Input
-                            type='text'
-                            id='full_name'
-                            {...register('full_name', { required: true })}
+                            type="text"
+                            id="full_name"
+                            {...register("full_name", { required: true })}
                           />
                           <FormErrorMessage>
                             FullName Harus Di isi
                           </FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.address} mb={4}>
-                          <FormLabel htmlFor='address'>Address</FormLabel>
+                          <FormLabel htmlFor="address">Address</FormLabel>
                           <Input
-                            type='text'
-                            id='address'
-                            {...register('address', { required: true })}
+                            type="text"
+                            id="address"
+                            {...register("address", { required: true })}
                           />
                           <FormErrorMessage>
                             Description Harus Di isi
                           </FormErrorMessage>
                         </FormControl>
                         <Button
-                          type='submit'
-                          size={'md'}
-                          colorScheme='blue'
-                          mr={3}
-                        >
+                          type="submit"
+                          size={"md"}
+                          colorScheme="blue"
+                          mr={3}>
                           Edit Category
                         </Button>
-                        <Button size={'md'} onClick={handleCloseModal}>
+                        <Button size={"md"} onClick={handleCloseModal}>
                           Cancel
                         </Button>
                       </form>
@@ -253,7 +256,7 @@ const Customers = () => {
   );
 };
 
-export const InputCustomers = () => {
+export const InputCustomers = ({ fetchData }) => {
   const {
     register,
     handleSubmit,
@@ -266,22 +269,23 @@ export const InputCustomers = () => {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/customer', data);
+      await instance.post("/customer", data);
       handleCloseModal(),
         toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
+          title: "Created Product",
+          description: "You have successfully Created Product.",
+          status: "success",
           duration: 3000,
           isClosable: true,
         });
-      fetchData();
+
       reset();
+      fetchData();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: "Failed to create product.",
         description: err.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -297,55 +301,55 @@ export const InputCustomers = () => {
   };
 
   React.useEffect(() => {
-    setValue('users_id', '');
-    setValue('full_name', '');
-    setValue('address', '');
+    setValue("users_id", "");
+    setValue("full_name", "");
+    setValue("address", "");
   }, [setValue]);
 
   return (
     <Box>
-      <Button size='sm' onClick={handleOpenModal}>
+      <Button size="sm" onClick={handleOpenModal}>
         <FiPlus />
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Stock Form</ModalHeader>
+          <ModalHeader textAlign="center">Stock Form</ModalHeader>
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl isInvalid={errors.users_id} mb={4}>
-                  <FormLabel htmlFor='users_id'>Users Id:</FormLabel>
+                  <FormLabel htmlFor="users_id">Users Id:</FormLabel>
                   <Input
-                    type='number'
-                    id='user_id'
-                    {...register('users_id', { required: true })}
+                    type="number"
+                    id="user_id"
+                    {...register("users_id", { required: true })}
                   />
                   <FormErrorMessage>UsersId Harus Di Isi</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.full_name} mb={4}>
-                  <FormLabel htmlFor='full_name'>Full Name</FormLabel>
+                  <FormLabel htmlFor="full_name">Full Name</FormLabel>
                   <Input
-                    type='text'
-                    id='full_name'
-                    {...register('full_name', { required: true })}
+                    type="text"
+                    id="full_name"
+                    {...register("full_name", { required: true })}
                   />
                   <FormErrorMessage>FullName Harus Di isi</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.address} mb={4}>
-                  <FormLabel htmlFor='address'>Address</FormLabel>
+                  <FormLabel htmlFor="address">Address</FormLabel>
                   <Input
-                    type='text'
-                    id='address'
-                    {...register('address', { required: true })}
+                    type="text"
+                    id="address"
+                    {...register("address", { required: true })}
                   />
-                  <FormErrorMessage>Description Harus Di isi</FormErrorMessage>
+                  <FormErrorMessage>Address Harus Di isi</FormErrorMessage>
                 </FormControl>
 
-                <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
+                <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
                   Create Category
                 </Button>
-                <Button size={'md'} onClick={handleCloseModal}>
+                <Button size={"md"} onClick={handleCloseModal}>
                   Cancel
                 </Button>
               </form>

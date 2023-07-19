@@ -287,10 +287,16 @@ const Suppliers = () => {
                       <Td>
                         <IconButton
                           icon={<FiEdit />}
+                          colorScheme={"blue"}
+                          variant={"outline"}
+                          ml={2}
                           onClick={() => toggleUpdateModal(supplier.id)}
                         />
                         <IconButton
                           icon={<FiDelete />}
+                          colorScheme={"red"}
+                          variant={"outline"}
+                          ml={2}
                           onClick={() => {
                             setDeleteSupplierId(supplier.id);
                             openDeleteModal();
