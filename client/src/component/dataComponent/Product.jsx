@@ -45,6 +45,7 @@ import {
   deleteItems,
   updateItems,
 } from "@/modules/fetch";
+import { getAllItems as newGetAllItems } from "@/api/fetch/product";
 //import { useNavigate } from "react-router-dom";
 import { WarningIcon, SearchIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import {
@@ -205,7 +206,7 @@ const Product = () => {
           alignItems={"center"}
           justifyContent={"space-between"}>
           <Box display={"flex"} justifyContent={"start"} my={10}>
-            <FilterForm product={product} />
+            <FilterForm product={product} fetchProduct={fetchProduct} />
           </Box>
         </Box>
 
@@ -426,7 +427,7 @@ export const AddProductForm = ({ fetchProduct }) => {
   } = useForm();
   const { categories } = useContext(DataContext);
 
-  console.log(categories, "categories");
+  //console.log(categories, "categories");
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -653,6 +654,7 @@ export const AddStockForm = ({ fetchProduct }) => {
 
   const onSubmit = async (data) => {
     const jsonData = JSON.stringify(data);
+
     try {
       const response = await instance.post(
         "/items/stock",
@@ -671,6 +673,7 @@ export const AddStockForm = ({ fetchProduct }) => {
           isClosable: true,
         })
       );
+
       if (response.status === 200) {
         console.log("Produk berhasil ditambahkan!");
 
@@ -770,7 +773,12 @@ export const AddStockForm = ({ fetchProduct }) => {
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>
 
-                <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
+                <Button
+                  type="submit"
+                  size={"md"}
+                  colorScheme="blue"
+                  mr={3}
+                  onClick={() => console.log("Masuk")}>
                   Tambah product
                 </Button>
                 <Button size={"md"} onClick={handleCloseModal}>
@@ -982,10 +990,11 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
   );
 };
 
-export const FilterForm = ({ product }) => {
+export const FilterForm = ({ product, fetchProduct }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [sku, setSku] = useState(0);
-  const [itemsId, setItemsId] = useState(0);
+  const [items, setItems] = useState([]);
+  const [selectedProductId, setSelectedProductId] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState("");
   const {
     register,
     handleSubmit,
@@ -995,8 +1004,6 @@ export const FilterForm = ({ product }) => {
     watch,
   } = useForm();
 
-  console.log("INI PRODUCT", product);
-
   const handleOpenModal = () => {
     setIsOpen(true);
   };
@@ -1005,47 +1012,59 @@ export const FilterForm = ({ product }) => {
     setIsOpen(false);
   };
 
-  const handleChange = (event) => {
-    const selectedValue = event.target.value;
-    setValue("category", selectedValue);
+  const handleSearch = async (data) => {
+    const url = `/items?page=1&q=${encodeURIComponent(
+      data.q
+    )}&sort=ASC&order=name`;
+
+    try {
+      const response = await instance.get(url);
+      setItems(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // function handleSubmit(e) {
-  //   e.preventDefault();
-  //   setFilters(updatedFilters);
-  //   handleApplyFilters();
-  //   handleCloseModal();
-  // }
+  // const handleSearch = async (data) => {
+  //   try {
+  //     const { q } = data;
+  //     const foundProduct = await newGetAllItems(q);
+  //     setItems(foundProduct.data);
+  //     handleCloseModal(),
+  //       toast({
+  //         title: "Created Product",
+  //         description: "You have successfully Created Product.",
+  //         status: "success",
+  //         duration: 3000,
+  //         isClosable: true,
+  //       });
+  //     reset();
+  //   } catch (error) {
+  //     console.error("Terjadi kesalahan saat mengirim permintaan:", error);
+  //     toast({
+  //       title: "Failed to delete product.",
+  //       description: error.message,
+  //       status: "error",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //   }
+  // };
 
-  const onSubmit = async (data) => {
-    try {
-      const response = await instance.post(
-        "/warehouses-stock/move-items",
-        data,
-        handleCloseModal(),
-        toast({
-          title: "Created Product",
-          description: "You have successfully Created Product.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        })
-      );
-      if (response.status === 200) {
-        console.log("Produk berhasil ditambahkan!");
-        reset();
-      }
-      fetchProduct();
-    } catch (error) {
-      console.error("Terjadi kesalahan saat mengirim permintaan:", error);
-      toast({
-        title: "Failed to create product.",
-        description: error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+  console.log("Product", items);
+
+  // const handleProductChange = (event) => {
+  //   setSelectedProduct(event.target.value);
+  //   setValue("name", event.target.value);
+  // };
+
+  const handleProductChange = (event) => {
+    setSelectedProduct(event.target.value);
+    // if (!event.target.value) {
+    //   setItems([]); // Clear the search results if the user selects the default value
+    // }
+    //setValue("q", event.target.value);
+    setValue("q", setSelectedProduct);
   };
 
   return (
@@ -1062,73 +1081,50 @@ export const FilterForm = ({ product }) => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader textAlign="center" fontSize="sm">
-            Search
+            Filters
           </ModalHeader>
           <ModalCloseButton />
 
           <ModalBody>
             <VStack>
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form onSubmit={handleSubmit(handleSearch)}>
                 {/* Mapping over products */}
-                <FormControl mb={4} isInvalid={errors.items_id}>
-                  <FormLabel>Select Product To move</FormLabel>
+                <FormControl mb={4} isInvalid={errors.name}>
+                  <FormLabel>Product</FormLabel>
                   <Select
                     size="sm"
                     variant="filled"
-                    name="Items Id"
-                    onChange={handleChange}
-                    {...register("items_id", { required: true })}>
-                    <option value="" selected disabled>
-                      Select Items
-                    </option>
+                    defaultValue=""
+                    onChange={handleProductChange}
+                    name="q"
+                    {...register("q", { required: true })}>
                     {product.map((product) => {
                       return (
-                        <option
-                          onClick={() => setItemsId(product.id)}
-                          key={product.id}
-                          value={product.id}>
+                        <option key={product.id} value={product.name}>
                           {product.name}
                         </option>
                       );
                     })}
                   </Select>
-                  <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
-                </FormControl>
-                <FormControl mb={4} isInvalid={errors.items_id}>
-                  <FormLabel>Select Source Warehouse</FormLabel>
-                  <Select
+                  {/* <Select
                     size="sm"
                     variant="filled"
-                    name="Items Id"
-                    onChange={handleChange}
-                    {...register("source_warehouse_id", { required: true })}>
-                    <option value="" selected disabled>
-                      {" "}
-                      Select Source SKU{" "}
-                    </option>
-                    {product.map((product) => {
-                      return (
-                        <option
-                          onClick={() => setItemsId(product.id)}
-                          key={product.id}
-                          value={product.id}>
+                    defaultValue=""
+                    onChange={handleProductChange}
+                    name="q"
+                    disabled>
+                    {product
+                      .find((product) => product.name === selectedProduct)
+                      .product.map((product) => (
+                        <option key={product.id} value={product.id}>
                           {product.SKU}
                         </option>
-                      );
-                    })}
-                    {/* {product
-                      ?.filter((ws) => ws.itemsId === itemsId)
-                      .map((product) => (
-                        <option
-                          key={product.id}
-                          value={product.sku}
-                          onClick={() => setSku(product.id)}>
-                          {`${product.SKU}`}
-                        </option>
-                      ))} */}
-                  </Select>
-                  <FormErrorMessage>This is required</FormErrorMessage>
+                      ))}
+                  </Select> */}
+                  {errors.name && <p>{errors.name.message}</p>}
+                  <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
                 </FormControl>
+
                 <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
                   Cari product
                 </Button>

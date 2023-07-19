@@ -46,6 +46,11 @@ export default function Page({ customersId }) {
   }, []);
   console.log("data order", order);
 
+  const filteredOrders = order.filter(
+    (order) => order.customer === customers.full_name
+  );
+  console.log("DATA FILTER", filteredOrders);
+
   return (
     <Flex
       w={"100%"}
