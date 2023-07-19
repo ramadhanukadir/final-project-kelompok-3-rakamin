@@ -45,23 +45,39 @@ export default function Dashboard() {
   const { orderData } = useContext(DataContext);
 
   return (
-    <Flex flexDir={['row', 'row', 'row']} overflow='hidden' marginTop={50}>
-      <Flex
-        w={['100%', '100%', '60%', '60%', '55%']}
-        p='3%'
-        flexDir='column'
-        overflow='auto'
-        minH='100vh'
+    <Flex flexDir='column' w='100%' marginTop={55}>
+      <Heading
+        fontWeight='normal'
+        my={4}
+        letterSpacing='tight'
+        textAlign={'center'}
       >
-        <Heading fontWeight='normal' mb={4} letterSpacing='tight'>
-          Welcome back,{' '}
-          <Flex display='inline-flex' fontWeight='bold'>
-            {userLogin.first_name}
-          </Flex>
-        </Heading>
+        Welcome back,{' '}
+        <Flex display='inline-flex' fontWeight='bold'>
+          {userLogin.first_name}
+        </Flex>
+      </Heading>
+      <Flex
+        flexDir={['row', 'row', 'row']}
+        overflow='hidden'
+        w={'100%'}
+        columnGap={4}
+      >
+        <Flex
+          // w={['100%', '100%', '60%', '60%', '55%']}
+          // border={'1px solid #DFF6FF'}
+          // borderRadius={'10px'}
+          p='3%'
+          flexDir='column'
+          overflow='auto'
+          // minH='100vh'
+        >
+          <Heading fontWeight='normal' mb={4} letterSpacing='tight'>
+            Revenue History
+          </Heading>
 
-        <MyChart />
-        <Flex justifyContent='space-between' mt={8}>
+          <MyChart />
+          {/* <Flex justifyContent='space-between' mt={8}>
           <Flex align='flex-end'>
             <Heading as='h2' size='lg' letterSpacing='tight'>
               Transactions
@@ -70,8 +86,8 @@ export default function Dashboard() {
               Apr 2021
             </Text>
           </Flex>
-        </Flex>
-        <Flex flexDir='column'>
+        </Flex> */}
+          {/* <Flex flexDir='column'>
           <Flex overflow='auto'>
             <Table variant='unstyled' mt={4}>
               <Thead>
@@ -144,20 +160,24 @@ export default function Dashboard() {
             />
             <Divider />
           </Flex>
+        </Flex> */}
         </Flex>
-      </Flex>
 
-      {/* Column 3 */}
-      <Flex
-        w={['100%', '100%', '30%']}
-        bgColor='#F5F5F5'
-        p='3%'
-        flexDir='column'
-        // overflow="auto"
-        minW={[null, null, '100px', '100px', '100px']}
-      >
-        <Heading letterSpacing='tight'>Orders</Heading>
-        <ExpensesChart />
+        {/* Column 3 */}
+        <Flex
+          // w={['100%', '100%', '40%']}
+          // border={'1px solid #DFF6FF'}
+          // borderRadius={'10px'}
+          p='2%'
+          flexDir='column'
+          // overflow="auto"
+          minW={[null, null, '100px', '100px', '100px']}
+        >
+          {/* <Heading letterSpacing='tight' textAlign={'center'}>
+            Profit
+          </Heading> */}
+          <ExpensesChart />
+        </Flex>
       </Flex>
     </Flex>
   );
