@@ -11,7 +11,13 @@ function Profile() {
   return (
     <HStack h={'inherit'} w={'full'} py={20}>
       <Flex w={'40%'} h={'inherit'} alignItems={'center'}>
-        <Image src={userLogin?.image_url} w={'200px'} h={'200px'} mx={'auto'} />
+        <Image
+          src={userLogin?.image_url}
+          w={'200px'}
+          h={'200px'}
+          mx={'auto'}
+          borderRadius={'full'}
+        />
       </Flex>
       <Flex
         w={'60%'}

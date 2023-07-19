@@ -3,7 +3,7 @@ import { instance } from '@/modules/axios';
 export const getAllCustomer = async () => {
   try {
     const { data } = await instance.get('/customer?page=1&limit=5');
-    return data.dataCustomers;
+    return data;
   } catch (error) {
     throw new Error(error.response.data.message);
   }
