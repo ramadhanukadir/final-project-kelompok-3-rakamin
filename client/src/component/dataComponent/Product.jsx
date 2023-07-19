@@ -45,7 +45,6 @@ import {
   deleteItems,
   updateItems,
 } from "@/modules/fetch";
-import { getAllItems as newGetAllItems } from "@/api/fetch/product";
 //import { useNavigate } from "react-router-dom";
 import { WarningIcon, SearchIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import {
@@ -206,7 +205,7 @@ const Product = () => {
           alignItems={"center"}
           justifyContent={"space-between"}>
           <Box display={"flex"} justifyContent={"start"} my={10}>
-            <FilterForm product={product} fetchProduct={fetchProduct} />
+            {/* <FilterForm product={product} fetchProduct={fetchProduct} /> */}
           </Box>
         </Box>
 
@@ -990,154 +989,154 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
   );
 };
 
-export const FilterForm = ({ product, fetchProduct }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState([]);
-  const [selectedProductId, setSelectedProductId] = useState(0);
-  const [selectedProduct, setSelectedProduct] = useState("");
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-    watch,
-  } = useForm();
+// export const FilterForm = ({ product, fetchProduct }) => {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const [items, setItems] = useState([]);
+//   const [selectedProductId, setSelectedProductId] = useState(0);
+//   const [selectedProduct, setSelectedProduct] = useState("");
+//   const {
+//     register,
+//     handleSubmit,
+//     formState: { errors },
+//     reset,
+//     setValue,
+//     watch,
+//   } = useForm();
 
-  const handleOpenModal = () => {
-    setIsOpen(true);
-  };
+//   const handleOpenModal = () => {
+//     setIsOpen(true);
+//   };
 
-  const handleCloseModal = () => {
-    setIsOpen(false);
-  };
+//   const handleCloseModal = () => {
+//     setIsOpen(false);
+//   };
 
-  const handleSearch = async (data) => {
-    const url = `/items?page=1&q=${encodeURIComponent(
-      data.q
-    )}&sort=ASC&order=name`;
+//   const handleSearch = async (data) => {
+//     const url = `/items?page=1&q=${encodeURIComponent(
+//       data.q
+//     )}&sort=ASC&order=name`;
 
-    try {
-      const response = await instance.get(url);
-      setItems(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+//     try {
+//       const response = await instance.get(url);
+//       setItems(response.data);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
 
-  // const handleSearch = async (data) => {
-  //   try {
-  //     const { q } = data;
-  //     const foundProduct = await newGetAllItems(q);
-  //     setItems(foundProduct.data);
-  //     handleCloseModal(),
-  //       toast({
-  //         title: "Created Product",
-  //         description: "You have successfully Created Product.",
-  //         status: "success",
-  //         duration: 3000,
-  //         isClosable: true,
-  //       });
-  //     reset();
-  //   } catch (error) {
-  //     console.error("Terjadi kesalahan saat mengirim permintaan:", error);
-  //     toast({
-  //       title: "Failed to delete product.",
-  //       description: error.message,
-  //       status: "error",
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
-  //   }
-  // };
+//   // const handleSearch = async (data) => {
+//   //   try {
+//   //     const { q } = data;
+//   //     const foundProduct = await newGetAllItems(q);
+//   //     setItems(foundProduct.data);
+//   //     handleCloseModal(),
+//   //       toast({
+//   //         title: "Created Product",
+//   //         description: "You have successfully Created Product.",
+//   //         status: "success",
+//   //         duration: 3000,
+//   //         isClosable: true,
+//   //       });
+//   //     reset();
+//   //   } catch (error) {
+//   //     console.error("Terjadi kesalahan saat mengirim permintaan:", error);
+//   //     toast({
+//   //       title: "Failed to delete product.",
+//   //       description: error.message,
+//   //       status: "error",
+//   //       duration: 3000,
+//   //       isClosable: true,
+//   //     });
+//   //   }
+//   // };
 
-  console.log("Product", items);
+//   console.log("Product", items);
 
-  // const handleProductChange = (event) => {
-  //   setSelectedProduct(event.target.value);
-  //   setValue("name", event.target.value);
-  // };
+//   // const handleProductChange = (event) => {
+//   //   setSelectedProduct(event.target.value);
+//   //   setValue("name", event.target.value);
+//   // };
 
-  const handleProductChange = (event) => {
-    setSelectedProduct(event.target.value);
-    // if (!event.target.value) {
-    //   setItems([]); // Clear the search results if the user selects the default value
-    // }
-    //setValue("q", event.target.value);
-    setValue("q", setSelectedProduct);
-  };
+//   const handleProductChange = (event) => {
+//     setSelectedProduct(event.target.value);
+//     // if (!event.target.value) {
+//     //   setItems([]); // Clear the search results if the user selects the default value
+//     // }
+//     //setValue("q", event.target.value);
+//     setValue("q", setSelectedProduct);
+//   };
 
-  return (
-    <Box>
-      <Button
-        size="sm"
-        bgColor={""}
-        leftIcon={<FiSearch />}
-        onClick={handleOpenModal}>
-        Search Stock
-      </Button>
+//   return (
+//     <Box>
+//       <Button
+//         size="sm"
+//         bgColor={""}
+//         leftIcon={<FiSearch />}
+//         onClick={handleOpenModal}>
+//         Search Stock
+//       </Button>
 
-      <Modal isOpen={isOpen} onClose={handleCloseModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader textAlign="center" fontSize="sm">
-            Filters
-          </ModalHeader>
-          <ModalCloseButton />
+//       <Modal isOpen={isOpen} onClose={handleCloseModal}>
+//         <ModalOverlay />
+//         <ModalContent>
+//           <ModalHeader textAlign="center" fontSize="sm">
+//             Filters
+//           </ModalHeader>
+//           <ModalCloseButton />
 
-          <ModalBody>
-            <VStack>
-              <form onSubmit={handleSubmit(handleSearch)}>
-                {/* Mapping over products */}
-                <FormControl mb={4} isInvalid={errors.name}>
-                  <FormLabel>Product</FormLabel>
-                  <Select
-                    size="sm"
-                    variant="filled"
-                    defaultValue=""
-                    onChange={handleProductChange}
-                    name="q"
-                    {...register("q", { required: true })}>
-                    {product.map((product) => {
-                      return (
-                        <option key={product.id} value={product.name}>
-                          {product.name}
-                        </option>
-                      );
-                    })}
-                  </Select>
-                  {/* <Select
-                    size="sm"
-                    variant="filled"
-                    defaultValue=""
-                    onChange={handleProductChange}
-                    name="q"
-                    disabled>
-                    {product
-                      .find((product) => product.name === selectedProduct)
-                      .product.map((product) => (
-                        <option key={product.id} value={product.id}>
-                          {product.SKU}
-                        </option>
-                      ))}
-                  </Select> */}
-                  {errors.name && <p>{errors.name.message}</p>}
-                  <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
-                </FormControl>
+//           <ModalBody>
+//             <VStack>
+//               <form onSubmit={handleSubmit(handleSearch)}>
+//                 {/* Mapping over products */}
+//                 <FormControl mb={4} isInvalid={errors.name}>
+//                   <FormLabel>Product</FormLabel>
+//                   <Select
+//                     size="sm"
+//                     variant="filled"
+//                     defaultValue=""
+//                     onChange={handleProductChange}
+//                     name="q"
+//                     {...register("q", { required: true })}>
+//                     {product.map((product) => {
+//                       return (
+//                         <option key={product.id} value={product.name}>
+//                           {product.name}
+//                         </option>
+//                       );
+//                     })}
+//                   </Select>
+//                   {/* <Select
+//                     size="sm"
+//                     variant="filled"
+//                     defaultValue=""
+//                     onChange={handleProductChange}
+//                     name="q"
+//                     disabled>
+//                     {product
+//                       .find((product) => product.name === selectedProduct)
+//                       .product.map((product) => (
+//                         <option key={product.id} value={product.id}>
+//                           {product.SKU}
+//                         </option>
+//                       ))}
+//                   </Select> */}
+//                   {errors.name && <p>{errors.name.message}</p>}
+//                   <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
+//                 </FormControl>
 
-                <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
-                  Cari product
-                </Button>
-                <Button size={"md"} onClick={handleCloseModal}>
-                  Cancel
-                </Button>
-              </form>
-            </VStack>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </Box>
-  );
-};
+//                 <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
+//                   Cari product
+//                 </Button>
+//                 <Button size={"md"} onClick={handleCloseModal}>
+//                   Cancel
+//                 </Button>
+//               </form>
+//             </VStack>
+//           </ModalBody>
+//         </ModalContent>
+//       </Modal>
+//     </Box>
+//   );
+// };
 
 export default Product;

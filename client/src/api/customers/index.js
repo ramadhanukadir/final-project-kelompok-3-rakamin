@@ -1,12 +1,11 @@
-import { instance } from "./../../../modules/axios";
+import { instance } from "@/modules/axios";
 
-export const getCustomers = async () => {
+export const getAllCustomer = async () => {
   try {
-    const response = await instance.get("/customer?page=1&limit=5");
-    const { data } = response.data;
+    const { data } = await instance.get("/customer?page=1&limit=5");
     return data;
   } catch (error) {
-    console.error("Gagal mengambil data:", error);
+    throw new Error(error.response.data.message);
   }
 };
 

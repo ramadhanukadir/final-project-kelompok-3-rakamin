@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
-  getCustomers,
+  getAllCustomer,
   getCustomersById,
   editCustomersById,
   deleteCustomersById,
-} from "@/api/fetch/customers";
+} from "@/api/customers";
 import {
   Table,
   Thead,
@@ -36,7 +36,7 @@ import { FiPlus, FiDelete, FiEdit, FiMove } from "react-icons/fi";
 import { instance } from "../../modules/axios/index";
 import { useRouter } from "next/router";
 import { useFieldArray, useForm, watch } from "react-hook-form";
-import { fetchData } from "@/api/fetch/suppliers";
+import { fetchData } from "@/api/suppliers";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
@@ -58,8 +58,9 @@ const Customers = () => {
 
   const fetchData = async () => {
     try {
-      const { data } = await instance.get("/customer?page=1&limit=5");
-      setCustomers(data);
+      const response = await instance.get("/customer?page=1&limit=5");
+      const { dataCustomers } = response.data;
+      setCustomers(dataCustomers);
     } catch (error) {
       console.error("Gagal mengambil data:", error);
     }
@@ -165,7 +166,7 @@ const Customers = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {customers?.dataCustomers?.map((customer) => (
+                {customers.map((customer) => (
                   <Tr key={customer.id}>
                     <Td
                       onClick={() => router.push(`/customers/${customer.id}`)}>
@@ -174,7 +175,6 @@ const Customers = () => {
                     <Td>{customer.users_id}</Td>
                     <Td>{customer.full_name}</Td>
                     <Td>{customer.address}</Td>
-
                     <Td>
                       <IconButton
                         icon={<FiEdit />}
@@ -269,24 +269,22 @@ export const InputCustomers = ({ fetchData }) => {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post(
-        `/customer`,
-        data,
-        handleCloseModal(),
+      await instance.post("/customer", data);
+      handleCloseModal(),
         toast({
           title: "Created Product",
           description: "You have successfully Created Product.",
           status: "success",
           duration: 3000,
           isClosable: true,
-        })
-      );
+        });
+
       reset();
       fetchData();
     } catch (error) {
       toast({
         title: "Failed to create product.",
-        description: error.message,
+        description: err.message,
         status: "error",
         duration: 5000,
         isClosable: true,

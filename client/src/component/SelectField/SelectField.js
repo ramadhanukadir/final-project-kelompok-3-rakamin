@@ -31,7 +31,7 @@ function SelectField({
         <option value='' style={{ padding: '10px' }} selected disabled>
           {`Select ${name}`}
         </option>
-        {mapping.map((opt, index) => (
+        {mapping?.map((opt, index) => (
           <option
             key={value(opt)}
             value={value(opt)}

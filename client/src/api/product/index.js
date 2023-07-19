@@ -1,9 +1,9 @@
 import { instance } from "@/modules/axios";
 
-export const getAllItems = async (q) => {
+export const getAllItems = async (page, sort, order, q, limit) => {
   try {
     const { data } = await instance.get(
-      `/items?page=1&q=${q}&sort=ASC&order=name`
+      `/items?page=${page}&q=${q}&sort=${sort}&order=${order}&limit=${limit}`
     );
     return data;
   } catch (error) {

@@ -1,9 +1,11 @@
 import React from 'react';
 import {
   Table,
+  TableCaption,
   TableContainer,
   Tbody,
   Td,
+  Tfoot,
   Th,
   Thead,
   Tr,
@@ -13,8 +15,9 @@ import { useRouter } from 'next/router';
 function OrderList({ orders }) {
   const router = useRouter();
   return (
-    <TableContainer>
+    <TableContainer overflowY={'auto'} h={'25em'} px={5}>
       <Table variant='simple'>
+        <TableCaption>Orders</TableCaption>
         <Thead bg={'#DFF6FE'}>
           <Tr>
             <Th>Date</Th>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { getSuppliersById } from "@/api/fetch/suppliers";
-import { getAllSuppliersItems } from "@/api/fetch/suppliers-items";
+import { getSuppliersById } from "@/api/suppliers";
+import { getAllSuppliersItems } from "@/api/suppliers-items";
 import { useRouter } from "next/router";
 import {
   Box,
