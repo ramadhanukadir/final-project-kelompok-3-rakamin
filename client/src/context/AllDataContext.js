@@ -1,17 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
-import {
-  getAllCustomer,
-  getAllItems,
-  getAllOrders,
-  getAllWarehouses,
-  getWarehousesById,
-} from '@/api/fetch/orders';
+import { getAllCustomer, getAllItems, getAllOrders, getAllWarehouses, getWarehousesById } from '@/api/fetch/orders';
 import { fetchUser } from '@/api/fetch/auth';
-import {
-  getAllExpenses,
-  getAllOrdersItems,
-  getAllRevenue,
-} from '@/api/fetch/chart';
+import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/fetch/chart';
 import { getAllCategories } from '@/api/fetch/category';
 import { getAllWarehousesStock } from '@/api/fetch/warehouses';
 
@@ -47,7 +37,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchWarehouse = async () => {
-    const data = await getAllWarehouses();
+    const data = await getAllWarehouses(1, 'ASC', 'name');
     setWarehouses(data);
   };
 
@@ -93,22 +83,13 @@ const AllDataContextProvider = ({ children }) => {
 
   const fetchRevenue = async () => {
     const data = await getAllRevenue();
-    const revenueSum = data.reduce(
-      (sum, revenue) => sum + revenue.totalRevenue,
-      0
-    );
+    const revenueSum = data.reduce((sum, revenue) => sum + revenue.totalRevenue, 0);
     setTotalRevenue(revenueSum);
   };
 
   useEffect(() => {
     if (access !== null) {
-      fetchCustomers(),
-        fetchItems(),
-        fetchWarehouse(),
-        fetchOrders(),
-        fetchUserLogin(),
-        fetchCategories(),
-        fetchWarehousesStock();
+      fetchCustomers(), fetchItems(), fetchWarehouse(), fetchOrders(), fetchUserLogin(), fetchCategories(), fetchWarehousesStock();
       fetchOrderItems();
       fetchExpenses();
       fetchRevenue();

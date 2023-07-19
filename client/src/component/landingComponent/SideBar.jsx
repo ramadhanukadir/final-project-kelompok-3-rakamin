@@ -139,15 +139,6 @@ const SidebarContent = ({ onClose, ...rest }) => {
         />
         <SideItem
           icon={FiUser}
-          title="Warehouse"
-          active={activeItem === 'warehouse'}
-          activeColor={'#1363DF'}
-          onClick={() => {
-            handleItemClick('warehouse'), router.push('/warehouse');
-          }}
-        />
-        <SideItem
-          icon={FiUser}
           title="Warehouses"
           active={activeItem === 'warehouses'}
           activeColor={'#1363DF'}

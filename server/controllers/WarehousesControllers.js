@@ -20,26 +20,86 @@ const getAllWarehouses = async (req, res) => {
   }
 };
 
-const searchWarehousesByName = async (req, res) => {
+// const getAllWarehouses = async (req, res) => {
+//   const { id } = req.loggedUser;
+//   const { page, limit, sort, q, order } = req.query;
+//   try {
+//     const { rows, count } = await Warehouses.findAndCountAll({
+//       offset: page && limit ? (page - 1) * limit : (page - 1) * 20,
+//       limit: limit ? parseInt(limit) : 20,
+//       order: sort && order ? [[order, sort]] : [['name', sort || 'ASC']],
+//       where: {
+//         users_id: id,
+//         [Op.or]: [{ name: { [Op.iLike]: `%${q}%` } }, { city: { [Op.iLike]: `%${q}%` } }],
+//       },
+//     });
+
+//     const response = mappingWarehouses(rows);
+
+//     res.status(200).json({
+//       meta: {
+//         page: page ? parseInt(page) : page,
+//         totalPages: page && limit ? Math.ceil(count / limit) : Math.ceil(count / 20),
+//         totalData: count,
+//       },
+//       data: response,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+const getAllWarehousesWithFilter = async (req, res) => {
   const { id } = req.loggedUser;
-  const { searchValue } = req.query;
-
-  try {
-    const warehouses = await Warehouses.findAll({
-      where: {
-        users_id: id,
-        name: {
-          [Op.iLike]: `%${searchValue}%`, // Gunakan Op.iLike untuk pencarian yang tidak case-sensitive
+  const page = parseInt(req.query.page) || 0;
+  const limit = parseInt(req.query.limit) || 10;
+  const search = req.query.search_query || '';
+  const offset = limit * page;
+  const totalRows = await Warehouses.count({
+    where: {
+      users_id: id,
+      [Op.or]: [
+        {
+          name: {
+            [Op.iLike]: '%' + search + '%',
+          },
         },
-      },
-    });
-
-    const response = mappingWarehouses(warehouses);
-
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+        {
+          city: {
+            [Op.iLike]: '%' + search + '%',
+          },
+        },
+      ],
+    },
+  });
+  const totalPage = Math.ceil(totalRows / limit);
+  const result = await Warehouses.findAll({
+    where: {
+      users_id: id,
+      [Op.or]: [
+        {
+          name: {
+            [Op.iLike]: '%' + search + '%',
+          },
+        },
+        {
+          city: {
+            [Op.iLike]: '%' + search + '%',
+          },
+        },
+      ],
+    },
+    offset: offset,
+    limit: limit,
+    order: [['id', 'DESC']],
+  });
+  res.json({
+    result: result,
+    page: page,
+    limit: limit,
+    totalRows: totalRows,
+    totalPage: totalPage,
+  });
 };
 
 const getWarehousesById = async (req, res) => {
@@ -131,9 +191,9 @@ const deleteWarehouses = async (req, res) => {
 
 module.exports = {
   getAllWarehouses,
+  getAllWarehousesWithFilter,
   getWarehousesById,
   createWarehouses,
   deleteWarehouses,
   updateWarehouses,
-  searchWarehousesByName,
 };
