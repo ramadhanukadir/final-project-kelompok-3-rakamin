@@ -24,7 +24,7 @@ import {
 import { CheckCircleIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
-import { handleRegister } from '@/api/fetch/auth';
+import { handleRegister } from '@/api/auth';
 import InputField from '@/component/InputField/InputField';
 
 const register = () => {

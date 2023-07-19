@@ -1,24 +1,19 @@
 import { createContext, useEffect, useState } from 'react';
+import { getAllOrders } from '@/api/orders';
+import { getAllItems } from '@/api/product';
+import { getAllCustomer } from '@/api/customers';
 import {
-  getAllCustomer,
-  getAllItems,
-  getAllOrders,
   getAllWarehouses,
+  getAllWarehousesStock,
   getWarehousesById,
-} from '@/api/fetch/orders';
-import { fetchUser } from '@/api/fetch/auth';
-import {
-  getAllExpenses,
-  getAllOrdersItems,
-  getAllRevenue,
-} from '@/api/fetch/chart';
-import { getAllCategories } from '@/api/fetch/category';
-import { getAllWarehousesStock } from '@/api/fetch/warehouses';
+} from '@/api/warehouses';
+import { fetchUser } from '@/api/auth';
+import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/chart';
+import { getAllCategories } from '@/api/category';
 
 const AllDataContext = createContext();
 
 const AllDataContextProvider = ({ children }) => {
-  const [isLogin, setIsLogin] = useState(false);
   const [warehouseId, setWarehouseId] = useState(0);
   const [warehouses, setWarehouses] = useState([]);
   const [warehouseItems, setWarehouseItems] = useState([]);
@@ -34,6 +29,14 @@ const AllDataContextProvider = ({ children }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [activeItem, setActiveItem] = useState('dashboard');
+  const [filterOrder, setFilterOrder] = useState({
+    warehouses_id: '',
+    customers_id: '',
+    page: 1,
+    limit: 2,
+    sort: '',
+    order: '',
+  });
 
   let access = '';
 
@@ -52,8 +55,9 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchItems = async () => {
-    const { data } = await getAllItems(1, 'ASC', 'name');
+    const { meta, data } = await getAllItems(1, 'ASC', 'name', '', 10);
     setProducts(data);
+    return meta;
   };
 
   const fetchCategories = async () => {
@@ -62,8 +66,8 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchCustomers = async () => {
-    const { data } = await getAllCustomer();
-    setCustomers(data);
+    const { dataCustomers } = await getAllCustomer();
+    setCustomers(dataCustomers);
   };
 
   const fetchWarehouseById = async (warehouseId) => {
@@ -72,7 +76,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchOrders = async () => {
-    const { data } = await getAllOrders();
+    const data = await getAllOrders(filterOrder);
     setOrders(data);
   };
 
@@ -102,13 +106,13 @@ const AllDataContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (access !== null) {
-      fetchCustomers(),
-        fetchItems(),
-        fetchWarehouse(),
-        fetchOrders(),
-        fetchUserLogin(),
-        fetchCategories(),
-        fetchWarehousesStock();
+      fetchCustomers();
+      fetchItems();
+      fetchWarehouse();
+      fetchOrders();
+      fetchUserLogin();
+      fetchCategories();
+      fetchWarehousesStock();
       fetchOrderItems();
       fetchExpenses();
       fetchRevenue();
@@ -117,13 +121,11 @@ const AllDataContextProvider = ({ children }) => {
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [access, warehouseId, itemsId]);
+  }, [access, warehouseId, itemsId, filterOrder]);
 
   return (
     <AllDataContext.Provider
       value={{
-        isLogin,
-        setIsLogin,
         warehouses,
         warehouseId,
         setWarehouseId,
@@ -146,6 +148,9 @@ const AllDataContextProvider = ({ children }) => {
         activeItem,
         setActiveItem,
         fetchUserLogin,
+        fetchItems,
+        filterOrder,
+        setFilterOrder,
       }}
     >
       {children}
