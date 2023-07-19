@@ -13,7 +13,6 @@ import {
   Td,
   Tbody,
   useBreakpointValue,
-  Image,
   Modal,
   ModalBody,
   ModalContent,
@@ -28,7 +27,6 @@ import {
   FormLabel as ChakraFormLabel,
   Input,
   useToast,
-  Select,
 } from "@chakra-ui/react";
 import { useFieldArray, useForm, watch } from "react-hook-form";
 import {
@@ -37,31 +35,17 @@ import {
   updateCategories,
   deleteCategories,
 } from "@/modules/fetch";
-import {
-  FiSearch,
-  FiUpload,
-  FiPlus,
-  FiEdit,
-  FiArrowLeft,
-  FiArrowRight,
-  FiCircle,
-  FiArrowUpRight,
-  FiDelete,
-  FiMove,
-} from "react-icons/fi";
+import { FiPlus, FiEdit, FiDelete } from "react-icons/fi";
 import { useRouter } from "next/router";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
-  const [categoriesId, setCategoriesId] = useState([]);
   const toast = useToast();
-  const columns = useBreakpointValue({ base: 1, md: 3 });
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-    control,
     reset,
     resetField,
     setValue,
@@ -72,18 +56,18 @@ const Categories = () => {
   const router = useRouter();
 
   const fetchCategories = async () => {
-    const categories = await getAllCategories();
-    setCategories(categories);
+    const { data } = await getAllCategories();
+    setCategories(data);
   };
 
   useEffect(() => {
+    fetchCategories();
     if (detailItems) {
       setValue("name", detailItems.name);
       setValue("description", detailItems.description);
     }
-    fetchCategories();
   }, [detailItems, isModalOpen]);
-  // console.log(categories);
+  console.log(categories);
 
   const handleEdit = async (id) => {
     const foundProduct = await getCategoriesId(id);
@@ -95,15 +79,6 @@ const Categories = () => {
     }
   };
   // console.log(detailItems);
-
-  // const handleGetById = async (id) => {
-  //   const foundProduct = await getCategoriesId(id);
-  //   setCategoriesId(foundProduct);
-
-  //   if (foundProduct) {
-  //     setGetById(id);
-  //   }
-  // };
 
   const handleDeleteItems = async (id) => {
     try {
@@ -180,7 +155,7 @@ const Categories = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {categories?.data?.map((item) => (
+                {categories.map((item) => (
                   <Tr key={item.id}>
                     <Td
                       onClick={() => router.push(`/category/${item.id}`)}
@@ -191,8 +166,8 @@ const Categories = () => {
 
                     <Td>
                       <Button
-                        color="blue"
-                        bg={"transparent"}
+                        colorScheme={"blue"}
+                        variant={"outline"}
                         onClick={() => handleEdit(item.id)}
                         size={"md"}>
                         <FiEdit />
@@ -200,8 +175,8 @@ const Categories = () => {
                     </Td>
                     <Td>
                       <Button
-                        color="red"
-                        bg={"transparent"}
+                        colorScheme={"red"}
+                        variant={"outline"}
                         onClick={() => handleDeleteItems(item.id)}
                         size={"md"}>
                         <FiDelete />
@@ -212,7 +187,7 @@ const Categories = () => {
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader textAlign="center">Edit Product</ModalHeader>
+                    <ModalHeader textAlign="center">Edit Category</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <FormControl isInvalid={errors.name} mb={4}>
@@ -294,7 +269,7 @@ export const InputCategory = () => {
       );
       if (response.status === 200) {
         console.log("Produk berhasil ditambahkan!");
-
+        fetchCategories();
         reset();
       }
     } catch (error) {
@@ -330,11 +305,11 @@ export const InputCategory = () => {
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign="center">Stock Form</ModalHeader>
+          <ModalHeader textAlign="center">Category Form</ModalHeader>
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
-                <FormControl isInvalid={errors.categories_id} mb={4}>
+                <FormControl isInvalid={errors.name} mb={4}>
                   <FormLabel htmlFor="name">Name</FormLabel>
                   <Input
                     type="text"
@@ -343,7 +318,7 @@ export const InputCategory = () => {
                   />
                   <FormErrorMessage>Name harus diisi.</FormErrorMessage>
                 </FormControl>
-                <FormControl isInvalid={errors.name} mb={4}>
+                <FormControl isInvalid={errors.description} mb={4}>
                   <FormLabel htmlFor="description">Description</FormLabel>
                   <Input
                     type="text"

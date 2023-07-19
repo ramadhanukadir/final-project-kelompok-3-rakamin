@@ -44,7 +44,7 @@ export default function Page({ customersId }) {
 
     fetchOrder();
   }, []);
-  // console.log("data order", order);
+  console.log("data order", order);
 
   const filteredOrders = order.filter(
     (order) => order.customer === customers.full_name

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { instance } from '@/modules/axios';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { instance } from "@/modules/axios";
+import axios from "axios";
 import {
   Button,
   Text,
@@ -36,12 +36,16 @@ import {
   AlertDialogBody,
   AlertDialogCloseButton,
   useDisclosure,
-} from '@chakra-ui/react';
-import { getAllWarehouses, getWarehouseId, updateWarehouses } from '@/modules/fetch';
-import { SearchIcon, EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
-import { Center } from '@chakra-ui/react';
-import { FiPlus } from 'react-icons/fi';
-import { useForm } from 'react-hook-form';
+} from "@chakra-ui/react";
+import {
+  getAllWarehouses,
+  getWarehouseId,
+  updateWarehouses,
+} from "@/modules/fetch";
+import { SearchIcon, EditIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
+import { Center } from "@chakra-ui/react";
+import { FiPlus } from "react-icons/fi";
+import { useForm } from "react-hook-form";
 
 export default function Warehouse() {
   const [warehouses, setWarehouse] = useState([]);
@@ -49,7 +53,8 @@ export default function Warehouse() {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isSavePopupOpen, setIsSavePopupOpen] = useState(false);
   const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -80,11 +85,17 @@ export default function Warehouse() {
   const onEditSubmit = async (data) => {
     try {
       // Validasi input
-      if (!data.name || !data.address || !data.province || !data.city || !data.telephone) {
+      if (
+        !data.name ||
+        !data.address ||
+        !data.province ||
+        !data.city ||
+        !data.telephone
+      ) {
         toast({
-          title: 'Error',
-          description: 'Please fill in all required fields.',
-          status: 'error',
+          title: "Error",
+          description: "Please fill in all required fields.",
+          status: "error",
           duration: 3000,
           isClosable: true,
         });
@@ -95,9 +106,9 @@ export default function Warehouse() {
       const phoneRegex = /^[0-9]{10,12}$/;
       if (!phoneRegex.test(data.telephone)) {
         toast({
-          title: 'Error',
-          description: 'Please enter a valid phone number.',
-          status: 'error',
+          title: "Error",
+          description: "Please enter a valid phone number.",
+          status: "error",
           duration: 3000,
           isClosable: true,
         });
@@ -115,9 +126,9 @@ export default function Warehouse() {
       // Tampilkan popup info bahwa data telah diperbarui
       setIsEditModalOpen(false);
       toast({
-        title: 'Success',
-        description: 'Warehouse data has been updated.',
-        status: 'success',
+        title: "Success",
+        description: "Warehouse data has been updated.",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
@@ -141,19 +152,21 @@ export default function Warehouse() {
     };
     fetchWarehouse();
     if (selectedWarehouse) {
-      setValue('name', selectedWarehouse.name);
-      setValue('address', selectedWarehouse.address);
-      setValue('province', selectedWarehouse.province);
-      setValue('city', selectedWarehouse.city);
-      setValue('postal_code', selectedWarehouse.postalCode);
-      setValue('telephone', selectedWarehouse.telephone);
+      setValue("name", selectedWarehouse.name);
+      setValue("address", selectedWarehouse.address);
+      setValue("province", selectedWarehouse.province);
+      setValue("city", selectedWarehouse.city);
+      setValue("postal_code", selectedWarehouse.postalCode);
+      setValue("telephone", selectedWarehouse.telephone);
     }
   }, [selectedWarehouse]);
 
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get('https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB');
+        const response = await axios.get(
+          "https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB"
+        );
         setProvinces(response.data.data);
         // console.log(response.data.data);
       } catch (error) {
@@ -165,7 +178,9 @@ export default function Warehouse() {
 
   const fetchCitiesByProvince = async (selectedProvince) => {
     try {
-      const response = await axios.get(`https://api.goapi.id/v1/regional/kota?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB&provinsi_id=${selectedProvince}`);
+      const response = await axios.get(
+        `https://api.goapi.id/v1/regional/kota?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB&provinsi_id=${selectedProvince}`
+      );
       setCities(response.data.data);
     } catch (error) {
       console.log(error);
@@ -184,11 +199,17 @@ export default function Warehouse() {
   const onSubmit = async (data) => {
     try {
       // Validasi input
-      if (!data.name || !data.address || !data.province || !data.city || !data.telephone) {
+      if (
+        !data.name ||
+        !data.address ||
+        !data.province ||
+        !data.city ||
+        !data.telephone
+      ) {
         toast({
-          title: 'Error',
-          description: 'Please fill in all required fields.',
-          status: 'error',
+          title: "Error",
+          description: "Please fill in all required fields.",
+          status: "error",
           duration: 3000,
           isClosable: true,
         });
@@ -199,9 +220,9 @@ export default function Warehouse() {
       const phoneRegex = /^[0-9]{10,12}$/;
       if (!phoneRegex.test(data.telephone)) {
         toast({
-          title: 'Error',
-          description: 'Please enter a valid phone number.',
-          status: 'error',
+          title: "Error",
+          description: "Please enter a valid phone number.",
+          status: "error",
           duration: 3000,
           isClosable: true,
         });
@@ -209,7 +230,7 @@ export default function Warehouse() {
       }
 
       // Kirim data gudang ke backend
-      await instance.post('/warehouses', data);
+      await instance.post("/warehouses", data);
 
       // Dapatkan data gudang terbaru dari backend
       const fetchedWarehouses = await getAllWarehouses();
@@ -264,36 +285,43 @@ export default function Warehouse() {
   };
 
   return (
-    <Box>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'}>
-        <Text fontWeight={'bold'} fontSize={'xl'}>
+    <Box marginTop={100}>
+      <Box
+        display={"flex"}
+        flexDirection={"row"}
+        justifyContent={"space-between"}
+        py={"10"}>
+        <Text fontWeight={"bold"} fontSize={"xl"}>
           Warehouses
         </Text>
-        <Box display={'flex'} flexDirection={'row'} gap={'5'}>
-          <Button size="sm" bgColor={''} leftIcon={<FiPlus />} onClick={openModal}>
+        <Box display={"flex"} flexDirection={"row"} gap={"5"}>
+          <Button
+            size="sm"
+            bgColor={""}
+            leftIcon={<FiPlus />}
+            onClick={openModal}>
             Add Warehouse
           </Button>
         </Box>
       </Box>
 
       <Box>
-        <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Box display={'row'} justifyContent={'start'} alignItems={'center'} gap={'10'} my={'5'}></Box>
-          <Box display={'flex'} justifyContent={'end'} mb={2}>
-            <InputGroup>
-              <Input placeholder="Masukkan kata kunci" value="Search value" onChange={''} px={'8'} />
-              <InputRightElement width="auto">
-                <Button colorScheme="blue" onClick={''} leftIcon={<SearchIcon />}>
-                  Cari
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-          </Box>
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"center"}
+          justifyContent={"space-between"}>
+          <Box
+            display={"row"}
+            justifyContent={"start"}
+            alignItems={"center"}
+            gap={"10"}
+            my={"5"}></Box>
         </Box>
         <Box>
           <TableContainer>
             <Table variant="simple" size="sm">
-              <Thead bg={'#DFF6FE'}>
+              <Thead bg={"#DFF6FE"}>
                 <Tr>
                   <Th>Warehouse Name</Th>
                   <Th>Address</Th>
@@ -310,7 +338,9 @@ export default function Warehouse() {
                 {warehouses.map((warehouse) => (
                   <Tr key={warehouse.id}>
                     <Td>{warehouse.name}</Td>
-                    <Td style={{ width: '400px', whiteSpace: 'normal' }}>{warehouse.address}</Td>
+                    <Td style={{ width: "400px", whiteSpace: "normal" }}>
+                      {warehouse.address}
+                    </Td>
                     <Td>{warehouse.province}</Td>
                     {/* <Td>{warehouse.city.split('-')[1]}</Td> */}
                     <Td>{warehouse.city}</Td>
@@ -318,13 +348,20 @@ export default function Warehouse() {
                     <Td>{warehouse.postalCode}</Td>
                     <Td>{warehouse.telephone}</Td>
                     <Td>
-                      {/* <Button colorScheme="yellow" onClick={() => handleDeleteItems(warehouse.id)} size={'sm'} ml={2} variant="outline">
-                        <ViewIcon />
-                      </Button> */}
-                      <Button colorScheme="blue" onClick={() => handleEditWarehouse(warehouse.id)} size={'sm'} ml={2} variant="outline">
+                      <Button
+                        colorScheme="blue"
+                        onClick={() => handleEditWarehouse(warehouse.id)}
+                        size={"sm"}
+                        ml={2}
+                        variant="outline">
                         <EditIcon />
                       </Button>
-                      <Button colorScheme="red" onClick={() => handleDeleteWarehouse(warehouse.id)} size={'sm'} ml={2} variant="outline">
+                      <Button
+                        colorScheme="red"
+                        onClick={() => handleDeleteWarehouse(warehouse.id)}
+                        size={"sm"}
+                        ml={2}
+                        variant="outline">
                         <DeleteIcon />
                       </Button>
                     </Td>
@@ -345,30 +382,46 @@ export default function Warehouse() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <ChakraFormControl isInvalid={errors.name} isRequired>
                 <ChakraFormLabel>Name</ChakraFormLabel>
-                <Input {...register('name', { required: true })} />
-                {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Input {...register("name", { required: true })} />
+                {errors.province && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.address} isRequired>
                 <ChakraFormLabel>Address</ChakraFormLabel>
-                <Textarea {...register('address', { required: true })} />
-                {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Textarea {...register("address", { required: true })} />
+                {errors.province && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.province} isRequired>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))}>
+                <Select
+                  id="province"
+                  {...register("province", { required: true })}
+                  onChange={(e) =>
+                    fetchCitiesByProvince(
+                      e.target.selectedOptions[0].getAttribute("data-id")
+                    )
+                  }>
                   <option value="">-Select Province-</option>
                   {provinces.map((province) => (
-                    <option key={province.id} value={province.name} data-id={province.id}>
+                    <option
+                      key={province.id}
+                      value={province.name}
+                      data-id={province.id}>
                       {province.name}
                     </option>
                   ))}
                 </Select>
-                {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
+                {errors.province && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
 
               <ChakraFormControl isInvalid={errors.city} isRequired>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select id="city" {...register('city', { required: true })}>
+                <Select id="city" {...register("city", { required: true })}>
                   <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
@@ -376,18 +429,25 @@ export default function Warehouse() {
                     </option>
                   ))}
                 </Select>
-                {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
+                {errors.province && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
 
               <ChakraFormControl>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input type="number" {...register('postal_code')} />
+                <Input type="number" {...register("postal_code")} />
               </ChakraFormControl>
 
               <ChakraFormControl isInvalid={errors.telephone} isRequired>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input type="number" {...register('telephone', { required: true })} />
-                {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Input
+                  type="number"
+                  {...register("telephone", { required: true })}
+                />
+                {errors.province && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
             </form>
           </ModalBody>
@@ -403,18 +463,36 @@ export default function Warehouse() {
       </Modal>
 
       {isSavePopupOpen && (
-        <Box position="fixed" bottom={4} right={4} p={3} bg="green.500" color="white" borderRadius="md" zIndex={9999}>
+        <Box
+          position="fixed"
+          bottom={4}
+          right={4}
+          p={3}
+          bg="green.500"
+          color="white"
+          borderRadius="md"
+          zIndex={9999}>
           Data has been saved to the database.
         </Box>
       )}
 
       {isDeletePopupOpen && (
-        <Box position="fixed" bottom={4} right={4} p={3} bg="red.700" color="white" borderRadius="md" zIndex={9999}>
+        <Box
+          position="fixed"
+          bottom={4}
+          right={4}
+          p={3}
+          bg="red.700"
+          color="white"
+          borderRadius="md"
+          zIndex={9999}>
           Data has been deleted.
         </Box>
       )}
 
-      <AlertDialog isOpen={isDeleteConfirmationOpen} onClose={cancelDeleteWarehouse}>
+      <AlertDialog
+        isOpen={isDeleteConfirmationOpen}
+        onClose={cancelDeleteWarehouse}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -423,7 +501,10 @@ export default function Warehouse() {
 
             <AlertDialogCloseButton />
 
-            <AlertDialogBody>Are you sure you want to delete this warehouse? This action is irreversible.</AlertDialogBody>
+            <AlertDialogBody>
+              Are you sure you want to delete this warehouse? This action is
+              irreversible.
+            </AlertDialogBody>
 
             <AlertDialogFooter>
               <Button onClick={cancelDeleteWarehouse}>Cancel</Button>
@@ -444,18 +525,31 @@ export default function Warehouse() {
             <form onSubmit={handleSubmit(onEditSubmit)}>
               <ChakraFormControl>
                 <ChakraFormLabel>Name</ChakraFormLabel>
-                <Input {...register('name')} />
+                <Input {...register("name")} />
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Address</ChakraFormLabel>
-                <Textarea defaultValue={selectedWarehouse?.address || ''} {...register('address')} />
+                <Textarea
+                  defaultValue={selectedWarehouse?.address || ""}
+                  {...register("address")}
+                />
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))}>
+                <Select
+                  id="province"
+                  {...register("province", { required: true })}
+                  onChange={(e) =>
+                    fetchCitiesByProvince(
+                      e.target.selectedOptions[0].getAttribute("data-id")
+                    )
+                  }>
                   <option value="">-Select Province-</option>
                   {provinces.map((province) => (
-                    <option key={province.id} value={province.name} data-id={province.id}>
+                    <option
+                      key={province.id}
+                      value={province.name}
+                      data-id={province.id}>
                       {province.name}
                     </option>
                   ))}
@@ -463,7 +557,7 @@ export default function Warehouse() {
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select id="city" {...register('city', { required: true })}>
+                <Select id="city" {...register("city", { required: true })}>
                   <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
@@ -474,18 +568,20 @@ export default function Warehouse() {
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input {...register('postal_code')} />
+                <Input {...register("postal_code")} />
               </ChakraFormControl>
               <ChakraFormControl>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input {...register('telephone')} />
+                <Input {...register("telephone")} />
               </ChakraFormControl>
 
               <ModalFooter>
                 <Button colorScheme="blue" type="submit">
                   Save Changes
                 </Button>
-                <Button variant="ghost" onClick={() => setIsEditModalOpen(false)}>
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsEditModalOpen(false)}>
                   Close
                 </Button>
               </ModalFooter>
