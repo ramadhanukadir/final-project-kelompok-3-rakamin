@@ -7,7 +7,13 @@ import {
   getWarehousesById,
 } from '@/api/fetch/orders';
 import { fetchUser } from '@/api/fetch/auth';
-import { getAllCategories, getAllWarehousesStock } from '@/api/fetch';
+import {
+  getAllExpenses,
+  getAllOrdersItems,
+  getAllRevenue,
+} from '@/api/fetch/chart';
+import { getAllCategories } from '@/api/fetch/category';
+import { getAllWarehousesStock } from '@/api/fetch/warehouses';
 
 const AllDataContext = createContext();
 
@@ -24,6 +30,10 @@ const AllDataContextProvider = ({ children }) => {
   const [itemsId, setItemsId] = useState(0);
   const [userLogin, setUserLogin] = useState({});
   const [warehouseStock, setWarehouseStock] = useState([]);
+  const [orderData, setOrderData] = useState([]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [activeItem, setActiveItem] = useState('dashboard');
 
   let access = '';
 
@@ -66,9 +76,28 @@ const AllDataContextProvider = ({ children }) => {
     setOrders(data);
   };
 
-  const fetchWarehousStock = async () => {
+  const fetchWarehousesStock = async () => {
     const data = await getAllWarehousesStock();
     setWarehouseStock(data);
+  };
+
+  const fetchOrderItems = async () => {
+    const data = await getAllOrdersItems();
+    setOrderData(data);
+  };
+
+  const fetchExpenses = async () => {
+    const data = await getAllExpenses();
+    setTotalExpenses(data.data.totalExpenses);
+  };
+
+  const fetchRevenue = async () => {
+    const data = await getAllRevenue();
+    const revenueSum = data.reduce(
+      (sum, revenue) => sum + revenue.totalRevenue,
+      0
+    );
+    setTotalRevenue(revenueSum);
   };
 
   useEffect(() => {
@@ -79,13 +108,16 @@ const AllDataContextProvider = ({ children }) => {
         fetchOrders(),
         fetchUserLogin(),
         fetchCategories(),
-        fetchWarehousStock();
+        fetchWarehousesStock();
+      fetchOrderItems();
+      fetchExpenses();
+      fetchRevenue();
     }
 
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [warehouseId, itemsId]);
+  }, [access, warehouseId, itemsId]);
 
   return (
     <AllDataContext.Provider
@@ -108,6 +140,12 @@ const AllDataContextProvider = ({ children }) => {
         setItemsId,
         userLogin,
         access,
+        orderData,
+        totalExpenses,
+        totalRevenue,
+        activeItem,
+        setActiveItem,
+        fetchUserLogin,
       }}
     >
       {children}

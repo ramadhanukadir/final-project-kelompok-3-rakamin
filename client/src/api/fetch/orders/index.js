@@ -2,8 +2,8 @@ import { instance } from "@/modules/axios";
 
 export const getAllCustomer = async () => {
   try {
-    const { data } = await instance.get("/customer");
-    return data;
+    const { data } = await instance.get("/customer?page=1&limit=5");
+    return data.dataCustomers;
   } catch (error) {
     throw new Error(error.response.data.message);
   }
@@ -29,6 +29,15 @@ export const getAllWarehouses = async () => {
   }
 };
 
+export const getAllWarehousesStock = async () => {
+  try {
+    const { data } = await instance.get("/warehouses-stock");
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
 export const getWarehousesById = async (id) => {
   try {
     const { data } = await instance.get(`/warehouses/${id}`);
@@ -40,7 +49,16 @@ export const getWarehousesById = async (id) => {
 
 export const getAllOrders = async () => {
   try {
-    const { data } = await instance.get('/orders');
+    const { data } = await instance.get("/orders");
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+
+export const getAllCategories = async () => {
+  try {
+    const { data } = await instance.get("/categories");
     return data;
   } catch (error) {
     throw new Error(error.response.data.message);

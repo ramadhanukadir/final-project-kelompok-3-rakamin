@@ -35,6 +35,7 @@ const SideBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const { userLogin, setIsLogin } = useContext(DataContext);
+  console.log('name', userLogin);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -134,6 +135,15 @@ const SidebarContent = ({ onClose, ...rest }) => {
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('customers'), router.push('/customers');
+          }}
+        />
+        <SideItem
+          icon={FiUser}
+          title="Warehouse"
+          active={activeItem === 'warehouse'}
+          activeColor={'#1363DF'}
+          onClick={() => {
+            handleItemClick('warehouse'), router.push('/warehouse');
           }}
         />
         <SideItem
