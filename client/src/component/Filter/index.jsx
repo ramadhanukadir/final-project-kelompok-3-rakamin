@@ -21,6 +21,8 @@ function Filter({
   show,
   filter,
   count,
+  handleSearch,
+  placeholder,
 }) {
   return (
     <HStack mb={3}>
@@ -29,13 +31,13 @@ function Filter({
         size={'xs'}
         px={3}
         py={'0px'}
-        onClick={handleNextPage}
+        onClick={handlePrevPage}
         isDisabled={disablePrevPage}
       >
         <GrFormPrevious />
       </Button>
       <Text fontSize={'sm'}>
-        {filter.page} of {model?.meta?.totalPages} pages
+        {filter.page} of {model?.totalPages} pages
       </Text>
       <Button
         variant={'unstyled'}
@@ -46,7 +48,7 @@ function Filter({
         _hover={{
           color: 'red',
         }}
-        onClick={handlePrevPage}
+        onClick={handleNextPage}
         isDisabled={disableNextPage}
       >
         <GrFormNext />
@@ -64,7 +66,13 @@ function Filter({
       </HStack>
       {model === show && (
         <Box>
-          <Input variant={'flushed'} placeholder='Search' />
+          <form onSubmit={handleSearch}>
+            <Input
+              variant={'flushed'}
+              placeholder={placeholder}
+              onChange={handleSearch}
+            />
+          </form>
         </Box>
       )}
       <HStack justifySelf={'flex-end'}>
