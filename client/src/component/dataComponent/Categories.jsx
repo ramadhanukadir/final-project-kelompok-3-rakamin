@@ -150,8 +150,8 @@ const Categories = () => {
               <Thead bg={"#DFF6FE"}>
                 <Tr>
                   <Th>SKU</Th>
-                  <Th>Edit</Th>
-                  <Th>Delete</Th>
+                  <Th>Description</Th>
+                  <Th>Action</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -163,6 +163,9 @@ const Categories = () => {
                       _hover={"black"}>
                       {item.name}
                     </Td>
+                    <Td cursor={"pointer"} _hover={"black"}>
+                      {item.description}
+                    </Td>
 
                     <Td>
                       <Button
@@ -172,8 +175,6 @@ const Categories = () => {
                         size={"md"}>
                         <FiEdit />
                       </Button>
-                    </Td>
-                    <Td>
                       <Button
                         colorScheme={"red"}
                         variant={"outline"}
