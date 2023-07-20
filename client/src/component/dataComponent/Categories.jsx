@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { instance } from "@/modules/axios";
+import React, { useState, useEffect } from 'react';
+import { instance } from '@/modules/axios';
 import {
   Box,
   Grid,
@@ -13,7 +13,6 @@ import {
   Td,
   Tbody,
   useBreakpointValue,
-  Image,
   Modal,
   ModalBody,
   ModalContent,
@@ -28,40 +27,26 @@ import {
   FormLabel as ChakraFormLabel,
   Input,
   useToast,
-  Select,
-} from "@chakra-ui/react";
-import { useFieldArray, useForm, watch } from "react-hook-form";
+  Icon,
+} from '@chakra-ui/react';
+import { useFieldArray, useForm, watch } from 'react-hook-form';
 import {
   getAllCategories,
   getCategoriesId,
   updateCategories,
   deleteCategories,
-} from "@/modules/fetch";
-import {
-  FiSearch,
-  FiUpload,
-  FiPlus,
-  FiEdit,
-  FiArrowLeft,
-  FiArrowRight,
-  FiCircle,
-  FiArrowUpRight,
-  FiDelete,
-  FiMove,
-} from "react-icons/fi";
-import { useRouter } from "next/router";
+} from '@/modules/fetch';
+import { FiPlus, FiEdit, FiDelete } from 'react-icons/fi';
+import { useRouter } from 'next/router';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
-  const [categoriesId, setCategoriesId] = useState([]);
   const toast = useToast();
-  const columns = useBreakpointValue({ base: 1, md: 3 });
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-    control,
     reset,
     resetField,
     setValue,
@@ -72,18 +57,18 @@ const Categories = () => {
   const router = useRouter();
 
   const fetchCategories = async () => {
-    const categories = await getAllCategories();
-    setCategories(categories);
+    const { data } = await getAllCategories();
+    setCategories(data);
   };
 
   useEffect(() => {
-    if (detailItems) {
-      setValue("name", detailItems.name);
-      setValue("description", detailItems.description);
-    }
     fetchCategories();
+    if (detailItems) {
+      setValue('name', detailItems.name);
+      setValue('description', detailItems.description);
+    }
   }, [detailItems, isModalOpen]);
-  // console.log(categories);
+  console.log(categories);
 
   const handleEdit = async (id) => {
     const foundProduct = await getCategoriesId(id);
@@ -94,34 +79,24 @@ const Categories = () => {
       setIsModalOpen(true);
     }
   };
-  // console.log(detailItems);
-
-  // const handleGetById = async (id) => {
-  //   const foundProduct = await getCategoriesId(id);
-  //   setCategoriesId(foundProduct);
-
-  //   if (foundProduct) {
-  //     setGetById(id);
-  //   }
-  // };
 
   const handleDeleteItems = async (id) => {
     try {
       await deleteCategories(id);
       handleCloseModal(),
         toast({
-          title: "Delete Product",
-          description: "You have successfully Created Product.",
-          status: "success",
+          title: 'Delete Product',
+          description: 'You have successfully Created Product.',
+          status: 'success',
           duration: 3000,
           isClosable: true,
         });
       fetchCategories();
     } catch (error) {
       toast({
-        title: "Failed to delete product.",
+        title: 'Failed to delete product.',
         description: error.message,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true,
       });
@@ -133,9 +108,9 @@ const Categories = () => {
       await instance.put(`/categories/${editItemId}`, data);
       handleCloseModal();
       toast({
-        title: "Created Product",
-        description: "You have successfully Created Product.",
-        status: "success",
+        title: 'Created Product',
+        description: 'You have successfully Created Product.',
+        status: 'success',
         duration: 3000,
         isClosable: true,
       });
@@ -143,9 +118,9 @@ const Categories = () => {
       reset();
     } catch (error) {
       toast({
-        title: "Failed to create product.",
+        title: 'Failed to create product.',
         description: error.message,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true,
       });
@@ -157,94 +132,106 @@ const Categories = () => {
   };
 
   return (
-    <Box maxW="7xl" mx={"auto"} px={{ base: 2, sm: 12, md: 17 }} mt={50}>
+    <Box maxW='7xl' mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'5em'}>
       <Box>
         <Box
-          display={"flex"}
-          flexDirection={"row"}
-          justifyContent={"space-between"}
-          py={"10"}>
-          <Text fontWeight={"bold"} fontSize={"xl"}>
+          display={'flex'}
+          flexDirection={'row'}
+          justifyContent={'space-between'}
+          mb={'6em'}
+          pb={'10'}
+        >
+          <Text fontWeight={'bold'} fontSize={'xl'}>
             Category
           </Text>
           <InputCategory />
         </Box>
         <Box>
-          <TableContainer>
-            <Table variant="simple">
-              <Thead bg={"#DFF6FE"}>
+          <TableContainer overflowY={'auto'} h={'25em'} px={5}>
+            <Table variant='simple'>
+              <Thead bg={'#06283D'}>
                 <Tr>
-                  <Th>SKU</Th>
-                  <Th>Edit</Th>
-                  <Th>Delete</Th>
+                  <Th color={'#EEEDED'}>Name</Th>
+                  <Th color={'#EEEDED'}>Description</Th>
+                  <Th color={'#EEEDED'}>Action</Th>
                 </Tr>
               </Thead>
-              <Tbody>
-                {categories?.data?.map((item) => (
-                  <Tr key={item.id}>
+              <Tbody bg={'#EEEDED'}>
+                {categories?.map((c) => (
+                  <Tr key={c.id}>
                     <Td
-                      onClick={() => router.push(`/category/${item.id}`)}
-                      cursor={"pointer"}
-                      _hover={"black"}>
-                      {item.name}
+                      onClick={() => router.push(`/category/${c.id}`)}
+                      cursor={'pointer'}
+                      _hover={'black'}
+                    >
+                      {c.name}
                     </Td>
+                    <Tr>
+                      <Td>{c.description}</Td>
+                    </Tr>
 
                     <Td>
-                      <Button
-                        color="blue"
-                        bg={"transparent"}
-                        onClick={() => handleEdit(item.id)}
-                        size={"md"}>
-                        <FiEdit />
-                      </Button>
-                    </Td>
-                    <Td>
-                      <Button
-                        color="red"
-                        bg={"transparent"}
-                        onClick={() => handleDeleteItems(item.id)}
-                        size={"md"}>
-                        <FiDelete />
-                      </Button>
+                      <Icon
+                        color={'#06283D'}
+                        onClick={() => handleEdit(c.id)}
+                        as={FiEdit}
+                        mr={3}
+                        _hover={{
+                          cursor: 'pointer',
+                          color: '#4F709C',
+                        }}
+                        title='Edit'
+                      />
+                      <Icon
+                        color={'red'}
+                        onClick={() => handleDeleteItems(c.id)}
+                        as={FiDelete}
+                        _hover={{
+                          cursor: 'pointer',
+                          color: '#EF6262',
+                        }}
+                        title='Delete'
+                      />
                     </Td>
                   </Tr>
                 ))}
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader textAlign="center">Edit Product</ModalHeader>
+                    <ModalHeader textAlign='center'>Edit Category</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <FormControl isInvalid={errors.name} mb={4}>
-                          <FormLabel htmlFor="name">Name:</FormLabel>
+                          <FormLabel htmlFor='name'>Name:</FormLabel>
                           <Input
-                            type="text"
-                            id="name"
-                            {...register("name", { required: true })}
+                            type='text'
+                            id='name'
+                            {...register('name', { required: true })}
                           />
                           <FormErrorMessage>Name Harus Di Isi</FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.description} mb={4}>
-                          <FormLabel htmlFor="description">
+                          <FormLabel htmlFor='description'>
                             Description
                           </FormLabel>
                           <Input
-                            type="text"
-                            id="description"
-                            {...register("description", { required: true })}
+                            type='text'
+                            id='description'
+                            {...register('description', { required: true })}
                           />
                           <FormErrorMessage>
                             Description Harus Di isi
                           </FormErrorMessage>
                         </FormControl>
                         <Button
-                          type="submit"
-                          size={"md"}
-                          colorScheme="blue"
-                          mr={3}>
+                          type='submit'
+                          size={'md'}
+                          colorScheme='blue'
+                          mr={3}
+                        >
                           Edit Category
                         </Button>
-                        <Button size={"md"} onClick={handleCloseModal}>
+                        <Button size={'md'} onClick={handleCloseModal}>
                           Cancel
                         </Button>
                       </form>
@@ -276,33 +263,33 @@ export const InputCategory = () => {
     const jsonData = JSON.stringify(data);
     try {
       const response = await instance.post(
-        "/categories",
+        '/categories',
         jsonData,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         },
         handleCloseModal(),
         toast({
-          title: "Created Product",
-          description: "You have successfully Created Product.",
-          status: "success",
+          title: 'Created Product',
+          description: 'You have successfully Created Product.',
+          status: 'success',
           duration: 3000,
           isClosable: true,
         })
       );
       if (response.status === 200) {
-        console.log("Produk berhasil ditambahkan!");
-
+        console.log('Produk berhasil ditambahkan!');
+        fetchCategories();
         reset();
       }
     } catch (error) {
-      console.error("Terjadi kesalahan saat mengirim permintaan:", error);
+      console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
-        title: "Failed to create product.",
+        title: 'Failed to create product.',
         description: err.message,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true,
       });
@@ -318,45 +305,57 @@ export const InputCategory = () => {
   };
 
   React.useEffect(() => {
-    setValue("name", "");
-    setValue("description", "");
+    setValue('name', '');
+    setValue('description', '');
   }, [setValue]);
 
   return (
     <Box>
-      <Button size="sm" onClick={handleOpenModal}>
-        <FiPlus />
+      <Button
+        size='sm'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        leftIcon={<FiPlus />}
+        onClick={handleOpenModal}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+      >
+        Add Category
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign="center">Stock Form</ModalHeader>
+          <ModalHeader textAlign='center'>Category Form</ModalHeader>
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
-                <FormControl isInvalid={errors.categories_id} mb={4}>
-                  <FormLabel htmlFor="name">Name</FormLabel>
+                <FormControl isInvalid={errors.name} mb={4}>
+                  <FormLabel htmlFor='name'>Name</FormLabel>
                   <Input
-                    type="text"
-                    id="name"
-                    {...register("name", { required: true })}
+                    type='text'
+                    id='name'
+                    {...register('name', { required: true })}
                   />
                   <FormErrorMessage>Name harus diisi.</FormErrorMessage>
                 </FormControl>
-                <FormControl isInvalid={errors.name} mb={4}>
-                  <FormLabel htmlFor="description">Description</FormLabel>
+                <FormControl isInvalid={errors.description} mb={4}>
+                  <FormLabel htmlFor='description'>Description</FormLabel>
                   <Input
-                    type="text"
-                    id="description"
-                    {...register("description", { required: true })}
+                    type='text'
+                    id='description'
+                    {...register('description', { required: true })}
                   />
                   <FormErrorMessage>Description harus diisi.</FormErrorMessage>
                 </FormControl>
 
-                <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
+                <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
                   Create Category
                 </Button>
-                <Button size={"md"} onClick={handleCloseModal}>
+                <Button size={'md'} onClick={handleCloseModal}>
                   Cancel
                 </Button>
               </form>

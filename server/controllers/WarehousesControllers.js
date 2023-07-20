@@ -22,7 +22,7 @@ const getAllWarehouses = async (req, res) => {
 
 const getAllWarehousesWithFilter = async (req, res) => {
   const { id } = req.loggedUser;
-  const page = parseInt(req.query.page) || 0;
+  const page = parseInt(req.query.page) - 1 || 0;
   const limit = parseInt(req.query.limit) || 10;
   const search = req.query.search_query || '';
   const offset = limit * page;
@@ -69,7 +69,7 @@ const getAllWarehousesWithFilter = async (req, res) => {
     page: page,
     limit: limit,
     totalRows: totalRows,
-    totalPage: totalPage,
+    totalPages: totalPage,
   });
 };
 

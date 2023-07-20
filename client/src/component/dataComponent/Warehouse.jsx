@@ -46,6 +46,7 @@ import { Center } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiEye } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
+import Filter from '../Filter';
 
 const Warehouses = () => {
   const router = useRouter();
@@ -53,11 +54,17 @@ const Warehouses = () => {
   const [warehouses, setWarehouses] = useState([]);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
-  const [pages, setPages] = useState(0);
+  const [pages, setPages] = useState({});
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState('');
   const [query, setQuery] = useState('');
   const [msg, setMsg] = useState('');
+
+  const [filterWarehouses, setFilterWarehouses] = useState({
+    search_query: '',
+    page: 1,
+    limit: 5,
+  });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [provinces, setProvinces] = useState([]);
@@ -113,14 +120,14 @@ const Warehouses = () => {
   // Pagination & Get Warehouses
   useEffect(() => {
     getWarehouses();
-  }, [page, keyword]);
+  }, [page, keyword, filterWarehouses]);
 
   const getWarehouses = async () => {
-    const response = await instance.get(`/warehouses/with-filter?search_query=${keyword}&page=${page}&limit=${limit}`);
+    const response = await instance.get(`/warehouses/with-filter?search_query=${filterWarehouses.search_query}&page=${filterWarehouses.page}&limit=${filterWarehouses.limit}`);
 
     setWarehouses(response.data.result);
     setPage(response.data.page);
-    setPages(response.data.totalPage);
+    setPages(response.data);
     setRows(response.data.totalRows);
   };
 
@@ -274,21 +281,47 @@ const Warehouses = () => {
         </Box>
       </Box>
 
+      <Filter
+        page={pages}
+        model={warehouses}
+        show={warehouses}
+        filter={filterWarehouses}
+        handleNextPage={() => {
+          setFilterWarehouses({
+            ...filterWarehouses,
+            page: filterWarehouses.page + 1,
+          });
+        }}
+        handlePrevPage={() => {
+          setFilterWarehouses({
+            ...filterWarehouses,
+            page: filterWarehouses.page - 1,
+          });
+        }}
+        handleLimit={(e) => {
+          setFilterWarehouses({
+            ...filterWarehouses,
+            limit: e.target.value,
+          });
+        }}
+        disableNextPage={filterWarehouses.page === pages}
+        disablePrevPage={filterWarehouses.page === 1}
+        count={rows}
+        placeholder={'Search by Name or Warehouse'}
+        handleSearch={(e) => {
+          setTimeout(() => {
+            setFilterWarehouses({
+              ...filterWarehouses,
+              search_query: e.target.value,
+            });
+          }, 1000);
+        }}
+      />
+
       <Box>
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
           <Box display={'row'} justifyContent={'start'} alignItems={'center'} gap={'10'} my={'5'}></Box>
-          <Box display={'flex'} justifyContent={'end'} mb={2}>
-            <form onSubmit={searchData}>
-              <InputGroup>
-                <Input placeholder="Gudang / Kota ..." value={query} onChange={(e) => setQuery(e.target.value)} px={'8'} />
-                <InputRightElement width="auto">
-                  <Button type="submit" colorScheme="blue" leftIcon={<SearchIcon />}>
-                    Cari
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </form>
-          </Box>
+          <Box display={'flex'} justifyContent={'end'} mb={2}></Box>
         </Box>
         <Box>
           <TableContainer>
@@ -358,7 +391,7 @@ const Warehouses = () => {
             </Table>
           </TableContainer>
 
-          <Text fontWeight={'bold'} fontSize={'l'} mt={5}>
+          {/* <Text fontWeight={'bold'} fontSize={'l'} mt={5}>
             Total Warehouse: {rows} Page: {rows ? page + 1 : 0} of {pages}
           </Text>
           <p className="text-danger">{msg}</p>
@@ -377,7 +410,7 @@ const Warehouses = () => {
               activeLinkClassName="pagination-link is-current"
               disabledLinkClassName="pagination-link is-disabled"
             />
-          </nav>
+          </nav> */}
         </Box>
       </Box>
 

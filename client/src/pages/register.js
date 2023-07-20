@@ -24,7 +24,7 @@ import {
 import { CheckCircleIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
-import { handleRegister } from '@/api/fetch/auth';
+import { handleRegister } from '@/api/auth';
 import InputField from '@/component/InputField/InputField';
 
 const register = () => {
@@ -71,7 +71,6 @@ const register = () => {
       alignItems={'center'}
       h={'100vh'}
       gridColumnGap={5}
-      // spacing={{ base: 10, lg: 32 }}
       py={{ base: 6, sm: 6, lg: 9, xl: 10 }}
       px={{ base: 5, sm: 5, lg: 7, xl: 8 }}
     >
@@ -83,9 +82,10 @@ const register = () => {
           <Image
             src='/StocktrackrLogo-01.png'
             alt='logo'
-            width={150}
-            height={150}
+            width={'250px'}
+            height={'80px'}
             onClick={handleHome}
+            mb={6}
           />
           Scale Your Business with Stocktrackr
         </Heading>

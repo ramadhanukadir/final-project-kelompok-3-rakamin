@@ -32,15 +32,18 @@ import {
   InputGroup,
   InputRightElement,
   Icon,
+  PageSelect,
+  Flex,
+  TableCaption,
 } from '@chakra-ui/react';
-import { getAllItems, getAllItemsById, getAllWarehouses, getAllWarehouseStock, getAllSuppliers, getWarehouseId, deleteItems, updateItems } from '@/modules/fetch';
-//import { useNavigate } from "react-router-dom";
-import { WarningIcon, SearchIcon, ArrowForwardIcon } from '@chakra-ui/icons';
-import { FiSearch, FiUpload, FiPlus, FiArrowLeft, FiArrowRight, FiCircle, FiArrowUpRight, FiDelete, FiMove, FaRegEdit, FiEdit } from 'react-icons/fi';
-import { Form, useForm } from 'react-hook-form';
+import { getAllItems, getAllItemsById, getAllWarehouses, getAllSuppliers } from '@/modules/fetch';
+import { FiPlus, FiArrowRight, FiDelete, FiMove, FiEdit } from 'react-icons/fi';
+import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { DataContext } from '@/context/AllDataContext';
 import SelectField from '../SelectField/SelectField';
+import Filter from '../Filter';
+import { updateItems, deleteItems } from '@/api/product';
 
 const Product = () => {
   const toast = useToast();
@@ -49,22 +52,14 @@ const Product = () => {
     reset,
     register,
     formState: { errors },
-    watch,
     setValue,
   } = useForm();
-  const { categories, warehouseStock } = useContext(DataContext);
-  const [product, setProduct] = useState([]);
+  const { categories, warehouseStock, products, fetchItems, filterProducts, setFilterProducts, fetchWarehousesStock } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
-  const [warehouse, setWarehouse] = useState([]);
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-  const router = useRouter();
 
-  const fetchProduct = async () => {
-    const { data } = await getAllItems();
-    setProduct(data);
-  };
+  const router = useRouter();
 
   useEffect(() => {
     if (detailItems) {
@@ -77,7 +72,6 @@ const Product = () => {
       setValue('base_price', detailItems.basePrice);
       setValue('selling_price', detailItems.sellingPrice);
     }
-    fetchProduct();
   }, [detailItems]);
 
   const handleCloseModal = () => {
@@ -89,7 +83,7 @@ const Product = () => {
     setDetailItems(foundProduct.data);
 
     if (foundProduct) {
-      setEditItemId(id);
+      setEditItemId(parseInt(id));
       setIsModalOpen(true);
     }
   };
@@ -98,14 +92,6 @@ const Product = () => {
     const categoryName = categories.find((item) => item.id === id);
     return categoryName?.name;
   };
-
-  // useEffect(() => {
-  //   const warehouseName = () => {
-  //     const data = warehouseStock.filter((item) => item.items_id === 1);
-  //     setWarehouse(data);
-  //   };
-  //   warehouseName();
-  // }, []);
 
   const handleDeleteItems = async (id) => {
     try {
@@ -118,7 +104,7 @@ const Product = () => {
           duration: 3000,
           isClosable: true,
         });
-      fetchProduct();
+      fetchItems();
     } catch (error) {
       toast({
         title: 'Failed to delete product.',
@@ -141,25 +127,25 @@ const Product = () => {
       formData.append('description', data.description);
       formData.append('base_price', data.base_price);
       formData.append('selling_price', data.selling_price);
-      formData.append('image_url', data.image_url[0]);
+      if (data.image_url[0]) {
+        formData.append('image_url', data.image_url[0]);
+      }
 
-      const response = await instance.post(
-        '/items',
-        formData,
-        handleCloseModal(),
-        toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
-      );
+      await updateItems(editItemId, formData);
+      toast({
+        title: 'Success',
+        description: 'Successfully update product',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      handleCloseModal();
+      fetchItems();
+      fetchWarehousesStock();
       reset();
-      fetchProduct();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: 'Failed to update product',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -169,268 +155,188 @@ const Product = () => {
   };
   return (
     <Box>
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'}>
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} mb={10} pb={'10'}>
         <Text fontWeight={'bold'} fontSize={'xl'}>
           Products
         </Text>
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
-          <AddProductForm />
-          <AddStockForm />
-          <MoveStock warehouseStock={warehouseStock} />
+          <AddProductForm fetchItems={() => fetchItems()} />
+          <AddStockForm fetchWarehousesStock={() => fetchWarehousesStock()} />
+          <MoveStock warehouseStock={warehouseStock} fetchWarehousesStock={() => fetchWarehousesStock()} />
         </Box>
       </Box>
-      {/* <Box>
-        <Box>
-          <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} mx={'2'}>
-            <Text fontWeight={'bold'} fontSize={'xl'}>
-              Summary
-            </Text>
-            <Text fontWeight={'bold'} color={'#1363DE'}>
-              Product Categories
-            </Text>
-          </Box>
-        </Box>
-        <Box display={'flex'} flexDirection={'center'} justifyContent={'center'} gap={'5'}>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
-            <WarningIcon fontSize={30} />
-            <Box direction={'column'} px={'2'} py={'3'}>
-              <Text fontWeight={'bold'} fontSize={'2xl'}>
-                28 Types
-              </Text>
-              <Text fontWeight={'normal'} fontSize={'xl'}>
-                Available Stock
-              </Text>
-            </Box>
-          </Box>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
-            <WarningIcon fontSize={30} />
-            <Box direction={'column'} px={'2'} py={'3'}>
-              <Text fontWeight={'bold'} fontSize={'2xl'}>
-                28 Types
-              </Text>
-              <Text fontWeight={'normal'} fontSize={'xl'}>
-                Available Stock
-              </Text>
-            </Box>
-          </Box>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
-            <WarningIcon fontSize={30} />
-            <Box direction={'column'} px={'2'} py={'3'}>
-              <Text fontWeight={'bold'} fontSize={'2xl'}>
-                28 Types
-              </Text>
-              <Text fontWeight={'normal'} fontSize={'xl'}>
-                Available Stock
-              </Text>
-            </Box>
-          </Box>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} px={'10'} py={'5'} borderWidth="1px" rounded="lg" shadow="lg">
-            <WarningIcon fontSize={30} />
-            <Box direction={'column'} px={'2'} py={'3'}>
-              <Text fontWeight={'bold'} fontSize={'2xl'}>
-                28 Types
-              </Text>
-              <Text fontWeight={'normal'} fontSize={'xl'}>
-                Available Stock
-              </Text>
-            </Box>
-          </Box>
-        </Box>
-      </Box> */}
-      <Box>
-        <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          {/* <Box
-            display={'row'}
-            justifyContent={'start'}
-            alignItems={'center'}
-            gap={'10'}
-            my={'5'}
-          >
-            <Button
-              px={8}
-              bg={'#DFF6FE'}
-              color={'black'}
-              rounded={'md'}
-              _active={{ bg: '#1363DE' }}
-            >
-              Goods & Services
-            </Button>
-            <Button
-              px={8}
-              bg={'#1363DE'}
-              color={'white'}
-              rounded={'md'}
-              _active={{ bg: '#DFF6FE' }}
-            >
-              Stock Adjustment
-            </Button>
-            <Button
-              px={8}
-              bg={'#DFF6FE'}
-              color={'black'}
-              rounded={'md'}
-              _active={{ bg: '#1363DE' }}
-            >
-              Need Approval
-            </Button>
-          </Box> */}
-          <Box display={'flex'} justifyContent={'end'}>
-            <InputGroup>
-              <Input placeholder="Masukkan kata kunci" value="Search value" onChange={''} px={'8'} />
-              <InputRightElement width="auto">
-                <Button colorScheme="blue" onClick={''} leftIcon={<SearchIcon />}>
-                  Cari
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-          </Box>
-        </Box>
-
-        <Box>
-          <TableContainer>
-            <Table variant="simple">
-              <Thead bg={'#DFF6FE'}>
-                <Tr>
-                  <Th>Name</Th>
-                  <Th>SKU</Th>
-                  <Th>Categories</Th>
-                  <Th>Warehouse</Th>
-                  <Th>Base Price</Th>
-                  <Th>Image</Th>
-                  <Th>Action</Th>
+      <Filter
+        page={products?.meta}
+        model={products}
+        show={products}
+        filter={filterProducts}
+        handleNextPage={() => {
+          setFilterProducts({
+            ...filterProducts,
+            page: filterProducts.page + 1,
+          });
+        }}
+        handlePrevPage={() => {
+          setFilterProducts({
+            ...filterProducts,
+            page: filterProducts.page - 1,
+          });
+        }}
+        handleLimit={(e) => {
+          setFilterProducts({
+            ...filterProducts,
+            limit: e.target.value,
+          });
+        }}
+        disableNextPage={filterProducts.page === products?.meta?.totalPages}
+        disablePrevPage={filterProducts.page === 1}
+        count={products?.meta?.totalData}
+        placeholder={'Search by Name or SKU'}
+        handleSearch={(e) => {
+          setTimeout(() => {
+            setFilterProducts({
+              ...filterProducts,
+              q: e.target.value,
+            });
+          }, 1000);
+        }}
+      />
+      <TableContainer overflowY={'auto'} h={'25em'} px={5}>
+        <Table variant="simple" size={'md'}>
+          <TableCaption>Products</TableCaption>
+          <Thead bg={'#06283D'}>
+            <Tr>
+              <Th color={'#EEEDED'}>Name</Th>
+              <Th color={'#EEEDED'}>SKU</Th>
+              <Th color={'#EEEDED'}>Categories</Th>
+              <Th color={'#EEEDED'}>Warehouse</Th>
+              <Th color={'#EEEDED'}>Image</Th>
+              <Th color={'#EEEDED'}>Action</Th>
+            </Tr>
+          </Thead>
+          <Tbody bg={'#EEEDED'}>
+            {products?.data?.map((item) => {
+              return (
+                <Tr key={item.id}>
+                  <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'} py={2}>
+                    {item.name}
+                  </Td>
+                  <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'} py={2}>
+                    {item.SKU}
+                  </Td>
+                  <Td py={2}>{categoriesName(item.categoriesId)}</Td>
+                  <Td py={2}>
+                    <Select border={'1px solid #9DB2BF'}>
+                      {warehouseStock
+                        .filter((ws) => ws.itemsName === item.name)
+                        .map((wS) => {
+                          return <option key={wS.id}>{`${wS.warehouseName}, Stock:  ${wS.stock}`}</option>;
+                        })}
+                    </Select>
+                  </Td>
+                  <Image src={item.imageUrl} w={'50px'} h={'50px'} />
+                  <Td>
+                    <Icon
+                      color={'#06283D'}
+                      onClick={() => handleEdit(item.id)}
+                      as={FiEdit}
+                      mr={3}
+                      _hover={{
+                        cursor: 'pointer',
+                        color: '#4F709C',
+                      }}
+                      title="Edit"
+                    />
+                    <Icon
+                      color={'red'}
+                      onClick={() => handleDeleteItems(item.id)}
+                      as={FiDelete}
+                      _hover={{
+                        cursor: 'pointer',
+                        color: '#EF6262',
+                      }}
+                      title="Delete"
+                    />
+                  </Td>
                 </Tr>
-              </Thead>
-              <Tbody>
-                {product?.map((item) => {
-                  const ws = warehouseStock.filter((ws) => ws.itemsName === item.name);
-                  // {warehouseName(item.id)}
-                  return (
-                    <Tr key={item.id}>
-                      <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'}>
-                        {item.name}
-                      </Td>
-                      <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'}>
-                        {item.SKU}
-                      </Td>
-                      <Td>{categoriesName(item.categoriesId)}</Td>
-                      <Td>
-                        <Select>
-                          {ws.map((wS) => {
-                            return <option key={wS.id}>{`${wS.warehouseName}, Stock:  ${wS.stock}`}</option>;
-                          })}
-                        </Select>
-                      </Td>
-                      <Td>{item.sellingPrice}</Td>
-                      <Image src={item.imageUrl} boxSize="50px" />
-                      <Td>
-                        <Icon
-                          boxSize={5}
-                          color={'#06283D'}
-                          onClick={() => handleEdit(item.id)}
-                          as={FiEdit}
-                          mr={3}
-                          _hover={{
-                            cursor: 'pointer',
-                            color: '#4F709C',
-                          }}
-                          title="Edit"
-                        />
-                        <Icon
-                          boxSize={5}
-                          color={'red'}
-                          onClick={() => handleDeleteItems(item.id)}
-                          as={FiDelete}
-                          _hover={{
-                            cursor: 'pointer',
-                            color: '#EF6262',
-                          }}
-                          title="Delete"
-                        />
-                      </Td>
-                    </Tr>
-                  );
-                })}
-                <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-                  <ModalOverlay />
-                  <ModalContent>
-                    <ModalHeader textAlign="center">Edit Product</ModalHeader>
-                    <ModalBody>
-                      <form onSubmit={handleSubmit(onSubmit)}>
-                        <SelectField
-                          // keyProp={1}
-                          name={'categories'}
-                          label={'Categories'}
-                          register={register('categories_id', {
-                            required: 'This is required',
-                          })}
-                          errors={errors.categories_id}
-                          mapping={categories}
-                          option={(opt) => opt.name}
-                          value={(opt) => opt.id}
-                        />
-                        <FormControl isInvalid={errors.name} mb={4}>
-                          <FormLabel htmlFor="name">Name:</FormLabel>
-                          <Input type="text" id="name" {...register('name', { required: true })} />
-                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={errors.SKU} mb={4}>
-                          <FormLabel htmlFor="SKU">SKU:</FormLabel>
-                          <Input type="text" id="SKU" {...register('SKU', { required: true })} />
-                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={errors.size} mb={4}>
-                          <FormLabel htmlFor="size">size:</FormLabel>
-                          <Input type="number" id="size" {...register('size', { required: true })} />
-                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={errors.weight} mb={4}>
-                          <FormLabel htmlFor="weight">weight:</FormLabel>
-                          <Input type="number" id="weight" {...register('weight', { required: true })} />
-                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={errors.description} mb={4}>
-                          <FormLabel htmlFor="description">Description:</FormLabel>
-                          <Input type="text" id="description" {...register('description', { required: true })} />
-                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={errors.base_price} mb={4}>
-                          <FormLabel htmlFor="base_price">Base Price:</FormLabel>
-                          <Input type="number" id="base_price" {...register('base_price', { required: true })} />
-                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={errors.selling_price} mb={4}>
-                          <FormLabel htmlFor="selling_price">Selling price:</FormLabel>
-                          <Input type="number" id="selling_price" {...register('selling_price', { required: true })} />
-                          <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                        </FormControl>
-                        <FormControl mb={4}>
-                          <FormLabel htmlFor="image_url">Gambar:</FormLabel>
-                          <Input type="file" id="image_url" {...register('image_url')} />
-                          {/* <FormErrorMessage>
-                            Gambar harus diunggah.
-                          </FormErrorMessage> */}
-                        </FormControl>
-                        <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
-                          Update product
-                        </Button>
-                        <Button size={'md'} onClick={handleCloseModal}>
-                          Cancel
-                        </Button>
-                      </form>
-                    </ModalBody>
-                    <ModalFooter></ModalFooter>
-                  </ModalContent>
-                </Modal>
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </Box>
+              );
+            })}
+            <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader textAlign="center">Edit Product</ModalHeader>
+                <ModalBody>
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <SelectField
+                      // keyProp={1}
+                      name={'categories'}
+                      label={'Categories'}
+                      register={register('categories_id', {
+                        required: 'This is required',
+                      })}
+                      errors={errors.categories_id}
+                      mapping={categories}
+                      option={(opt) => opt.name}
+                      value={(opt) => opt.id}
+                    />
+                    <FormControl isInvalid={errors.name} mb={4}>
+                      <FormLabel htmlFor="name">Name:</FormLabel>
+                      <Input type="text" id="name" {...register('name', { required: true })} />
+                      <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={errors.SKU} mb={4}>
+                      <FormLabel htmlFor="SKU">SKU:</FormLabel>
+                      <Input type="text" id="SKU" {...register('SKU', { required: true })} />
+                      <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={errors.size} mb={4}>
+                      <FormLabel htmlFor="size">size:</FormLabel>
+                      <Input type="number" id="size" {...register('size', { required: true })} />
+                      <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={errors.weight} mb={4}>
+                      <FormLabel htmlFor="weight">weight:</FormLabel>
+                      <Input type="number" id="weight" {...register('weight', { required: true })} />
+                      <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={errors.description} mb={4}>
+                      <FormLabel htmlFor="description">Description:</FormLabel>
+                      <Input type="text" id="description" {...register('description', { required: true })} />
+                      <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={errors.base_price} mb={4}>
+                      <FormLabel htmlFor="base_price">Base Price:</FormLabel>
+                      <Input type="number" id="base_price" {...register('base_price', { required: true })} />
+                      <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={errors.selling_price} mb={4}>
+                      <FormLabel htmlFor="selling_price">Selling price:</FormLabel>
+                      <Input type="number" id="selling_price" {...register('selling_price', { required: true })} />
+                      <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
+                    </FormControl>
+                    <FormControl mb={4}>
+                      <FormLabel htmlFor="image_url">Gambar:</FormLabel>
+                      <Input type="file" id="image_url" {...register('image_url')} />
+                    </FormControl>
+                    <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
+                      Update product
+                    </Button>
+                    <Button size={'md'} onClick={handleCloseModal}>
+                      Cancel
+                    </Button>
+                  </form>
+                </ModalBody>
+                <ModalFooter></ModalFooter>
+              </ModalContent>
+            </Modal>
+          </Tbody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
 
-export const AddProductForm = ({ fetchProduct }) => {
+export const AddProductForm = ({ fetchItems }) => {
   const {
     register,
     handleSubmit,
@@ -439,7 +345,6 @@ export const AddProductForm = ({ fetchProduct }) => {
   } = useForm();
   const { categories } = useContext(DataContext);
 
-  console.log(categories, 'categories');
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -458,26 +363,21 @@ export const AddProductForm = ({ fetchProduct }) => {
       formData.append('description', data.description);
       formData.append('base_price', data.base_price);
       formData.append('selling_price', data.selling_price);
-      formData.append('image_url', data.image_url[0]);
-
-      const response = await instance.post(
-        '/items',
-        formData,
-        handleCloseModal(),
-        toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
-      );
-      if (response.status === 200) {
-        console.log('Produk berhasil ditambahkan!');
-
-        reset();
+      if (data.image_url[0]) {
+        formData.append('image_url', data.image_url[0]);
       }
-      fetchProduct();
+
+      await instance.post('/items', formData);
+      toast({
+        title: 'Created Product',
+        description: 'You have successfully Created Product.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      reset();
+      fetchItems();
+      handleCloseModal();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -509,7 +409,19 @@ export const AddProductForm = ({ fetchProduct }) => {
 
   return (
     <Box>
-      <Button size="sm" bgColor={''} leftIcon={<FiPlus />} onClick={handleOpenModal}>
+      <Button
+        size="sm"
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        leftIcon={<FiPlus />}
+        onClick={handleOpenModal}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+      >
         Add Product
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
@@ -519,17 +431,7 @@ export const AddProductForm = ({ fetchProduct }) => {
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
-                {/* <FormControl isInvalid={errors.categories_id} mb={4}>
-                  <FormLabel htmlFor='categories_id'>Categories id:</FormLabel>
-                  <Input
-                    type='number'
-                    id='categories_id'
-                    {...register('categories_id', { required: true })}
-                  />
-                  <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
-                </FormControl> */}
                 <SelectField
-                  // keyProp={1}
                   name={'categories'}
                   label={'Categories'}
                   register={register('categories_id', {
@@ -577,7 +479,7 @@ export const AddProductForm = ({ fetchProduct }) => {
                 </FormControl>
                 <FormControl isInvalid={errors.image_url} mb={4}>
                   <FormLabel htmlFor="image_url">Gambar:</FormLabel>
-                  <Input type="file" id="image_url" {...register('image_url', { required: true })} />
+                  <Input type="file" id="image_url" {...register('image_url')} />
                   <FormErrorMessage>Gambar harus diunggah.</FormErrorMessage>
                 </FormControl>
                 <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
@@ -595,7 +497,7 @@ export const AddProductForm = ({ fetchProduct }) => {
   );
 };
 
-export const AddStockForm = ({ fetchProduct }) => {
+export const AddStockForm = ({ fetchWarehousesStock }) => {
   const {
     register,
     handleSubmit,
@@ -638,44 +540,23 @@ export const AddStockForm = ({ fetchProduct }) => {
     setValue('category', selectedValue);
   };
 
-  // React.useEffect(() => {
-  //   setValue('items_id', 1);
-  //   setValue('warehouses_id', 1);
-  //   setValue('suppliers_id', 1);
-  //   setValue('stock', 1);
-  // }, [setValue]);
-
   const onSubmit = async (data) => {
-    const jsonData = JSON.stringify(data);
     try {
-      const response = await instance.post(
-        '/items/stock',
-        jsonData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-        handleCloseModal(),
-        toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
-      );
-      if (response.status === 200) {
-        console.log('Produk berhasil ditambahkan!');
-
-        reset();
-      }
-      fetchProduct();
+      const response = await instance.post('/items/stock', data);
+      handleCloseModal();
+      toast({
+        title: 'Created Product',
+        description: 'You have successfully Created Product.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      reset();
+      fetchWarehousesStock();
     } catch (error) {
-      console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
         title: 'Failed to create product.',
-        description: err.message,
+        description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -693,7 +574,19 @@ export const AddStockForm = ({ fetchProduct }) => {
 
   return (
     <Box>
-      <Button size="sm" leftIcon={<FiArrowRight />} onClick={handleOpenModal}>
+      <Button
+        size="sm"
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+        leftIcon={<FiArrowRight />}
+        onClick={handleOpenModal}
+      >
         Add Stocks
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
@@ -706,6 +599,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Product</FormLabel>
                   <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('items_id', { required: true })}>
+                    <option value="" selected disabled>
+                      Select Items
+                    </option>
                     {items?.data?.map((product) => (
                       <option key={product.id} value={product.id}>
                         {product.name}
@@ -717,6 +613,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                 <FormControl mb={4} isInvalid={errors.warehouse_id}>
                   <FormLabel>Warehouse</FormLabel>
                   <Select size="sm" variant="filled" name="warehouse_id" onChange={handleChange} {...register('warehouses_id', { required: true })}>
+                    <option value="" selected disabled>
+                      Select Warehouse
+                    </option>
                     {warehouse.map((warehouses) => (
                       <option key={warehouses.id} value={warehouses.id}>
                         {warehouses.name}
@@ -733,6 +632,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                 <FormControl mb={4} isInvalid={errors.suppliers_id}>
                   <FormLabel>Suppliers</FormLabel>
                   <Select size="sm" variant="filled" name="vendor_id" onChange={handleChange} {...register('suppliers_id', { required: true })}>
+                    <option value="" selected disabled>
+                      Select Suppliers
+                    </option>
                     {suppliers?.dataSuppliers?.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>
                         {vendor.name}
@@ -742,8 +644,8 @@ export const AddStockForm = ({ fetchProduct }) => {
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>
 
-                <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
-                  Tambah product
+                <Button type="submit" size={'md'} colorScheme="blue" mr={3} onClick={() => console.log('Masuk')}>
+                  Add Stock Product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>
                   Cancel
@@ -757,7 +659,7 @@ export const AddStockForm = ({ fetchProduct }) => {
   );
 };
 
-export const MoveStock = ({ warehouseStock, fetchProduct }) => {
+export const MoveStock = ({ warehouseStock, fetchWarehousesStock }) => {
   const {
     register,
     handleSubmit,
@@ -768,7 +670,7 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
   } = useForm();
   const [items, setItems] = useState([]);
   const [warehouse, setWarehouse] = useState([]);
-  // const { warehouseStock } = useContext(DataContext);
+
   const [warehouseId, setWarehouseId] = useState(0);
   const [itemsId, setItemsId] = useState(0);
   const toast = useToast();
@@ -821,7 +723,7 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
         console.log('Produk berhasil ditambahkan!');
         reset();
       }
-      fetchProduct();
+      fetchWarehousesStock();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -836,7 +738,19 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
 
   return (
     <Box>
-      <Button size="sm" bgColor={''} leftIcon={<FiMove />} onClick={handleOpenModal}>
+      <Button
+        size="sm"
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+        leftIcon={<FiMove />}
+        onClick={handleOpenModal}
+      >
         Move Stocks
       </Button>
 
