@@ -78,7 +78,7 @@ const Categories = () => {
       setIsModalOpen(true);
     }
   };
-  // console.log(detailItems);
+  //console.log(detailItems);
 
   const handleDeleteItems = async (id) => {
     try {
@@ -150,8 +150,8 @@ const Categories = () => {
               <Thead bg={"#DFF6FE"}>
                 <Tr>
                   <Th>SKU</Th>
-                  <Th>Edit</Th>
-                  <Th>Delete</Th>
+                  <Th>Description</Th>
+                  <Th>Action</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -163,22 +163,25 @@ const Categories = () => {
                       _hover={"black"}>
                       {item.name}
                     </Td>
+                    <Td cursor={"pointer"} _hover={"black"}>
+                      {item.description}
+                    </Td>
 
                     <Td>
                       <Button
                         colorScheme={"blue"}
                         variant={"outline"}
                         onClick={() => handleEdit(item.id)}
-                        size={"md"}>
+                        size={"md"}
+                        ml={2}>
                         <FiEdit />
                       </Button>
-                    </Td>
-                    <Td>
                       <Button
                         colorScheme={"red"}
                         variant={"outline"}
                         onClick={() => handleDeleteItems(item.id)}
-                        size={"md"}>
+                        size={"md"}
+                        ml={2}>
                         <FiDelete />
                       </Button>
                     </Td>
