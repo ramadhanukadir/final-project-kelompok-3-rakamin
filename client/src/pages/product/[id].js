@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { getAllItemsById } from "@/modules/fetch";
-import { getAllWarehousesStock } from "@/api/fetch/warehouses";
+import { getAllWarehousesStock } from "@/api/warehouses";
 import { useRouter } from "next/router";
 import {
   Box,
