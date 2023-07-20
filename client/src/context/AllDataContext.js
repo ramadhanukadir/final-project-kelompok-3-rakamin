@@ -1,15 +1,15 @@
-import { createContext, useEffect, useState } from "react";
-import { getAllOrders } from "@/api/orders";
-import { getAllItems } from "@/api/product";
-import { getAllCustomer } from "@/api/customers";
+import { createContext, useEffect, useState } from 'react';
+import { getAllOrders } from '@/api/orders';
+import { getAllItems } from '@/api/product';
+import { getAllCustomer } from '@/api/customers';
 import {
   getAllWarehouses,
   getAllWarehousesStock,
   getWarehousesById,
-} from "@/api/warehouses";
-import { fetchUser } from "@/api/auth";
-import { getAllExpenses, getAllOrdersItems, getAllRevenue } from "@/api/chart";
-import { getAllCategories } from "@/api/category";
+} from '@/api/warehouses';
+import { fetchUser } from '@/api/auth';
+import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/chart';
+import { getAllCategories } from '@/api/category';
 
 const AllDataContext = createContext();
 
@@ -29,20 +29,20 @@ const AllDataContextProvider = ({ children }) => {
   const [orderData, setOrderData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [activeItem, setActiveItem] = useState("dashboard");
+  const [activeItem, setActiveItem] = useState('dashboard');
   const [filterOrder, setFilterOrder] = useState({
-    warehouses_id: "",
-    customers_id: "",
+    warehouses_id: '',
+    customers_id: '',
     page: 1,
-    limit: 2,
-    sort: "",
-    order: "",
+    limit: 5,
+    sort: '',
+    order: '',
   });
 
-  let access = "";
+  let access = '';
 
-  if (typeof window !== "undefined") {
-    access = sessionStorage.getItem("token");
+  if (typeof window !== 'undefined') {
+    access = sessionStorage.getItem('token');
   }
 
   const fetchUserLogin = async () => {
@@ -56,7 +56,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchItems = async () => {
-    const { meta, data } = await getAllItems(1, "ASC", "name", "", 10);
+    const { meta, data } = await getAllItems(1, 'ASC', 'name', '', 10);
     setProducts(data);
     return meta;
   };
@@ -158,7 +158,8 @@ const AllDataContextProvider = ({ children }) => {
         fetchItems,
         filterOrder,
         setFilterOrder,
-      }}>
+      }}
+    >
       {children}
     </AllDataContext.Provider>
   );
