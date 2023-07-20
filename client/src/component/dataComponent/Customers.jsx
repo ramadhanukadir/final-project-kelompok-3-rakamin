@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
-  getAllCustomer,
   getCustomersById,
   editCustomersById,
   deleteCustomersById,
@@ -20,26 +19,17 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
-  FormControl,
   FormControl as FormErrorMessage,
-  FormLabel,
-  Input,
   Box,
   TableContainer,
-  IconButton,
   Text,
-  useDisclosure,
   useToast,
-  VStack,
   Icon,
   TableCaption,
 } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
-import { instance } from '../../modules/axios/index';
 import { useRouter } from 'next/router';
-import { useFieldArray, useForm, watch } from 'react-hook-form';
-import { fetchData } from '@/api/suppliers';
+import { useForm } from 'react-hook-form';
 import InputField from '../InputField/InputField';
 import { DataContext } from '@/context/AllDataContext';
 import Filter from '../Filter';
@@ -47,14 +37,11 @@ import Filter from '../Filter';
 const Customers = () => {
   const { customers, filterCustomer, setFilterCustomer, fetchCustomers } =
     useContext(DataContext);
-  // const [customers, setCustomers] = useState([]);
   const toast = useToast();
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
-    control,
     reset,
     setValue,
   } = useForm();
@@ -62,18 +49,6 @@ const Customers = () => {
   const [editCustomersId, setEditCustomersId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
   const router = useRouter();
-
-  console.log('customer', customers);
-
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await instance.get('/customer?page=1&limit=10');
-  //     const { dataCustomers } = response.data;
-  //     setCustomers(dataCustomers);
-  //   } catch (error) {
-  //     console.error('Gagal mengambil data:', error);
-  //   }
-  // };
 
   useEffect(() => {
     if (detailItems) {
@@ -118,7 +93,7 @@ const Customers = () => {
 
   const onSubmit = async (data) => {
     try {
-      await instance.put(`/customer/${editCustomersId}`, data);
+      await editCustomersById(editCustomersId, data);
       handleCloseModal();
       toast({
         title: 'Updated Customer',
@@ -265,7 +240,7 @@ const Customers = () => {
                           w={'100%'}
                           borderRadius={'full'}
                         >
-                          Update Category
+                          Update Customer
                         </Button>
                       </form>
                     </ModalBody>

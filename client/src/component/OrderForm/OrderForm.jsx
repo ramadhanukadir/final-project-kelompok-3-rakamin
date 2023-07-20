@@ -72,6 +72,7 @@ function OrderForm() {
       fetchOrders();
     } catch (error) {
       toast({
+        title: 'Error',
         description: error.message,
         status: 'error',
         duration: 3000,
@@ -83,7 +84,19 @@ function OrderForm() {
 
   return (
     <>
-      <Button onClick={onOpen} leftIcon={<FiPlus />}>
+      <Button
+        size='sm'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        leftIcon={<FiPlus />}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+        onClick={onOpen}
+      >
         Add Order
       </Button>
 
