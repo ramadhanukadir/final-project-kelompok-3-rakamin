@@ -1,4 +1,3 @@
-import { DataContext } from '@/context/AllDataContext';
 import {
   Box,
   Button,
@@ -10,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 import { GrFormPrevious, GrFormNext } from 'react-icons/gr';
+import { TbDatabase } from 'react-icons/tb';
 
 function Filter({
   handleNextPage,
@@ -20,9 +20,8 @@ function Filter({
   model,
   show,
   filter,
+  count,
 }) {
-  const { filterOrder } = useContext(DataContext);
-
   return (
     <HStack mb={3}>
       <Button
@@ -68,6 +67,10 @@ function Filter({
           <Input variant={'flushed'} placeholder='Search' />
         </Box>
       )}
+      <HStack justifySelf={'flex-end'}>
+        <TbDatabase />
+        <p>{count}</p>
+      </HStack>
     </HStack>
   );
 }

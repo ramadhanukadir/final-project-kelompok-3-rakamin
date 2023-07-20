@@ -48,8 +48,6 @@ function OrderForm() {
   const router = useRouter();
   const id = watch('warehouses_id');
 
-  console.log(customers, '<<<<');
-
   useEffect(() => {
     setWarehouseId(parseInt(id));
     if (access === null) {
