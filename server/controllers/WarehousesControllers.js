@@ -20,35 +20,6 @@ const getAllWarehouses = async (req, res) => {
   }
 };
 
-// const getAllWarehouses = async (req, res) => {
-//   const { id } = req.loggedUser;
-//   const { page, limit, sort, q, order } = req.query;
-//   try {
-//     const { rows, count } = await Warehouses.findAndCountAll({
-//       offset: page && limit ? (page - 1) * limit : (page - 1) * 20,
-//       limit: limit ? parseInt(limit) : 20,
-//       order: sort && order ? [[order, sort]] : [['name', sort || 'ASC']],
-//       where: {
-//         users_id: id,
-//         [Op.or]: [{ name: { [Op.iLike]: `%${q}%` } }, { city: { [Op.iLike]: `%${q}%` } }],
-//       },
-//     });
-
-//     const response = mappingWarehouses(rows);
-
-//     res.status(200).json({
-//       meta: {
-//         page: page ? parseInt(page) : page,
-//         totalPages: page && limit ? Math.ceil(count / limit) : Math.ceil(count / 20),
-//         totalData: count,
-//       },
-//       data: response,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 const getAllWarehousesWithFilter = async (req, res) => {
   const { id } = req.loggedUser;
   const page = parseInt(req.query.page) || 0;

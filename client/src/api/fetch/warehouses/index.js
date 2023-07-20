@@ -9,9 +9,9 @@ export const getAllWarehousesStock = async () => {
   }
 };
 
-export const getAllWarehouses = async (page, sort, order, q = '') => {
+export const getWarehouseById = async (id) => {
   try {
-    const { data } = await instance.get(`/warehouses?page=${page}&q=${q}&sort=${sort}&order=${order}`);
+    const { data } = await instance.get(`/warehouses/${id}`);
     return data;
   } catch (error) {
     throw new Error(error.response.data.message);
