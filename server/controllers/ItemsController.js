@@ -62,7 +62,7 @@ const createItems = async (req, res) => {
 
     const items = await Items.create({
       users_id: id,
-      categories_id,
+      categories_id: parseInt(categories_id),
       name,
       description,
       SKU,
@@ -81,13 +81,22 @@ const createItems = async (req, res) => {
 
 const updateItems = async (req, res) => {
   const { id } = req.params;
-  const { name, description, SKU, size, weight, base_price, selling_price } =
-    req.body;
+  const {
+    name,
+    categories_id,
+    description,
+    SKU,
+    size,
+    weight,
+    base_price,
+    selling_price,
+  } = req.body;
 
   try {
     const items = await Items.findByPk(id);
     let updatedData = {
       name,
+      categories_id: parseInt(categories_id),
       description,
       SKU,
       size,
