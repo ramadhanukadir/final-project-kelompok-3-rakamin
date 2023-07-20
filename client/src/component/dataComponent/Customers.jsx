@@ -136,6 +136,7 @@ const Customers = () => {
         </Box>
         <Box>
           <Filter
+            page={customers}
             model={customers}
             show={!customers}
             filter={filterCustomer}

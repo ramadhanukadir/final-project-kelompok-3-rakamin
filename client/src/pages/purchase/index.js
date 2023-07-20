@@ -18,7 +18,8 @@ const index = () => {
       </Flex>
       <Box w={'100%'} mt={14}>
         <Filter
-          model={orders?.meta}
+          page={orders?.meta}
+          model={orders}
           show={!orders}
           filter={filterOrder}
           handleNextPage={() => {

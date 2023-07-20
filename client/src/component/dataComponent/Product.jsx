@@ -42,9 +42,8 @@ import {
   getAllWarehouses,
   getAllSuppliers,
 } from '@/modules/fetch';
-//import { useNavigate } from "react-router-dom";
 import { FiPlus, FiArrowRight, FiDelete, FiMove, FiEdit } from 'react-icons/fi';
-import { Form, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { DataContext } from '@/context/AllDataContext';
 import SelectField from '../SelectField/SelectField';
@@ -67,6 +66,7 @@ const Product = () => {
     fetchItems,
     filterProducts,
     setFilterProducts,
+    fetchWarehousesStock,
   } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
@@ -152,7 +152,9 @@ const Product = () => {
         duration: 3000,
         isClosable: true,
       });
-      handleCloseModal(), fetchItems();
+      handleCloseModal();
+      fetchItems();
+      fetchWarehousesStock();
       reset();
     } catch (error) {
       toast({
@@ -179,12 +181,16 @@ const Product = () => {
         </Text>
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
           <AddProductForm fetchItems={() => fetchItems()} />
-          <AddStockForm />
-          <MoveStock warehouseStock={warehouseStock} />
+          <AddStockForm fetchWarehousesStock={() => fetchWarehousesStock()} />
+          <MoveStock
+            warehouseStock={warehouseStock}
+            fetchWarehousesStock={() => fetchWarehousesStock()}
+          />
         </Box>
       </Box>
       <Filter
-        model={products?.meta}
+        page={products?.meta}
+        model={products}
         show={products}
         filter={filterProducts}
         handleNextPage={() => {
@@ -251,7 +257,7 @@ const Product = () => {
                   </Td>
                   <Td py={2}>{categoriesName(item.categoriesId)}</Td>
                   <Td py={2}>
-                    <Select border={'1px solid #C2DEDC'}>
+                    <Select border={'1px solid #9DB2BF'}>
                       {warehouseStock
                         .filter((ws) => ws.itemsName === item.name)
                         .map((wS) => {
@@ -592,7 +598,7 @@ export const AddProductForm = ({ fetchItems }) => {
   );
 };
 
-export const AddStockForm = ({ fetchProduct }) => {
+export const AddStockForm = ({ fetchWarehousesStock }) => {
   const {
     register,
     handleSubmit,
@@ -636,38 +642,22 @@ export const AddStockForm = ({ fetchProduct }) => {
   };
 
   const onSubmit = async (data) => {
-    const jsonData = JSON.stringify(data);
-
     try {
-      const response = await instance.post(
-        '/items/stock',
-        jsonData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-        handleCloseModal(),
-        toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
-      );
-
-      if (response.status === 200) {
-        console.log('Produk berhasil ditambahkan!');
-
-        reset();
-      }
-      // fetchProduct();
+      const response = await instance.post('/items/stock', data);
+      handleCloseModal();
+      toast({
+        title: 'Created Product',
+        description: 'You have successfully Created Product.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      reset();
+      fetchWarehousesStock();
     } catch (error) {
-      console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
         title: 'Failed to create product.',
-        description: err.message,
+        description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -716,6 +706,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                     onChange={handleChange}
                     {...register('items_id', { required: true })}
                   >
+                    <option value='' selected disabled>
+                      Select Items
+                    </option>
                     {items?.data?.map((product) => (
                       <option key={product.id} value={product.id}>
                         {product.name}
@@ -733,6 +726,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                     onChange={handleChange}
                     {...register('warehouses_id', { required: true })}
                   >
+                    <option value='' selected disabled>
+                      Select Warehouse
+                    </option>
                     {warehouse.map((warehouses) => (
                       <option key={warehouses.id} value={warehouses.id}>
                         {warehouses.name}
@@ -762,6 +758,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                     onChange={handleChange}
                     {...register('suppliers_id', { required: true })}
                   >
+                    <option value='' selected disabled>
+                      Select Suppliers
+                    </option>
                     {suppliers?.dataSuppliers?.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>
                         {vendor.name}
@@ -778,7 +777,7 @@ export const AddStockForm = ({ fetchProduct }) => {
                   mr={3}
                   onClick={() => console.log('Masuk')}
                 >
-                  Tambah product
+                  Add Stock Product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>
                   Cancel
@@ -792,7 +791,7 @@ export const AddStockForm = ({ fetchProduct }) => {
   );
 };
 
-export const MoveStock = ({ warehouseStock, fetchProduct }) => {
+export const MoveStock = ({ warehouseStock, fetchWarehousesStock }) => {
   const {
     register,
     handleSubmit,
@@ -856,7 +855,7 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
         console.log('Produk berhasil ditambahkan!');
         reset();
       }
-      // fetchProduct();
+      fetchWarehousesStock();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({

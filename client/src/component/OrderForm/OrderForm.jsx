@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import SelectField from '../SelectField/SelectField';
 import {
   Button,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -22,7 +23,7 @@ import { FiPlus } from 'react-icons/fi';
 
 function OrderForm() {
   const {
-    customers,
+    allCustomers,
     warehouses,
     setWarehouseId,
     warehouseItems,
@@ -127,7 +128,7 @@ function OrderForm() {
                   required: 'This is required',
                 })}
                 errors={errors.customers_id}
-                mapping={customers}
+                mapping={allCustomers?.dataCustomers}
                 option={(opt) => opt.full_name}
                 value={(opt) => opt.id}
               />
@@ -174,13 +175,14 @@ function OrderForm() {
               <Stack
                 spacing={{ base: 4, sm: 6 }}
                 direction={{ base: 'column', sm: 'row' }}
+                mt={4}
               >
                 {warehouseItems.length !== 0 && (
                   <>
                     <Button
                       type='submit'
-                      rounded={'lg'}
-                      size={'lg'}
+                      rounded={'full'}
+                      size={'md'}
                       fontWeight={'Bold'}
                       px={20}
                       colorScheme={'red'}
@@ -193,8 +195,8 @@ function OrderForm() {
                     </Button>
                     <Button
                       type='submit'
-                      rounded={'lg'}
-                      size={'lg'}
+                      rounded={'full'}
+                      size={'md'}
                       fontWeight={'Bold'}
                       px={20}
                       colorScheme={'red'}

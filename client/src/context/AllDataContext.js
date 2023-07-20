@@ -20,6 +20,7 @@ const AllDataContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState({});
+  const [allCustomers, setAllCustomers] = useState({});
   const [suppliers, setSuppliers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [detailOrder, setDetailOrder] = useState({});
@@ -83,6 +84,11 @@ const AllDataContextProvider = ({ children }) => {
     setCustomers(data);
   };
 
+  const fetchAllCustomers = async () => {
+    const data = await getAllCustomer();
+    setAllCustomers(data);
+  };
+
   const fetchSuppliers = async () => {
     const { data } = await getAllSuppliers();
     setSuppliers(data);
@@ -125,6 +131,7 @@ const AllDataContextProvider = ({ children }) => {
   useEffect(() => {
     if (access !== null) {
       fetchCustomers();
+      fetchAllCustomers();
       fetchItems();
       fetchWarehouse();
       fetchOrders();
@@ -156,9 +163,11 @@ const AllDataContextProvider = ({ children }) => {
         setWarehouseId,
         warehouseItems,
         warehouseStock,
+        fetchWarehousesStock,
         products,
         categories,
         customers,
+        allCustomers,
         fetchCustomers,
         suppliers,
         orders,

@@ -170,7 +170,7 @@ const Suppliers = () => {
             color: '#EEEDED',
           }}
         >
-          Add Product
+          Add Supplier
         </Button>
       </Box>
       <Box display={'flex'} flexDirection={'row'} gap={'5'}>
