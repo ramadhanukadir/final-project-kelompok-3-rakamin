@@ -11,6 +11,7 @@ const AllDataContext = createContext();
 
 const AllDataContextProvider = ({ children }) => {
   const [warehouseId, setWarehouseId] = useState(0);
+  const [detailWarehouse, setDetailWarehouse] = useState({});
   const [warehouses, setWarehouses] = useState([]);
   const [warehouseItems, setWarehouseItems] = useState([]);
   const [products, setProducts] = useState([]);
@@ -177,6 +178,8 @@ const AllDataContextProvider = ({ children }) => {
         setFilterProducts,
         filterCustomer,
         setFilterCustomer,
+        detailWarehouse,
+        setDetailWarehouse,
       }}
     >
       {children}
