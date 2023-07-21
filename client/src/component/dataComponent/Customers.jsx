@@ -246,7 +246,13 @@ const Customers = () => {
                       </form>
                     </ModalBody>
                     <ModalFooter>
-                      <Button size={'md'} onClick={handleCloseModal}>
+                      <Button
+                        size={'sm'}
+                        colorScheme='red'
+                        rounded={'full'}
+                        fontWeight={'semibold'}
+                        onClick={handleCloseModal}
+                      >
                         Cancel
                       </Button>
                     </ModalFooter>
@@ -275,7 +281,6 @@ export const InputCustomers = ({ fetchData }) => {
     try {
       console.log(data);
       await postCustomers(data);
-      // await instance.post('/customer', data);
       handleCloseModal(),
         toast({
           title: 'Created Product',
@@ -362,7 +367,13 @@ export const InputCustomers = ({ fetchData }) => {
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button size={'md'} onClick={handleCloseModal}>
+            <Button
+              size={'sm'}
+              colorScheme='red'
+              rounded={'full'}
+              fontWeight={'semibold'}
+              onClick={handleCloseModal}
+            >
               Cancel
             </Button>
           </ModalFooter>
