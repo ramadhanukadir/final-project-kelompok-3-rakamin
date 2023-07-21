@@ -31,41 +31,37 @@ const postSupplier = async (req, res) => {
 
 const getAllSupplier = async (req, res) => {
   try {
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    const offset = (page - 1) * req.query.limit;
     const { id } = req.loggedUser;
+    const { page, limit, sort, order } = req.query;
 
-    const findAllSuppliers = await Suppliers.findAll({
+    const { rows, count } = await Suppliers.findAndCountAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      offset: page && limit ? (page - 1) * limit : 0,
+      limit: limit ? parseInt(limit) : null,
+      order: sort && order ? [[order, sort]] : [['name', sort || 'ASC']],
       where: {
         users_id: id,
       },
-      attributes: { exclude: ['createdAt', 'updateAt'] },
-      limit: req.query.limit,
-      offset,
     });
-    if (findAllSuppliers.length === 0) {
+    if (!rows) {
       return res.status(404).json({
         succes: false,
         message: 'Data Suppliers Not Found',
       });
     }
-    const totalItems = await Suppliers.count();
-    const totalPages = Math.ceil(totalItems / limit);
+    const totalItems = count;
+    const totalPages = limit ? Math.ceil(count / limit) : 1;
 
-    return res.status(201).json({
+    return res.status(200).json({
       succes: true,
       msg: 'Data Supplliers Retrieved',
-      page,
-      totalItems: findAllSuppliers.length,
+      page: page ? parseInt(page) : 1,
+      totalItems,
       totalPages,
-      dataSuppliers: findAllSuppliers,
+      dataSuppliers: rows,
     });
   } catch (error) {
-    res.status(400).json({
-      message: 'Failed Data suppliers',
-      error,
-    });
+    res.status(500).json({ error: error.message });
   }
 };
 
