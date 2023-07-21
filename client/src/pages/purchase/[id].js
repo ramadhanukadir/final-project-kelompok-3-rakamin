@@ -88,7 +88,6 @@ export default function Page({ orderId }) {
                       h={12}
                       objectFit={'contain'}
                       borderRadius={'xl'}
-                      // bg={'black'}
                     />
                     <Box>
                       <Text fontSize={'sm'} fontWeight={'semibold'}>

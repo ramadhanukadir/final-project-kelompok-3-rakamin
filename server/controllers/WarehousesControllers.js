@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { Warehouses, Items, Warehouses_Stock } = require('../models');
 const { mappingWarehouses, mappingItems, responseItemsId, responseWarehouseId } = require('../utils/response');
 
@@ -8,6 +9,7 @@ const getAllWarehouses = async (req, res) => {
       where: {
         users_id: id,
       },
+      order: [['createdAt', 'DESC']],
     });
 
     const response = mappingWarehouses(warehouses);
@@ -18,26 +20,57 @@ const getAllWarehouses = async (req, res) => {
   }
 };
 
-const searchWarehousesByName = async (req, res) => {
+const getAllWarehousesWithFilter = async (req, res) => {
   const { id } = req.loggedUser;
-  const { searchValue } = req.query;
-
-  try {
-    const warehouses = await Warehouses.findAll({
-      where: {
-        users_id: id,
-        name: {
-          [Op.iLike]: `%${searchValue}%`, // Menggunakan Op.iLike untuk pencarian case-insensitive
+  const page = parseInt(req.query.page) - 1 || 0;
+  const limit = parseInt(req.query.limit) || 10;
+  const search = req.query.search_query || '';
+  const offset = limit * page;
+  const totalRows = await Warehouses.count({
+    where: {
+      users_id: id,
+      [Op.or]: [
+        {
+          name: {
+            [Op.iLike]: '%' + search + '%',
+          },
         },
-      },
-    });
-
-    const response = mappingWarehouses(warehouses);
-
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+        {
+          city: {
+            [Op.iLike]: '%' + search + '%',
+          },
+        },
+      ],
+    },
+  });
+  const totalPage = Math.ceil(totalRows / limit);
+  const result = await Warehouses.findAll({
+    where: {
+      users_id: id,
+      [Op.or]: [
+        {
+          name: {
+            [Op.iLike]: '%' + search + '%',
+          },
+        },
+        {
+          city: {
+            [Op.iLike]: '%' + search + '%',
+          },
+        },
+      ],
+    },
+    offset: offset,
+    limit: limit,
+    order: [['id', 'DESC']],
+  });
+  res.json({
+    result: result,
+    page: page,
+    limit: limit,
+    totalRows: totalRows,
+    totalPages: totalPage,
+  });
 };
 
 const getWarehousesById = async (req, res) => {
@@ -129,9 +162,9 @@ const deleteWarehouses = async (req, res) => {
 
 module.exports = {
   getAllWarehouses,
+  getAllWarehousesWithFilter,
   getWarehousesById,
   createWarehouses,
   deleteWarehouses,
   updateWarehouses,
-  searchWarehousesByName,
 };

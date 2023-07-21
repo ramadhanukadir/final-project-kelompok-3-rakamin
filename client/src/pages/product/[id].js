@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { getAllItemsById } from '@/modules/fetch';
-import { getAllWarehousesStock } from '@/api/warehouses';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect, useContext } from "react";
+import { getAllItemsById } from "@/modules/fetch";
+import { getAllWarehousesStock } from "@/api/warehouses";
+import { useRouter } from "next/router";
 import {
   Box,
   Text,
@@ -14,17 +14,17 @@ import {
   HStack,
   VStack,
   useBreakpointValue,
-} from '@chakra-ui/react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut } from 'react-chartjs-2';
-import { ArrowBackIcon } from '@chakra-ui/icons';
+} from "@chakra-ui/react";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function Page({ itemsId }) {
   const router = useRouter();
   const [product, setProduct] = useState({});
-  const flexDirection = useBreakpointValue({ base: 'column', sm: 'row' });
+  const flexDirection = useBreakpointValue({ base: "column", sm: "row" });
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -36,47 +36,43 @@ export default function Page({ itemsId }) {
 
   return (
     <Flex
-      w={'100%'}
+      w={"100%"}
       marginTop={100}
-      flexDirection={'column'}
-      justifyContent={'flex-start'}
-      zIndex={1}
-    >
-      <HStack display={'flex'} justifyContent={'space-between'}>
-        <Button size={'sm'} w={'3'} onClick={() => router.back()}>
+      flexDirection={"column"}
+      justifyContent={"flex-start"}
+      zIndex={1}>
+      <HStack display={"flex"} justifyContent={"space-between"}>
+        <Button size={"sm"} w={"3"} onClick={() => router.back()}>
           <ArrowBackIcon w={4} h={4} />
         </Button>
-        <Text fontSize={'xl'} fontWeight={'bold'}>
+        <Text fontSize={"xl"} fontWeight={"bold"}>
           PRODUCT
         </Text>
       </HStack>
-      <Flex direction={'column'}>
-        <Flex justifyContent={'center'} columnGap={'20px'}>
+      <Flex direction={"column"}>
+        <Flex justifyContent={"center"} columnGap={"20px"}>
           <VStack mt={6}>
-            <Text fontSize='md' fontWeight='bold'>
+            <Text fontSize="md" fontWeight="bold">
               Detail Product
             </Text>
             <Flex
-              alignContent={'center'}
-              w={'100%'}
+              alignContent={"center"}
+              w={"100%"}
               py={{ base: 2, md: 4 }}
               px={{ base: 4, md: 8 }}
-              border={'1px'}
-              borderColor={'gray.300'}
-              borderRadius={'lg'}
-            >
-              <HStack w={'100%'}>
+              border={"1px"}
+              borderColor={"gray.300"}
+              borderRadius={"lg"}>
+              <HStack w={"100%"}>
                 <HStack
-                  display={'flex'}
-                  justifyContent={'space-between'}
-                  w={'100%'}
-                >
+                  display={"flex"}
+                  justifyContent={"space-between"}
+                  w={"100%"}>
                   <Flex
                     direction={flexDirection}
-                    justifyContent={'center'}
-                    alignItems={'center'}
-                    gap={4}
-                  >
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    gap={4}>
                     <Box>
                       <Card
                         key={product.index}
@@ -111,73 +107,70 @@ export async function getServerSideProps(ctx) {
 function Card({ SKU, description, name, basePrice, sellingPrice, image }) {
   return (
     <Box
-      role={'group'}
+      role={"group"}
       p={5}
-      maxW={'330px'}
-      w={'full'}
-      bg={useColorModeValue('white', 'gray.900')}
-      boxShadow={'2xl'}
-      rounded={'lg'}
-      pos={'relative'}
-      zIndex={1}
-    >
+      maxW={"330px"}
+      w={"full"}
+      bg={useColorModeValue("white", "gray.900")}
+      boxShadow={"2xl"}
+      rounded={"lg"}
+      pos={"relative"}
+      zIndex={1}>
       <Box
-        rounded={'lg'}
+        rounded={"lg"}
         mt={15}
-        height={'230px'}
-        pos={'relative'}
+        height={"230px"}
+        pos={"relative"}
         _after={{
-          transition: 'all .3s ease',
+          transition: "all .3s ease",
           content: '""',
-          w: 'full',
-          h: 'full',
-          pos: 'absolute',
+          w: "full",
+          h: "full",
+          pos: "absolute",
           top: 5,
           left: 0,
           backgroundImage: `url(${image})`,
-          filter: 'blur(15px)',
+          filter: "blur(15px)",
           zIndex: -1,
         }}
         _groupHover={{
           _after: {
-            filter: 'blur(20px)',
+            filter: "blur(20px)",
           },
-        }}
-      >
+        }}>
         <Image
-          rounded={'lg'}
+          rounded={"lg"}
           height={230}
           width={250}
           src={image}
-          objectFit={'cover'}
+          objectFit={"cover"}
         />
       </Box>
-      <Stack pt={5} align={'center'}>
+      <Stack pt={5} align={"center"}>
         <Text
-          color={'black'}
+          color={"black"}
           fontWeight={800}
-          fontSize={'xl'}
-          textTransform={'uppercase'}
-        >
+          fontSize={"xl"}
+          textTransform={"uppercase"}>
           {SKU}
         </Text>
-        <Text color={'gray.500'} fontSize={'sm'} textTransform={'uppercase'}>
+        <Text color={"gray.500"} fontSize={"sm"} textTransform={"uppercase"}>
           {name}
         </Text>
-        <Heading fontSize={'2xl'} fontFamily={'body'} fontWeight={500}>
+        <Heading fontSize={"2xl"} fontFamily={"body"} fontWeight={500}>
           {description}
         </Heading>
-        <Stack direction={'column'} align={'center'}>
+        <Stack direction={"column"} align={"center"}>
           <Text>
-            {basePrice?.toLocaleString('id-ID', {
-              style: 'currency',
-              currency: 'IDR',
+            {basePrice?.toLocaleString("id-ID", {
+              style: "currency",
+              currency: "IDR",
             })}
           </Text>
-          <Text color={'gray.600'}>
-            {sellingPrice?.toLocaleString('id-ID', {
-              style: 'currency',
-              currency: 'IDR',
+          <Text color={"gray.600"}>
+            {sellingPrice?.toLocaleString("id-ID", {
+              style: "currency",
+              currency: "IDR",
             })}
           </Text>
         </Stack>

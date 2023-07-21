@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import SelectField from '../SelectField/SelectField';
 import {
   Button,
+  HStack,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -22,7 +23,7 @@ import { FiPlus } from 'react-icons/fi';
 
 function OrderForm() {
   const {
-    customers,
+    allCustomers,
     warehouses,
     setWarehouseId,
     warehouseItems,
@@ -72,6 +73,7 @@ function OrderForm() {
       fetchOrders();
     } catch (error) {
       toast({
+        title: 'Error',
         description: error.message,
         status: 'error',
         duration: 3000,
@@ -83,7 +85,19 @@ function OrderForm() {
 
   return (
     <>
-      <Button onClick={onOpen} leftIcon={<FiPlus />}>
+      <Button
+        size='sm'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        leftIcon={<FiPlus />}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+        onClick={onOpen}
+      >
         Add Order
       </Button>
 
@@ -114,7 +128,7 @@ function OrderForm() {
                   required: 'This is required',
                 })}
                 errors={errors.customers_id}
-                mapping={customers}
+                mapping={allCustomers?.dataCustomers}
                 option={(opt) => opt.full_name}
                 value={(opt) => opt.id}
               />
@@ -161,13 +175,14 @@ function OrderForm() {
               <Stack
                 spacing={{ base: 4, sm: 6 }}
                 direction={{ base: 'column', sm: 'row' }}
+                mt={4}
               >
                 {warehouseItems.length !== 0 && (
                   <>
                     <Button
                       type='submit'
-                      rounded={'lg'}
-                      size={'lg'}
+                      rounded={'full'}
+                      size={'md'}
                       fontWeight={'Bold'}
                       px={20}
                       colorScheme={'red'}
@@ -180,8 +195,8 @@ function OrderForm() {
                     </Button>
                     <Button
                       type='submit'
-                      rounded={'lg'}
-                      size={'lg'}
+                      rounded={'full'}
+                      size={'md'}
                       fontWeight={'Bold'}
                       px={20}
                       colorScheme={'red'}

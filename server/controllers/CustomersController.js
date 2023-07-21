@@ -3,42 +3,34 @@ const { Customers } = require('../models');
 const getAllCustomers = async (req, res) => {
   try {
     const { id } = req.loggedUser;
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    const offset = (page - 1) * req.query.limit;
+    const { page, limit, sort, order } = req.query;
 
-    const customers = await Customers.findAll({
+    const { rows, count } = await Customers.findAndCountAll({
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      offset: page && limit ? (page - 1) * limit : 0,
+      limit: limit ? parseInt(limit) : null,
+      order: sort && order ? [[order, sort]] : [['full_name', sort || 'ASC']],
       where: {
         users_id: id,
       },
-      attributes: { exclude: ['createdAt', 'updateAt'] },
-      limit: req.query.limit,
-      offset,
     });
-    if (!customers) {
+    if (!rows) {
       return res.status(404).json({
         succes: false,
         message: 'Data Customers Not Found',
       });
     }
-    const totalItems = await Customers.count();
-    const totalPages = Math.ceil(totalItems / limit);
+    const totalItems = count;
+    const totalPages = limit ? Math.ceil(count / limit) : 1;
 
     return res.status(201).json({
       succes: true,
       msg: 'Data Customers Retrieved',
-      page,
-      totalItems: customers.length,
+      page: page ? parseInt(page) : 1,
+      totalItems,
       totalPages,
-      dataCustomers: customers,
+      dataCustomers: rows,
     });
-    // } catch (error) {
-    //   res.status(400).json({
-    //     message: "Failed Data Customers",
-    //     error,
-    //   });
-
-    // return res.status(200).json({ data: customers });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -64,10 +56,10 @@ const createCustomers = async (req, res) => {
       address,
     });
 
-    if (!users_id || !full_name || !address)
+    if (!full_name || !address)
       res.status(400).json({ message: 'Bad request' });
 
-    return res.status(201).json({ data: customers });
+    return res.status(200).json({ data: customers });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
