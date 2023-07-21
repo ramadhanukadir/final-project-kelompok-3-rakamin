@@ -1,5 +1,13 @@
 import { useContext, useState } from "react";
-import { Box, Text, SimpleGrid, Icon, Stack, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  SimpleGrid,
+  Icon,
+  Stack,
+  HStack,
+  Flex,
+} from "@chakra-ui/react";
 import React from "react";
 import { FiPackage, FiUser, FiUsers } from "react-icons/fi";
 import { MdOutlineWarehouse } from "react-icons/md";
@@ -23,22 +31,22 @@ const AllDataDashboard = () => {
       h="auto">
       {/* <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}> */}
       <Feature
-        icon={<Icon as={FiPackage} w={10} h={10} color={"black"} />}
+        icon={<Icon as={FiPackage} w={8} h={8} color={"black"} />}
         title={"Product"}
         text={products?.meta?.totalData}
       />
       <Feature
-        icon={<Icon as={FiUser} w={10} h={10} color={"black"} />}
+        icon={<Icon as={FiUser} w={8} h={8} color={"black"} />}
         title={"Suppliers"}
         text={suppliers?.totalItems}
       />
       <Feature
-        icon={<Icon as={FiUsers} w={10} h={10} color={"black"} />}
+        icon={<Icon as={FiUsers} w={8} h={8} color={"black"} />}
         title={"Customers"}
         text={customers?.totalItems}
       />
       <Feature
-        icon={<Icon as={MdOutlineWarehouse} w={10} h={10} color={"black"} />}
+        icon={<Icon as={MdOutlineWarehouse} w={8} h={8} color={"black"} />}
         title={"Warehouse"}
         text={warehouses.length}
       />
@@ -50,19 +58,26 @@ const AllDataDashboard = () => {
 const Feature = ({ title, text, icon }) => {
   return (
     <Stack justifyContent={"flex"} alignItems={"center"}>
-      <Flex
-        w={16}
-        h={16}
-        align={"center"}
-        justifyContent={"center"}
-        color={"white"}
-        rounded={"full"}
-        bg={"gray.100"}
-        mb={1}>
-        {icon}
-      </Flex>
-      <Text fontWeight={600}>{title}</Text>
-      <Text fontWeight={600}>{text}</Text>
+      <HStack>
+        <Flex
+          w={14}
+          h={14}
+          align={"center"}
+          justifyContent={"center"}
+          color={"white"}
+          rounded={"full"}
+          bg={"gray.100"}
+          mb={1}>
+          {icon}
+        </Flex>
+        <Text fontWeight={600} fontSize={"lg"}>
+          {text}
+        </Text>
+      </HStack>
+
+      <Text fontWeight={600} fontSize={"xl"}>
+        {title}
+      </Text>
     </Stack>
   );
 };

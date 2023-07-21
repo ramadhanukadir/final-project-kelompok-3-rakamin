@@ -74,7 +74,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchWarehouse = async () => {
-    const data = await getAllWarehouses();
+    const data = await getAllWarehouses(1, "ASC", "name");
     setWarehouses(data);
   };
 

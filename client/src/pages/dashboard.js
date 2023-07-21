@@ -24,6 +24,7 @@ export default function Dashboard() {
         </Flex>
       </Heading>
       <Flex
+        justifyContent={"center"}
         flexDir={["row", "row", "row"]}
         overflow="hidden"
         w={"100%"}
