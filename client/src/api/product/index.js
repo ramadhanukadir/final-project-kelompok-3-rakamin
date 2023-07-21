@@ -40,40 +40,38 @@ export const deleteItems = async (id) => {
   }
 };
 
-export const getAllWarehouses = async () => {
+export const postItems = async (payload) => {
   try {
-    const { data } = await instance.get('/warehouses');
-    return data;
-  } catch (error) {
-    throw new Error(error.response.data.message);
-  }
-};
-
-export const getAllWarehousesStock = async () => {
-  try {
-    const { data } = await instance.get('/warehouses-stock');
+    const { data } = await instance.post('/items', payload);
     return data;
   } catch (error) {
     throw new Error(error.response.data.message || 'Something went wrong');
   }
 };
 
-export const getAllSuppliers = async (page, limit) => {
-  try {
-    const { data } = await instance.get(
-      `/suppliers?page=${page}&limit=${limit}`
-    );
-    return data;
-  } catch (error) {
-    throw new Error(error.response.data.message || 'Something went wrong');
-  }
-};
+// export const getAllWarehouses = async () => {
+//   try {
+//     const { data } = await instance.get('/warehouses');
+//     return data;
+//   } catch (error) {
+//     throw new Error(error.response.data.message);
+//   }
+// };
 
-export const getWarehouseId = async (id) => {
-  try {
-    const { data } = await instance.get(`/warehouses/${id}`);
-    return data;
-  } catch (error) {
-    throw new Error(error.response.data.message || 'Something went wrong');
-  }
-};
+// export const getAllWarehousesStock = async () => {
+//   try {
+//     const { data } = await instance.get('/warehouses-stock');
+//     return data;
+//   } catch (error) {
+//     throw new Error(error.response.data.message || 'Something went wrong');
+//   }
+// };
+
+// export const getWarehouseId = async (id) => {
+//   try {
+//     const { data } = await instance.get(`/warehouses/${id}`);
+//     return data;
+//   } catch (error) {
+//     throw new Error(error.response.data.message || 'Something went wrong');
+//   }
+// };

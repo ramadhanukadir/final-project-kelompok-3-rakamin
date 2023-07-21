@@ -9,11 +9,6 @@ const AllDataDashboard = () => {
   const { products, suppliers, customers, warehouses } =
     useContext(DataContext);
 
-  console.log("INI DATA PRODUCT", products);
-  console.log("INI DATA suppliers", suppliers);
-  console.log("INI DATA CUSTOMERS", customers);
-  console.log("INI DATA WAREHOUSES", warehouses);
-
   return (
     <Flex
       flexDirection={"row"}
@@ -35,7 +30,7 @@ const AllDataDashboard = () => {
       <Feature
         icon={<Icon as={FiUser} w={10} h={10} color={"black"} />}
         title={"Suppliers"}
-        text={"Lorem ipsum dolor sit amet"}
+        text={suppliers?.totalItems}
       />
       <Feature
         icon={<Icon as={FiUsers} w={10} h={10} color={"black"} />}
