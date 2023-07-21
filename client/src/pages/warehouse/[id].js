@@ -53,12 +53,12 @@ export default function Page({ warehouseId }) {
             <Text>Telephone </Text>
           </Flex>
           <Flex direction={'column'}>
-            <Text>: {detailWarehouse.warehouse.name}</Text>
-            <Text>: {detailWarehouse.warehouse.address}</Text>
-            <Text>: {detailWarehouse.warehouse.province}</Text>
-            <Text>: {detailWarehouse.warehouse.city}</Text>
-            <Text>: {detailWarehouse.warehouse.postalCode}</Text>
-            <Text>: {detailWarehouse.warehouse.telephone}</Text>
+            <Text>: {detailWarehouse?.warehouse?.name}</Text>
+            <Text>: {detailWarehouse?.warehouse?.address}</Text>
+            <Text>: {detailWarehouse?.warehouse?.province}</Text>
+            <Text>: {detailWarehouse?.warehouse?.city}</Text>
+            <Text>: {detailWarehouse?.warehouse?.postalCode}</Text>
+            <Text>: {detailWarehouse?.warehouse?.telephone}</Text>
           </Flex>
         </Flex>
         <VStack mt={6}>
