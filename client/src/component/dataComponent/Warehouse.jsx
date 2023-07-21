@@ -39,6 +39,7 @@ import {
   Icon,
   IconButton,
   Flex,
+  TableCaption,
 } from '@chakra-ui/react';
 
 import { SearchIcon } from '@chakra-ui/icons';
@@ -269,13 +270,25 @@ const Warehouses = () => {
   };
 
   return (
-    <Box width="100%">
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'} mt={10}>
+    <Box maxW="7xl" mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'3em'}>
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} mb={'3em'} pb={'8'}>
         <Text fontWeight={'bold'} fontSize={'xl'}>
           Warehouses
         </Text>
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
-          <Button size="sm" bgColor={''} leftIcon={<FiPlus />} onClick={openModal}>
+          <Button
+            size="sm"
+            bgColor={'#06283D'}
+            color={'#EEEDED'}
+            leftIcon={<FiPlus />}
+            onClick={openModal}
+            borderRadius={'full'}
+            boxShadow={'0px 0px 3px 0px #06283D'}
+            _hover={{
+              bg: '#164B60',
+              color: '#EEEDED',
+            }}
+          >
             Add Warehouse
           </Button>
         </Box>
@@ -317,52 +330,34 @@ const Warehouses = () => {
           }, 1000);
         }}
       />
-
       <Box>
-        <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Box display={'row'} justifyContent={'start'} alignItems={'center'} gap={'10'} my={'5'}></Box>
-          <Box display={'flex'} justifyContent={'end'} mb={2}></Box>
-        </Box>
         <Box>
-          <TableContainer>
+          <TableContainer overflowY={'auto'} h={'25em'} px={5}>
             <Table variant="simple">
-              <Thead bg={'#DFF6FE'}>
+              <TableCaption>Warehouses</TableCaption>
+              <Thead bg={'#06283D'}>
                 <Tr>
-                  <Th>Warehouse Name</Th>
-                  <Th>Address</Th>
-                  <Th>Province</Th>
-                  <Th>City</Th>
-                  <Th>Postal Code</Th>
-                  <Th>Telephone</Th>
-                  <Th>
+                  <Th color={'#EEEDED'}>Warehouse Name</Th>
+                  <Th color={'#EEEDED'}>Address</Th>
+                  <Th color={'#EEEDED'}>Province</Th>
+                  <Th color={'#EEEDED'}>City</Th>
+
+                  <Th color={'#EEEDED'}>
                     <Center>Actions</Center>
                   </Th>
                 </Tr>
               </Thead>
-              <Tbody>
+              <Tbody bg={'#EEEDED'}>
                 {warehouses.map((warehouse) => (
                   <Tr key={warehouse.id}>
-                    <Td>{warehouse.name}</Td>
+                    <Td onClick={() => router.push(`/warehouse/${warehouse.id}`)} cursor={'pointer'}>
+                      {warehouse.name}
+                    </Td>
                     <Td>{warehouse.address}</Td>
                     <Td>{warehouse.province}</Td>
                     <Td>{warehouse.city}</Td>
-                    <Td>{warehouse.postal_code}</Td>
-                    <Td>{warehouse.telephone}</Td>
                     <Td>
                       <Icon
-                        boxSize={5}
-                        color={'#06283D'}
-                        onClick={() => router.push(`/warehouse/${warehouse.id}`)}
-                        as={FiEye}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title="View"
-                      />
-                      <Icon
-                        boxSize={5}
                         color={'#06283D'}
                         onClick={() => handleEditWarehouse(warehouse)}
                         as={FiEdit}
@@ -374,7 +369,6 @@ const Warehouses = () => {
                         title="Edit"
                       />
                       <Icon
-                        boxSize={5}
                         color={'red'}
                         onClick={() => handleDeleteWarehouse(warehouse.id)}
                         as={FiDelete}
@@ -496,9 +490,11 @@ const Warehouses = () => {
             </AlertDialogHeader>
             <AlertDialogBody>Are you sure you want to delete this warehouse? This action is irreversible.</AlertDialogBody>
             <AlertDialogFooter>
-              <Button onClick={cancelDeleteWarehouse}>Cancel</Button>
-              <Button colorScheme="red" ml={3} onClick={confirmDeleteWarehouse}>
+              <Button rounded={'full'} colorScheme="red" mr={3} onClick={confirmDeleteWarehouse}>
                 Delete
+              </Button>
+              <Button rounded={'full'} onClick={cancelDeleteWarehouse}>
+                Cancel
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
