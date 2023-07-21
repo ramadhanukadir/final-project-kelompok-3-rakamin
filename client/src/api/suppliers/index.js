@@ -1,11 +1,13 @@
 import { instance } from "@/modules/axios";
 
-export const getAllSuppliers = async () => {
+export const getAllSuppliers = async (page, sort, order, q, limit) => {
   try {
-    const { data } = await instance.get("/suppliers");
+    const { data } = await instance.get(
+      `/suppliers?page=${page}&limit=${limit}`
+    );
     return data;
   } catch (error) {
-    throw new Error(error.response.data.message);
+    throw new Error(error.response.data.message || "Something went wrong");
   }
 };
 

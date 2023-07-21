@@ -33,7 +33,6 @@ export default function Page({ itemsId }) {
     };
     fetchItems();
   }, []);
-  console.log("INI ITEMS", product);
 
   return (
     <Flex

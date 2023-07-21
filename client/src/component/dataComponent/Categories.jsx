@@ -78,7 +78,7 @@ const Categories = () => {
       setIsModalOpen(true);
     }
   };
-  // console.log(detailItems);
+  //console.log(detailItems);
 
   const handleDeleteItems = async (id) => {
     try {
@@ -172,14 +172,16 @@ const Categories = () => {
                         colorScheme={"blue"}
                         variant={"outline"}
                         onClick={() => handleEdit(item.id)}
-                        size={"md"}>
+                        size={"md"}
+                        ml={2}>
                         <FiEdit />
                       </Button>
                       <Button
                         colorScheme={"red"}
                         variant={"outline"}
                         onClick={() => handleDeleteItems(item.id)}
-                        size={"md"}>
+                        size={"md"}
+                        ml={2}>
                         <FiDelete />
                       </Button>
                     </Td>

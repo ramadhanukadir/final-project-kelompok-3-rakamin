@@ -20,7 +20,7 @@ const ExpensesChart = () => {
     datasets: [
       {
         data: [profit, totalRevenue, totalExpenses],
-        backgroundColor: ['#4318FF', '#6AD2FF', '#EFF4FB'],
+        backgroundColor: ['#1363DF', '#47B5FF', '#DFF6FF'],
         chart: {
           width: '50px',
         },
@@ -49,7 +49,7 @@ const ExpensesChart = () => {
           },
         },
         fill: {
-          colors: ['#4318FF', '#6AD2FF', '#EFF4FB'],
+          colors: ['#1363DF', '#47B5FF', '#DFF6FF'],
         },
         tooltip: {
           enabled: true,
@@ -60,12 +60,20 @@ const ExpensesChart = () => {
   };
 
   return (
-    <Box>
-      <Pie data={data} />
-      <Flex flexDir='column' my={4}>
+    <Flex
+      flexDir='column'
+      boxShadow={'2px 2px 10px 1px #DDE6ED'}
+      border={'1px solid #DDE6ED'}
+      borderRadius={'10px'}
+      p='3%'
+    >
+      <Box h='300px' w='300px'>
+        <Pie data={data} />
+      </Box>
+      <Flex flexDir='column' my={2}>
         <Flex justify='space-between' mb={2}>
           <Text color='gray.400'>Profit</Text>
-          <Text fontWeight='bold' fontSize='xl'>
+          <Text fontWeight='semibold' fontSize='lg'>
             {/* IDR {formatter.format(profit)} */}
             {profit?.toLocaleString('id-ID', {
               style: 'currency',
@@ -76,7 +84,7 @@ const ExpensesChart = () => {
 
         <Flex justify='space-between' mb={2}>
           <Text color='gray.400'>Expenses</Text>
-          <Text fontWeight='bold' fontSize='xl'>
+          <Text fontWeight='semibold' fontSize='lg'>
             {/* IDR {formatter.format(totalExpenses)} */}
             {totalExpenses?.toLocaleString('id-ID', {
               style: 'currency',
@@ -84,10 +92,9 @@ const ExpensesChart = () => {
             })}
           </Text>
         </Flex>
-
         <Flex justify='space-between' mb={2}>
           <Text color='gray.400'>Revenue</Text>
-          <Text fontWeight='bold' fontSize='xl'>
+          <Text fontWeight='semibold' fontSize='lg'>
             {/* IDR {formatter.format(totalRevenue)} */}
             {totalRevenue?.toLocaleString('id-ID', {
               style: 'currency',
@@ -96,7 +103,7 @@ const ExpensesChart = () => {
           </Text>
         </Flex>
       </Flex>
-    </Box>
+    </Flex>
   );
 };
 

@@ -10,6 +10,7 @@ import {
 import { fetchUser } from "@/api/auth";
 import { getAllExpenses, getAllOrdersItems, getAllRevenue } from "@/api/chart";
 import { getAllCategories } from "@/api/category";
+import { getAllSuppliers } from "@/api/suppliers";
 
 const AllDataContext = createContext();
 
@@ -34,7 +35,7 @@ const AllDataContextProvider = ({ children }) => {
     warehouses_id: "",
     customers_id: "",
     page: 1,
-    limit: 2,
+    limit: 5,
     sort: "",
     order: "",
   });
@@ -115,6 +116,7 @@ const AllDataContextProvider = ({ children }) => {
       fetchCustomers();
       fetchItems();
       fetchWarehouse();
+      fetchSuppliers();
       fetchOrders();
       fetchUserLogin();
       fetchCategories();

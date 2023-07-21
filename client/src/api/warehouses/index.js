@@ -1,17 +1,17 @@
-import { instance } from '@/modules/axios';
-
-export const getAllWarehousesStock = async () => {
-  try {
-    const { data } = await instance.get('/warehouses-stock');
-    return data;
-  } catch (error) {
-    throw new Error(error.response.data.message);
-  }
-};
+import { instance } from "@/modules/axios";
 
 export const getAllWarehouses = async () => {
   try {
-    const { data } = await instance.get('/warehouses');
+    const { data } = await instance.get("/warehouses");
+    return data;
+  } catch (error) {
+    throw new Error(error.response.data.message || "Something went wrong");
+  }
+};
+
+export const getAllWarehousesStock = async () => {
+  try {
+    const { data } = await instance.get("/warehouses-stock");
     return data;
   } catch (error) {
     throw new Error(error.response.data.message);
