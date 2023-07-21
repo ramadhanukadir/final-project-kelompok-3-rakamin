@@ -34,6 +34,7 @@ const AllDataContextProvider = ({ children }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [activeItem, setActiveItem] = useState("dashboard");
+  const [isLoading, setIsLoading] = useState(true);
   const [filterOrder, setFilterOrder] = useState({
     warehouses_id: "",
     customers_id: "",
@@ -146,6 +147,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     if (access !== null) {
       fetchCustomers();
       fetchAllCustomers();
@@ -167,6 +169,8 @@ const AllDataContextProvider = ({ children }) => {
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
+
+    setIsLoading(false);
   }, [
     access,
     warehouseId,
@@ -219,6 +223,7 @@ const AllDataContextProvider = ({ children }) => {
         allProducts,
         fetchAllItems,
         fetchCategories,
+        isLoading,
       }}>
       {children}
     </AllDataContext.Provider>
