@@ -19,10 +19,12 @@ const AllDataContextProvider = ({ children }) => {
   const [warehouses, setWarehouses] = useState([]);
   const [warehouseItems, setWarehouseItems] = useState([]);
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState({});
   const [allCustomers, setAllCustomers] = useState({});
-  const [suppliers, setSuppliers] = useState([]);
+  const [suppliers, setSuppliers] = useState({});
+  const [allSuppliers, setAllSuppliers] = useState({});
   const [orders, setOrders] = useState([]);
   const [detailOrder, setDetailOrder] = useState({});
   const [itemsId, setItemsId] = useState(0);
@@ -53,6 +55,12 @@ const AllDataContextProvider = ({ children }) => {
     sort: "",
     order: "",
   });
+  const [filterSupplier, setFilterSupplier] = useState({
+    page: 1,
+    limit: 5,
+    sort: "",
+    order: "",
+  });
 
   let access = "";
 
@@ -74,6 +82,10 @@ const AllDataContextProvider = ({ children }) => {
     const data = await getAllItems(filterProducts);
     setProducts(data);
   };
+  const fetchAllItems = async () => {
+    const data = await getAllItems();
+    setAllProducts(data);
+  };
 
   const fetchCategories = async () => {
     const { data } = await getAllCategories();
@@ -91,8 +103,12 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchSuppliers = async () => {
-    const { data } = await getAllSuppliers();
+    const data = await getAllSuppliers(filterSupplier);
     setSuppliers(data);
+  };
+  const fetchAllSuppliers = async () => {
+    const data = await getAllSuppliers();
+    setAllSuppliers(data);
   };
 
   const fetchWarehouseById = async (warehouseId) => {
@@ -143,6 +159,9 @@ const AllDataContextProvider = ({ children }) => {
       fetchOrderItems();
       fetchExpenses();
       fetchRevenue();
+      fetchSuppliers();
+      fetchAllSuppliers();
+      fetchAllItems();
     }
 
     if (warehouseId > 0) {
@@ -172,6 +191,7 @@ const AllDataContextProvider = ({ children }) => {
         allCustomers,
         fetchCustomers,
         suppliers,
+        allSuppliers,
         orders,
         detailOrder,
         setDetailOrder,
@@ -193,6 +213,12 @@ const AllDataContextProvider = ({ children }) => {
         setFilterProducts,
         filterCustomer,
         setFilterCustomer,
+        filterSupplier,
+        setFilterSupplier,
+        fetchAllSuppliers,
+        allProducts,
+        fetchAllItems,
+        fetchCategories,
       }}>
       {children}
     </AllDataContext.Provider>

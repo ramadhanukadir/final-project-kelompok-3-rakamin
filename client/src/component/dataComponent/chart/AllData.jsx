@@ -6,10 +6,8 @@ import { MdOutlineWarehouse } from "react-icons/md";
 import { DataContext } from "@/context/AllDataContext";
 
 const AllDataDashboard = () => {
-  const { products } = useContext(DataContext);
-  const { suppliers } = useContext(DataContext);
-  const { customers } = useContext(DataContext);
-  const { warehouses } = useContext(DataContext);
+  const { products, suppliers, customers, warehouses } =
+    useContext(DataContext);
 
   console.log("INI DATA PRODUCT", products);
   console.log("INI DATA suppliers", suppliers);
@@ -32,7 +30,7 @@ const AllDataDashboard = () => {
       <Feature
         icon={<Icon as={FiPackage} w={10} h={10} color={"black"} />}
         title={"Product"}
-        text={products?.data?.length}
+        text={products?.meta?.totalData}
       />
       <Feature
         icon={<Icon as={FiUser} w={10} h={10} color={"black"} />}
@@ -42,7 +40,7 @@ const AllDataDashboard = () => {
       <Feature
         icon={<Icon as={FiUsers} w={10} h={10} color={"black"} />}
         title={"Customers"}
-        text={customers?.dataCustomers?.length}
+        text={customers?.totalItems}
       />
       <Feature
         icon={<Icon as={MdOutlineWarehouse} w={10} h={10} color={"black"} />}
