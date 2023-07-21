@@ -18,37 +18,40 @@ const AllDataDashboard = () => {
   console.log("INI DATA WAREHOUSES", warehouses);
 
   return (
-    <Box
+    <Flex
+      flexDirection={"row"}
+      justifyContent={"space-between"}
+      alignItems={"center"}
       boxShadow={"2px 2px 10px 1px #DDE6ED"}
       border={"1px solid #DDE6ED"}
       borderRadius={"10px"}
       p="3%"
       marginTop={10}
-      w="500px"
-      h="350px">
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
-        <Feature
-          icon={<Icon as={FiPackage} w={10} h={10} color={"black"} />}
-          title={"Product"}
-          text={products.length}
-        />
-        <Feature
-          icon={<Icon as={FiUser} w={10} h={10} color={"black"} />}
-          title={"Suppliers"}
-          text={"Lorem ipsum dolor sit amet"}
-        />
-        <Feature
-          icon={<Icon as={FiUsers} w={10} h={10} color={"black"} />}
-          title={"Customers"}
-          text={customers.length}
-        />
-        <Feature
-          icon={<Icon as={MdOutlineWarehouse} w={10} h={10} color={"black"} />}
-          title={"Warehouse"}
-          text={warehouses.length}
-        />
-      </SimpleGrid>
-    </Box>
+      w="100%"
+      h="auto">
+      {/* <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}> */}
+      <Feature
+        icon={<Icon as={FiPackage} w={10} h={10} color={"black"} />}
+        title={"Product"}
+        text={products.length}
+      />
+      <Feature
+        icon={<Icon as={FiUser} w={10} h={10} color={"black"} />}
+        title={"Suppliers"}
+        text={"Lorem ipsum dolor sit amet"}
+      />
+      <Feature
+        icon={<Icon as={FiUsers} w={10} h={10} color={"black"} />}
+        title={"Customers"}
+        text={customers.length}
+      />
+      <Feature
+        icon={<Icon as={MdOutlineWarehouse} w={10} h={10} color={"black"} />}
+        title={"Warehouse"}
+        text={warehouses.length}
+      />
+      {/* </SimpleGrid> */}
+    </Flex>
   );
 };
 

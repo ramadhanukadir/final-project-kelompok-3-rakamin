@@ -56,8 +56,6 @@ export default function Dashboard() {
             Revenue History
           </Heading>
           <MyChart />
-
-          <AllDataDashboard />
         </Flex>
 
         {/* Column 3 */}
@@ -68,6 +66,7 @@ export default function Dashboard() {
           <ExpensesChart />
         </Flex>
       </Flex>
+      <AllDataDashboard />
     </Flex>
   );
 }
