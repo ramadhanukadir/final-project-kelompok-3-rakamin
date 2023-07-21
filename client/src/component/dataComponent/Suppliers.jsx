@@ -24,13 +24,23 @@ import {
   Text,
   useDisclosure,
   Icon,
+  useToast,
 } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
 import { instance } from '@/modules/axios';
 import Link from 'next/link';
 import { Link as ChakraLink } from '@chakra-ui/react';
+import { useForm } from 'react-hook-form';
+import InputField from '../InputField/InputField';
 
 const Suppliers = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+    setValue,
+  } = useForm();
   const [suppliers, setSuppliers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
@@ -54,6 +64,7 @@ const Suppliers = () => {
     onOpen: openDeleteModal,
     onClose: closeDeleteModal,
   } = useDisclosure();
+  const toast = useToast();
   const [deleteSupplierId, setDeleteSupplierId] = useState('');
   const router = useRouter();
 
@@ -63,7 +74,7 @@ const Suppliers = () => {
 
   const fetchData = async () => {
     try {
-      const response = await instance.get('suppliers?page=1&limit=10');
+      const response = await instance.get('/suppliers');
       const { dataSuppliers } = response.data;
       setSuppliers(dataSuppliers);
     } catch (error) {
@@ -86,7 +97,6 @@ const Suppliers = () => {
     setCurrentSupplierId(id);
     openUpdateModal();
   };
-  console.log(setDetail);
 
   const toggleCancelModal = () => {
     closeUpdateModal();
@@ -95,23 +105,30 @@ const Suppliers = () => {
     setTelephone('');
   };
 
-  const handleCreate = async () => {
+  const onSubmit = async (data) => {
     try {
-      const newSupplier = {
-        name: name,
-        address: address,
-        telephone: telephone,
-      };
-
-      const response = await instance.post('suppliers', newSupplier);
-      const createdSupplier = response.data;
-
-      setSuppliers([...suppliers, createdSupplier]);
-
+      console.log(data);
+      await instance.post('suppliers', data);
+      toast({
+        title: 'Created Supplier',
+        description: 'You have successfully created Supplier.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top',
+      });
+      reset();
       closeModal();
       fetchData();
     } catch (error) {
-      console.error('Gagal membuat supplier:', error);
+      toast({
+        title: 'Failed to create supplier.',
+        description: error.response.data.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
+      });
     }
   };
 
@@ -177,40 +194,51 @@ const Suppliers = () => {
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <ModalOverlay />
           <ModalContent>
-            <Box display={'flex'} flexDirection={'row'} gap={'5'}>
-              <ModalHeader>Tambah Supplier</ModalHeader>
-            </Box>
+            <ModalHeader>Tambah Supplier</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <FormControl>
-                <FormLabel>Nama:</FormLabel>
-                <Input
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <InputField
+                  label='Name'
                   type='text'
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  name={'name'}
+                  placeholder={'Insert Name'}
+                  register={register('name', {
+                    required: 'This is required',
+                  })}
+                  errors={errors.name}
                 />
-              </FormControl>
-              <FormControl mt={4}>
-                <FormLabel>Alamat:</FormLabel>
-                <Input
+                <InputField
+                  label='Address'
                   type='text'
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  name={'address'}
+                  placeholder={'Insert Address'}
+                  register={register('address', {
+                    required: 'This is required',
+                  })}
+                  errors={errors.address}
                 />
-              </FormControl>
-              <FormControl mt={4}>
-                <FormLabel>Telepon:</FormLabel>
-                <Input
+                <InputField
+                  label='Telephone'
                   type='text'
-                  value={telephone}
-                  onChange={(e) => setTelephone(e.target.value)}
+                  name={'telephone'}
+                  placeholder={'Insert Telephone'}
+                  register={register('telephone', {
+                    required: 'This is required',
+                  })}
+                  errors={errors.telephone}
                 />
-              </FormControl>
+                <Button
+                  type='submit'
+                  isLoading={isSubmitting}
+                  colorScheme='blue'
+                  mr={3}
+                >
+                  Simpan
+                </Button>
+              </form>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleCreate}>
-                Simpan
-              </Button>
               <Button onClick={closeModal}>Batal</Button>
             </ModalFooter>
           </ModalContent>
