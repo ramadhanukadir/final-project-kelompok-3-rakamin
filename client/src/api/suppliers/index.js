@@ -1,11 +1,15 @@
 import { instance } from "@/modules/axios";
 
-export const getAllSuppliers = async () => {
+export const getAllSuppliers = async (filters = {}) => {
   try {
-    const { data } = await instance.get("/suppliers");
+    const nonEmptyFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value !== "")
+    );
+    const params = new URLSearchParams(nonEmptyFilters).toString();
+    const { data } = await instance.get(`/suppliers?${params}`);
     return data;
   } catch (error) {
-    throw new Error(error.response.data.message);
+    throw new Error(error.response.data.message || "Something went wrong");
   }
 };
 

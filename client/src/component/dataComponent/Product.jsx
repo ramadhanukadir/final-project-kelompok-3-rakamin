@@ -54,7 +54,18 @@ const Product = () => {
     formState: { errors },
     setValue,
   } = useForm();
-  const { categories, warehouseStock, products, fetchItems, filterProducts, setFilterProducts, fetchWarehousesStock } = useContext(DataContext);
+  const {
+    categories,
+    warehouseStock,
+    products,
+    fetchItems,
+    allProducts,
+    fetchAllItems,
+    filterProducts,
+    setFilterProducts,
+    fetchWarehousesStock,
+    fetchCategories,
+  } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
@@ -72,7 +83,8 @@ const Product = () => {
       setValue('base_price', detailItems.basePrice);
       setValue('selling_price', detailItems.sellingPrice);
     }
-  }, [detailItems]);
+    fetchCategories();
+  }, [detailItems, isModalOpen]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -162,7 +174,12 @@ const Product = () => {
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
           <AddProductForm fetchItems={() => fetchItems()} />
           <AddStockForm fetchWarehousesStock={() => fetchWarehousesStock()} />
-          <MoveStock warehouseStock={warehouseStock} fetchWarehousesStock={() => fetchWarehousesStock()} />
+          <MoveStock
+            allProducts={allProducts}
+            fetchAllItems={() => fetchAllItems()}
+            warehouseStock={warehouseStock}
+            fetchWarehousesStock={() => fetchWarehousesStock()}
+          />
         </Box>
       </Box>
       <Filter
@@ -268,7 +285,6 @@ const Product = () => {
                 <ModalBody>
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <SelectField
-                      // keyProp={1}
                       name={'categories'}
                       label={'Categories'}
                       register={register('categories_id', {
@@ -505,9 +521,9 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
     reset,
     setValue,
   } = useForm();
+  const { allSuppliers, allProducts, fetchAllItems, fetchAllSuppliers } =
+    useContext(DataContext);
   const [warehouse, setWarehouse] = useState([]);
-  const [items, setItems] = useState([]);
-  const [suppliers, setSuppliers] = useState([]);
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -520,20 +536,9 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
   }, []);
 
   useEffect(() => {
-    const fetchItems = async () => {
-      const items = await getAllItems();
-      setItems(items);
-    };
-    fetchItems();
-  }, []);
-
-  useEffect(() => {
-    const fetchSuppliers = async () => {
-      const suppliers = await getAllSuppliers();
-      setSuppliers(suppliers);
-    };
-    fetchSuppliers();
-  }, []);
+    fetchAllSuppliers();
+    fetchAllItems();
+  }, [isOpen]);
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;
@@ -598,11 +603,17 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Product</FormLabel>
-                  <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('items_id', { required: true })}>
-                    <option value="" selected disabled>
+                  <Select
+                    size='sm'
+                    variant='filled'
+                    name='Items Id'
+                    onChange={handleChange}
+                    {...register('items_id', { required: true })}
+                  >
+                    <option value='' selected disabled h={'2rem'}>
                       Select Items
                     </option>
-                    {items?.data?.map((product) => (
+                    {allProducts?.data?.map((product) => (
                       <option key={product.id} value={product.id}>
                         {product.name}
                       </option>
@@ -635,7 +646,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
                     <option value="" selected disabled>
                       Select Suppliers
                     </option>
-                    {suppliers?.dataSuppliers?.map((vendor) => (
+                    {allSuppliers?.dataSuppliers?.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>
                         {vendor.name}
                       </option>
@@ -659,7 +670,12 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
   );
 };
 
-export const MoveStock = ({ warehouseStock, fetchWarehousesStock }) => {
+export const MoveStock = ({
+  allProducts,
+  warehouseStock,
+  fetchWarehousesStock,
+  fetchAllItems,
+}) => {
   const {
     register,
     handleSubmit,
@@ -668,21 +684,15 @@ export const MoveStock = ({ warehouseStock, fetchWarehousesStock }) => {
     setValue,
     watch,
   } = useForm();
-  const [items, setItems] = useState([]);
   const [warehouse, setWarehouse] = useState([]);
-
   const [warehouseId, setWarehouseId] = useState(0);
   const [itemsId, setItemsId] = useState(0);
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const fetchItems = async () => {
-      const { data } = await getAllItems();
-      setItems(data);
-    };
-    fetchItems();
-  }, []);
+    fetchAllItems();
+  }, [isOpen]);
 
   useEffect(() => {
     const fetchWarehouse = async () => {
@@ -710,29 +720,29 @@ export const MoveStock = ({ warehouseStock, fetchWarehousesStock }) => {
       const response = await instance.post(
         '/warehouses-stock/move-items',
         data,
-        handleCloseModal(),
-        toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
+        handleCloseModal()
       );
-      if (response.status === 200) {
-        console.log('Produk berhasil ditambahkan!');
-        reset();
-      }
+      toast({
+        title: 'Created Product',
+        description: 'You have successfully Created Product.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top',
+      });
+      reset();
       fetchWarehousesStock();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
         title: 'Failed to create product.',
-        description: error.message,
+        description: error.response.data.message,
         status: 'error',
         duration: 5000,
         isClosable: true,
+        position: 'top',
       });
+      reset();
     }
   };
 
@@ -772,8 +782,12 @@ export const MoveStock = ({ warehouseStock, fetchWarehousesStock }) => {
                     <option value="" selected disabled>
                       Select Items
                     </option>
-                    {items?.map((product) => (
-                      <option onClick={() => setItemsId(product.id)} key={product.id} value={product.id}>
+                    {allProducts?.data?.map((product) => (
+                      <option
+                        onClick={() => setItemsId(product.id)}
+                        key={product.id}
+                        value={product.id}
+                      >
                         {product.name}
                       </option>
                     ))}

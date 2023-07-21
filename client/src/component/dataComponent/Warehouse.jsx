@@ -490,9 +490,11 @@ const Warehouses = () => {
             </AlertDialogHeader>
             <AlertDialogBody>Are you sure you want to delete this warehouse? This action is irreversible.</AlertDialogBody>
             <AlertDialogFooter>
-              <Button onClick={cancelDeleteWarehouse}>Cancel</Button>
-              <Button colorScheme="red" ml={3} onClick={confirmDeleteWarehouse}>
+              <Button rounded={'full'} colorScheme="red" mr={3} onClick={confirmDeleteWarehouse}>
                 Delete
+              </Button>
+              <Button rounded={'full'} onClick={cancelDeleteWarehouse}>
+                Cancel
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
