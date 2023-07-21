@@ -36,12 +36,7 @@ import {
   Flex,
   TableCaption,
 } from '@chakra-ui/react';
-import {
-  getAllItems,
-  getAllItemsById,
-  getAllWarehouses,
-  getAllSuppliers,
-} from '@/modules/fetch';
+import { getAllItems, getAllItemsById, getAllWarehouses, getAllSuppliers } from '@/modules/fetch';
 import { FiPlus, FiArrowRight, FiDelete, FiMove, FiEdit } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
@@ -172,14 +167,7 @@ const Product = () => {
   };
   return (
     <Box>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
-        mb={10}
-        pb={'10'}
-      >
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} mb={10} pb={'10'}>
         <Text fontWeight={'bold'} fontSize={'xl'}>
           Products
         </Text>
@@ -231,7 +219,7 @@ const Product = () => {
         }}
       />
       <TableContainer overflowY={'auto'} h={'25em'} px={5}>
-        <Table variant='simple' size={'md'}>
+        <Table variant="simple" size={'md'}>
           <TableCaption>Products</TableCaption>
           <Thead bg={'#06283D'}>
             <Tr>
@@ -247,18 +235,10 @@ const Product = () => {
             {products?.data?.map((item) => {
               return (
                 <Tr key={item.id}>
-                  <Td
-                    onClick={() => router.push(`/product/${item.id}`)}
-                    cursor={'pointer'}
-                    py={2}
-                  >
+                  <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'} py={2}>
                     {item.name}
                   </Td>
-                  <Td
-                    onClick={() => router.push(`/product/${item.id}`)}
-                    cursor={'pointer'}
-                    py={2}
-                  >
+                  <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'} py={2}>
                     {item.SKU}
                   </Td>
                   <Td py={2}>{categoriesName(item.categoriesId)}</Td>
@@ -267,11 +247,7 @@ const Product = () => {
                       {warehouseStock
                         .filter((ws) => ws.itemsName === item.name)
                         .map((wS) => {
-                          return (
-                            <option
-                              key={wS.id}
-                            >{`${wS.warehouseName}, Stock:  ${wS.stock}`}</option>
-                          );
+                          return <option key={wS.id}>{`${wS.warehouseName}, Stock:  ${wS.stock}`}</option>;
                         })}
                     </Select>
                   </Td>
@@ -286,7 +262,7 @@ const Product = () => {
                         cursor: 'pointer',
                         color: '#4F709C',
                       }}
-                      title='Edit'
+                      title="Edit"
                     />
                     <Icon
                       color={'red'}
@@ -296,7 +272,7 @@ const Product = () => {
                         cursor: 'pointer',
                         color: '#EF6262',
                       }}
-                      title='Delete'
+                      title="Delete"
                     />
                   </Td>
                 </Tr>
@@ -305,7 +281,7 @@ const Product = () => {
             <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
               <ModalOverlay />
               <ModalContent>
-                <ModalHeader textAlign='center'>Edit Product</ModalHeader>
+                <ModalHeader textAlign="center">Edit Product</ModalHeader>
                 <ModalBody>
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <SelectField
@@ -320,79 +296,45 @@ const Product = () => {
                       value={(opt) => opt.id}
                     />
                     <FormControl isInvalid={errors.name} mb={4}>
-                      <FormLabel htmlFor='name'>Name:</FormLabel>
-                      <Input
-                        type='text'
-                        id='name'
-                        {...register('name', { required: true })}
-                      />
+                      <FormLabel htmlFor="name">Name:</FormLabel>
+                      <Input type="text" id="name" {...register('name', { required: true })} />
                       <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                     </FormControl>
                     <FormControl isInvalid={errors.SKU} mb={4}>
-                      <FormLabel htmlFor='SKU'>SKU:</FormLabel>
-                      <Input
-                        type='text'
-                        id='SKU'
-                        {...register('SKU', { required: true })}
-                      />
+                      <FormLabel htmlFor="SKU">SKU:</FormLabel>
+                      <Input type="text" id="SKU" {...register('SKU', { required: true })} />
                       <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                     </FormControl>
                     <FormControl isInvalid={errors.size} mb={4}>
-                      <FormLabel htmlFor='size'>size:</FormLabel>
-                      <Input
-                        type='number'
-                        id='size'
-                        {...register('size', { required: true })}
-                      />
+                      <FormLabel htmlFor="size">size:</FormLabel>
+                      <Input type="number" id="size" {...register('size', { required: true })} />
                       <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                     </FormControl>
                     <FormControl isInvalid={errors.weight} mb={4}>
-                      <FormLabel htmlFor='weight'>weight:</FormLabel>
-                      <Input
-                        type='number'
-                        id='weight'
-                        {...register('weight', { required: true })}
-                      />
+                      <FormLabel htmlFor="weight">weight:</FormLabel>
+                      <Input type="number" id="weight" {...register('weight', { required: true })} />
                       <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                     </FormControl>
                     <FormControl isInvalid={errors.description} mb={4}>
-                      <FormLabel htmlFor='description'>Description:</FormLabel>
-                      <Input
-                        type='text'
-                        id='description'
-                        {...register('description', { required: true })}
-                      />
+                      <FormLabel htmlFor="description">Description:</FormLabel>
+                      <Input type="text" id="description" {...register('description', { required: true })} />
                       <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                     </FormControl>
                     <FormControl isInvalid={errors.base_price} mb={4}>
-                      <FormLabel htmlFor='base_price'>Base Price:</FormLabel>
-                      <Input
-                        type='number'
-                        id='base_price'
-                        {...register('base_price', { required: true })}
-                      />
+                      <FormLabel htmlFor="base_price">Base Price:</FormLabel>
+                      <Input type="number" id="base_price" {...register('base_price', { required: true })} />
                       <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                     </FormControl>
                     <FormControl isInvalid={errors.selling_price} mb={4}>
-                      <FormLabel htmlFor='selling_price'>
-                        Selling price:
-                      </FormLabel>
-                      <Input
-                        type='number'
-                        id='selling_price'
-                        {...register('selling_price', { required: true })}
-                      />
+                      <FormLabel htmlFor="selling_price">Selling price:</FormLabel>
+                      <Input type="number" id="selling_price" {...register('selling_price', { required: true })} />
                       <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                     </FormControl>
                     <FormControl mb={4}>
-                      <FormLabel htmlFor='image_url'>Gambar:</FormLabel>
-                      <Input
-                        type='file'
-                        id='image_url'
-                        {...register('image_url')}
-                      />
+                      <FormLabel htmlFor="image_url">Gambar:</FormLabel>
+                      <Input type="file" id="image_url" {...register('image_url')} />
                     </FormControl>
-                    <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
+                    <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
                       Update product
                     </Button>
                     <Button size={'md'} onClick={handleCloseModal}>
@@ -484,7 +426,7 @@ export const AddProductForm = ({ fetchItems }) => {
   return (
     <Box>
       <Button
-        size='sm'
+        size="sm"
         bgColor={'#06283D'}
         color={'#EEEDED'}
         leftIcon={<FiPlus />}
@@ -501,7 +443,7 @@ export const AddProductForm = ({ fetchItems }) => {
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Create Product</ModalHeader>
+          <ModalHeader textAlign="center">Create Product</ModalHeader>
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
@@ -517,78 +459,46 @@ export const AddProductForm = ({ fetchItems }) => {
                   value={(opt) => opt.id}
                 />
                 <FormControl isInvalid={errors.name} mb={4}>
-                  <FormLabel htmlFor='name'>Name:</FormLabel>
-                  <Input
-                    type='text'
-                    id='name'
-                    {...register('name', { required: true })}
-                  />
+                  <FormLabel htmlFor="name">Name:</FormLabel>
+                  <Input type="text" id="name" {...register('name', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.SKU} mb={4}>
-                  <FormLabel htmlFor='SKU'>SKU:</FormLabel>
-                  <Input
-                    type='text'
-                    id='SKU'
-                    {...register('SKU', { required: true })}
-                  />
+                  <FormLabel htmlFor="SKU">SKU:</FormLabel>
+                  <Input type="text" id="SKU" {...register('SKU', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.size} mb={4}>
-                  <FormLabel htmlFor='size'>size:</FormLabel>
-                  <Input
-                    type='number'
-                    id='size'
-                    {...register('size', { required: true })}
-                  />
+                  <FormLabel htmlFor="size">size:</FormLabel>
+                  <Input type="number" id="size" {...register('size', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.weight} mb={4}>
-                  <FormLabel htmlFor='weight'>weight:</FormLabel>
-                  <Input
-                    type='number'
-                    id='weight'
-                    {...register('weight', { required: true })}
-                  />
+                  <FormLabel htmlFor="weight">weight:</FormLabel>
+                  <Input type="number" id="weight" {...register('weight', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.description} mb={4}>
-                  <FormLabel htmlFor='description'>Description:</FormLabel>
-                  <Input
-                    type='text'
-                    id='description'
-                    {...register('description', { required: true })}
-                  />
+                  <FormLabel htmlFor="description">Description:</FormLabel>
+                  <Input type="text" id="description" {...register('description', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.base_price} mb={4}>
-                  <FormLabel htmlFor='base_price'>Base Price:</FormLabel>
-                  <Input
-                    type='number'
-                    id='base_price'
-                    {...register('base_price', { required: true })}
-                  />
+                  <FormLabel htmlFor="base_price">Base Price:</FormLabel>
+                  <Input type="number" id="base_price" {...register('base_price', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.selling_price} mb={4}>
-                  <FormLabel htmlFor='selling_price'>Selling price:</FormLabel>
-                  <Input
-                    type='number'
-                    id='selling_price'
-                    {...register('selling_price', { required: true })}
-                  />
+                  <FormLabel htmlFor="selling_price">Selling price:</FormLabel>
+                  <Input type="number" id="selling_price" {...register('selling_price', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.image_url} mb={4}>
-                  <FormLabel htmlFor='image_url'>Gambar:</FormLabel>
-                  <Input
-                    type='file'
-                    id='image_url'
-                    {...register('image_url')}
-                  />
+                  <FormLabel htmlFor="image_url">Gambar:</FormLabel>
+                  <Input type="file" id="image_url" {...register('image_url')} />
                   <FormErrorMessage>Gambar harus diunggah.</FormErrorMessage>
                 </FormControl>
-                <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
+                <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
                   Tambah product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>
@@ -670,7 +580,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
   return (
     <Box>
       <Button
-        size='sm'
+        size="sm"
         bgColor={'#06283D'}
         color={'#EEEDED'}
         borderRadius={'full'}
@@ -687,7 +597,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Stock Form</ModalHeader>
+          <ModalHeader textAlign="center">Stock Form</ModalHeader>
           <ModalBody>
             <VStack>
               <form onSubmit={handleSubmit(onSubmit)}>
@@ -713,14 +623,8 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.warehouse_id}>
                   <FormLabel>Warehouse</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='warehouse_id'
-                    onChange={handleChange}
-                    {...register('warehouses_id', { required: true })}
-                  >
-                    <option value='' selected disabled>
+                  <Select size="sm" variant="filled" name="warehouse_id" onChange={handleChange} {...register('warehouses_id', { required: true })}>
+                    <option value="" selected disabled>
                       Select Warehouse
                     </option>
                     {warehouse.map((warehouses) => (
@@ -733,26 +637,13 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.stock}>
                   <FormLabel>Stock</FormLabel>
-                  <Input
-                    size='sm'
-                    variant='filled'
-                    type='text'
-                    name='quantity'
-                    onChange={handleChange}
-                    {...register('stock', { required: true })}
-                  />
+                  <Input size="sm" variant="filled" type="text" name="quantity" onChange={handleChange} {...register('stock', { required: true })} />
                   <FormErrorMessage>Stock Harus Di Isi</FormErrorMessage>
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.suppliers_id}>
                   <FormLabel>Suppliers</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='vendor_id'
-                    onChange={handleChange}
-                    {...register('suppliers_id', { required: true })}
-                  >
-                    <option value='' selected disabled>
+                  <Select size="sm" variant="filled" name="vendor_id" onChange={handleChange} {...register('suppliers_id', { required: true })}>
+                    <option value="" selected disabled>
                       Select Suppliers
                     </option>
                     {allSuppliers?.dataSuppliers?.map((vendor) => (
@@ -764,13 +655,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>
 
-                <Button
-                  type='submit'
-                  size={'md'}
-                  colorScheme='blue'
-                  mr={3}
-                  onClick={() => console.log('Masuk')}
-                >
+                <Button type="submit" size={'md'} colorScheme="blue" mr={3} onClick={() => console.log('Masuk')}>
                   Add Stock Product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>
@@ -864,7 +749,7 @@ export const MoveStock = ({
   return (
     <Box>
       <Button
-        size='sm'
+        size="sm"
         bgColor={'#06283D'}
         color={'#EEEDED'}
         borderRadius={'full'}
@@ -882,7 +767,7 @@ export const MoveStock = ({
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center' fontSize='sm'>
+          <ModalHeader textAlign="center" fontSize="sm">
             Move Stock
           </ModalHeader>
           <ModalCloseButton />
@@ -893,14 +778,8 @@ export const MoveStock = ({
                 {/* Mapping over products */}
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Select Product To move</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='Items Id'
-                    onChange={handleChange}
-                    {...register('items_id', { required: true })}
-                  >
-                    <option value='' selected disabled>
+                  <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('items_id', { required: true })}>
+                    <option value="" selected disabled>
                       Select Items
                     </option>
                     {allProducts?.data?.map((product) => (
@@ -917,25 +796,15 @@ export const MoveStock = ({
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Select Source Warehouse</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='Items Id'
-                    onChange={handleChange}
-                    {...register('source_warehouse_id', { required: true })}
-                  >
-                    <option value='' selected disabled>
+                  <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('source_warehouse_id', { required: true })}>
+                    <option value="" selected disabled>
                       {' '}
                       Select Source Warehouse{' '}
                     </option>
                     {warehouseStock
                       ?.filter((ws) => ws.itemsId === itemsId)
                       .map((warehouses) => (
-                        <option
-                          key={warehouses.id}
-                          value={warehouses.warehouseId}
-                          onClick={() => setWarehouseId(warehouses.warehouseId)}
-                        >
+                        <option key={warehouses.id} value={warehouses.warehouseId} onClick={() => setWarehouseId(warehouses.warehouseId)}>
                           {`${warehouses.warehouseName}, Stock: ${warehouses.stock}`}
                         </option>
                       ))}
@@ -944,23 +813,16 @@ export const MoveStock = ({
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.stock}>
                   <FormLabel>Stock</FormLabel>
-                  <Input
-                    size='sm'
-                    variant='filled'
-                    type='text'
-                    name='quantity'
-                    onChange={handleChange}
-                    {...register('stock', { required: true })}
-                  />
+                  <Input size="sm" variant="filled" type="text" name="quantity" onChange={handleChange} {...register('stock', { required: true })} />
                   <FormErrorMessage>Stock Harus Di Isi</FormErrorMessage>
                 </FormControl>
 
                 <FormControl mb={4} isInvalid={errors.suppliers_id}>
                   <FormLabel>Select Warehouse Destination</FormLabel>
                   <Select
-                    size='sm'
-                    variant='filled'
-                    name='Warehouse id'
+                    size="sm"
+                    variant="filled"
+                    name="Warehouse id"
                     onChange={handleChange}
                     {...register('destination_warehouse_id', {
                       required: true,
@@ -977,7 +839,7 @@ export const MoveStock = ({
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>
 
-                <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
+                <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
                   Tambah product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>
