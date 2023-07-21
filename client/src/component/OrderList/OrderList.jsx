@@ -18,15 +18,15 @@ function OrderList({ orders }) {
     <TableContainer overflowY={'auto'} h={'25em'} px={5}>
       <Table variant='simple'>
         <TableCaption>Orders</TableCaption>
-        <Thead bg={'#DFF6FE'}>
+        <Thead bg={'#06283D'}>
           <Tr>
-            <Th>Date</Th>
-            <Th>Warehouse</Th>
-            <Th>Customer</Th>
-            <Th>Revenue</Th>
+            <Th color={'#EEEDED'}>Date</Th>
+            <Th color={'#EEEDED'}>Warehouse</Th>
+            <Th color={'#EEEDED'}>Customer</Th>
+            <Th color={'#EEEDED'}>Revenue</Th>
           </Tr>
         </Thead>
-        <Tbody>
+        <Tbody bg={'#EEEDED'}>
           {orders?.map((order) => (
             <Tr
               key={order.id}

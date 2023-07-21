@@ -27,6 +27,7 @@ import {
   FormLabel as ChakraFormLabel,
   Input,
   useToast,
+  Icon,
 } from "@chakra-ui/react";
 import { useFieldArray, useForm, watch } from "react-hook-form";
 import {
@@ -78,7 +79,6 @@ const Categories = () => {
       setIsModalOpen(true);
     }
   };
-  //console.log(detailItems);
 
   const handleDeleteItems = async (id) => {
     try {
@@ -132,58 +132,64 @@ const Categories = () => {
   };
 
   return (
-    <Box maxW="7xl" mx={"auto"} px={{ base: 2, sm: 12, md: 17 }} mt={50}>
+    <Box maxW="7xl" mx={"auto"} pt={{ base: 2, sm: 12, md: 17 }} mt={"5em"}>
       <Box>
         <Box
           display={"flex"}
           flexDirection={"row"}
           justifyContent={"space-between"}
-          py={"10"}>
+          mb={"6em"}
+          pb={"10"}>
           <Text fontWeight={"bold"} fontSize={"xl"}>
             Category
           </Text>
           <InputCategory />
         </Box>
         <Box>
-          <TableContainer>
+          <TableContainer overflowY={"auto"} h={"25em"} px={5}>
             <Table variant="simple">
-              <Thead bg={"#DFF6FE"}>
+              <Thead bg={"#06283D"}>
                 <Tr>
-                  <Th>SKU</Th>
-                  <Th>Description</Th>
-                  <Th>Action</Th>
+                  <Th color={"#EEEDED"}>Name</Th>
+                  <Th color={"#EEEDED"}>Description</Th>
+                  <Th color={"#EEEDED"}>Action</Th>
                 </Tr>
               </Thead>
-              <Tbody>
-                {categories.map((item) => (
-                  <Tr key={item.id}>
+              <Tbody bg={"#EEEDED"}>
+                {categories?.map((c) => (
+                  <Tr key={c.id}>
                     <Td
-                      onClick={() => router.push(`/category/${item.id}`)}
+                      onClick={() => router.push(`/category/${c.id}`)}
                       cursor={"pointer"}
                       _hover={"black"}>
-                      {item.name}
+                      {c.name}
                     </Td>
-                    <Td cursor={"pointer"} _hover={"black"}>
-                      {item.description}
-                    </Td>
+                    <Tr>
+                      <Td>{c.description}</Td>
+                    </Tr>
 
                     <Td>
-                      <Button
-                        colorScheme={"blue"}
-                        variant={"outline"}
-                        onClick={() => handleEdit(item.id)}
-                        size={"md"}
-                        ml={2}>
-                        <FiEdit />
-                      </Button>
-                      <Button
-                        colorScheme={"red"}
-                        variant={"outline"}
-                        onClick={() => handleDeleteItems(item.id)}
-                        size={"md"}
-                        ml={2}>
-                        <FiDelete />
-                      </Button>
+                      <Icon
+                        color={"#06283D"}
+                        onClick={() => handleEdit(c.id)}
+                        as={FiEdit}
+                        mr={3}
+                        _hover={{
+                          cursor: "pointer",
+                          color: "#4F709C",
+                        }}
+                        title="Edit"
+                      />
+                      <Icon
+                        color={"red"}
+                        onClick={() => handleDeleteItems(c.id)}
+                        as={FiDelete}
+                        _hover={{
+                          cursor: "pointer",
+                          color: "#EF6262",
+                        }}
+                        title="Delete"
+                      />
                     </Td>
                   </Tr>
                 ))}
@@ -302,8 +308,19 @@ export const InputCategory = () => {
 
   return (
     <Box>
-      <Button size="sm" onClick={handleOpenModal}>
-        <FiPlus />
+      <Button
+        size="sm"
+        bgColor={"#06283D"}
+        color={"#EEEDED"}
+        leftIcon={<FiPlus />}
+        onClick={handleOpenModal}
+        borderRadius={"full"}
+        boxShadow={"0px 0px 3px 0px #06283D"}
+        _hover={{
+          bg: "#164B60",
+          color: "#EEEDED",
+        }}>
+        Add Category
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />

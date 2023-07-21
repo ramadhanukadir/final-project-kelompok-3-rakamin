@@ -20,7 +20,8 @@ const AllDataContextProvider = ({ children }) => {
   const [warehouseItems, setWarehouseItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [customers, setCustomers] = useState([]);
+  const [customers, setCustomers] = useState({});
+  const [allCustomers, setAllCustomers] = useState({});
   const [suppliers, setSuppliers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [detailOrder, setDetailOrder] = useState({});
@@ -34,6 +35,19 @@ const AllDataContextProvider = ({ children }) => {
   const [filterOrder, setFilterOrder] = useState({
     warehouses_id: "",
     customers_id: "",
+    page: 1,
+    limit: 5,
+    sort: "",
+    order: "",
+  });
+  const [filterProducts, setFilterProducts] = useState({
+    q: "",
+    page: 1,
+    limit: 5,
+    sort: "",
+    order: "",
+  });
+  const [filterCustomer, setFilterCustomer] = useState({
     page: 1,
     limit: 5,
     sort: "",
@@ -57,9 +71,8 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchItems = async () => {
-    const { meta, data } = await getAllItems(1, "ASC", "name", "", 10);
+    const data = await getAllItems(filterProducts);
     setProducts(data);
-    return meta;
   };
 
   const fetchCategories = async () => {
@@ -68,8 +81,13 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchCustomers = async () => {
-    const { dataCustomers } = await getAllCustomer();
-    setCustomers(dataCustomers);
+    const data = await getAllCustomer(filterCustomer);
+    setCustomers(data);
+  };
+
+  const fetchAllCustomers = async () => {
+    const data = await getAllCustomer();
+    setAllCustomers(data);
   };
 
   const fetchSuppliers = async () => {
@@ -114,6 +132,7 @@ const AllDataContextProvider = ({ children }) => {
   useEffect(() => {
     if (access !== null) {
       fetchCustomers();
+      fetchAllCustomers();
       fetchItems();
       fetchWarehouse();
       fetchSuppliers();
@@ -129,7 +148,14 @@ const AllDataContextProvider = ({ children }) => {
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [access, warehouseId, itemsId, filterOrder]);
+  }, [
+    access,
+    warehouseId,
+    itemsId,
+    filterOrder,
+    filterProducts,
+    filterCustomer,
+  ]);
 
   return (
     <AllDataContext.Provider
@@ -139,9 +165,12 @@ const AllDataContextProvider = ({ children }) => {
         setWarehouseId,
         warehouseItems,
         warehouseStock,
+        fetchWarehousesStock,
         products,
         categories,
         customers,
+        allCustomers,
+        fetchCustomers,
         suppliers,
         orders,
         detailOrder,
@@ -160,6 +189,10 @@ const AllDataContextProvider = ({ children }) => {
         fetchItems,
         filterOrder,
         setFilterOrder,
+        filterProducts,
+        setFilterProducts,
+        filterCustomer,
+        setFilterCustomer,
       }}>
       {children}
     </AllDataContext.Provider>

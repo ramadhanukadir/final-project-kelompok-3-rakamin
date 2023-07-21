@@ -119,6 +119,7 @@ const postOrders = async (req, res) => {
       }
 
       if (foundStock.stock < items.quantity) {
+        await t.rollback();
         return res.status(400).json({ message: 'Stock Insufficient' });
       }
 

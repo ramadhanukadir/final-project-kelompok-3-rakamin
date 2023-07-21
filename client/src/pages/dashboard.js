@@ -1,32 +1,9 @@
 import React, { useContext, useState } from "react";
-import {
-  Flex,
-  Heading,
-  Avatar,
-  AvatarGroup,
-  Text,
-  Icon,
-  IconButton,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Divider,
-  Link,
-  Box,
-  Button,
-  Input,
-  InputGroup,
-  InputLeftElement,
-} from "@chakra-ui/react";
+import { Flex, Heading } from "@chakra-ui/react";
 import MyChart from "@/component/dataComponent/chart/LineChart";
 import ExpensesChart from "@/component/dataComponent/chart/expenses";
-import { DataContext } from "@/context/AllDataContext";
-import { formatter } from "@/modules/formatter";
-import AllData from "@/component/dataComponent/chart/AllData";
 import AllDataDashboard from "@/component/dataComponent/chart/AllData";
+import { DataContext } from "@/context/AllDataContext";
 
 export default function Dashboard() {
   const [display, changeDisplay] = useState("hide");
@@ -57,8 +34,6 @@ export default function Dashboard() {
           </Heading>
           <MyChart />
         </Flex>
-
-        {/* Column 3 */}
         <Flex
           p="2%"
           flexDir="column"

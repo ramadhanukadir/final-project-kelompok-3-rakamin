@@ -3,7 +3,6 @@ import { Box, Text, SimpleGrid, Icon, Stack, Flex } from "@chakra-ui/react";
 import React from "react";
 import { FiPackage, FiUser, FiUsers } from "react-icons/fi";
 import { MdOutlineWarehouse } from "react-icons/md";
-import AllData from "@/component/dataComponent/chart/AllData";
 import { DataContext } from "@/context/AllDataContext";
 
 const AllDataDashboard = () => {
@@ -33,7 +32,7 @@ const AllDataDashboard = () => {
       <Feature
         icon={<Icon as={FiPackage} w={10} h={10} color={"black"} />}
         title={"Product"}
-        text={products.length}
+        text={products?.data?.length}
       />
       <Feature
         icon={<Icon as={FiUser} w={10} h={10} color={"black"} />}
@@ -43,7 +42,7 @@ const AllDataDashboard = () => {
       <Feature
         icon={<Icon as={FiUsers} w={10} h={10} color={"black"} />}
         title={"Customers"}
-        text={customers.length}
+        text={customers?.dataCustomers?.length}
       />
       <Feature
         icon={<Icon as={MdOutlineWarehouse} w={10} h={10} color={"black"} />}

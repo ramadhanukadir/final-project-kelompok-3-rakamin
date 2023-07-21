@@ -34,36 +34,21 @@ import {
   Icon,
   PageSelect,
   Flex,
+  TableCaption,
 } from '@chakra-ui/react';
 import {
   getAllItems,
   getAllItemsById,
   getAllWarehouses,
-  getAllWarehouseStock,
   getAllSuppliers,
-  getWarehouseId,
-  deleteItems,
-  updateItems,
 } from '@/modules/fetch';
-//import { useNavigate } from "react-router-dom";
-import { WarningIcon, SearchIcon, ArrowForwardIcon } from '@chakra-ui/icons';
-import {
-  FiSearch,
-  FiUpload,
-  FiPlus,
-  FiArrowLeft,
-  FiArrowRight,
-  FiCircle,
-  FiArrowUpRight,
-  FiDelete,
-  FiMove,
-  FaRegEdit,
-  FiEdit,
-} from 'react-icons/fi';
-import { Form, useForm } from 'react-hook-form';
+import { FiPlus, FiArrowRight, FiDelete, FiMove, FiEdit } from 'react-icons/fi';
+import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { DataContext } from '@/context/AllDataContext';
 import SelectField from '../SelectField/SelectField';
+import Filter from '../Filter';
+import { updateItems, deleteItems } from '@/api/product';
 
 const Product = () => {
   const toast = useToast();
@@ -72,22 +57,22 @@ const Product = () => {
     reset,
     register,
     formState: { errors },
-    watch,
     setValue,
   } = useForm();
-  const { categories, warehouseStock } = useContext(DataContext);
-  const [product, setProduct] = useState([]);
+  const {
+    categories,
+    warehouseStock,
+    products,
+    fetchItems,
+    filterProducts,
+    setFilterProducts,
+    fetchWarehousesStock,
+  } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
-  const [warehouse, setWarehouse] = useState([]);
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-  const router = useRouter();
 
-  const fetchProduct = async () => {
-    const { data } = await getAllItems();
-    setProduct(data);
-  };
+  const router = useRouter();
 
   useEffect(() => {
     if (detailItems) {
@@ -100,7 +85,6 @@ const Product = () => {
       setValue('base_price', detailItems.basePrice);
       setValue('selling_price', detailItems.sellingPrice);
     }
-    fetchProduct();
   }, [detailItems]);
 
   const handleCloseModal = () => {
@@ -112,7 +96,7 @@ const Product = () => {
     setDetailItems(foundProduct.data);
 
     if (foundProduct) {
-      setEditItemId(id);
+      setEditItemId(parseInt(id));
       setIsModalOpen(true);
     }
   };
@@ -133,7 +117,7 @@ const Product = () => {
           duration: 3000,
           isClosable: true,
         });
-      fetchProduct();
+      fetchItems();
     } catch (error) {
       toast({
         title: 'Failed to delete product.',
@@ -156,25 +140,25 @@ const Product = () => {
       formData.append('description', data.description);
       formData.append('base_price', data.base_price);
       formData.append('selling_price', data.selling_price);
-      formData.append('image_url', data.image_url[0]);
+      if (data.image_url[0]) {
+        formData.append('image_url', data.image_url[0]);
+      }
 
-      const response = await instance.post(
-        '/items',
-        formData,
-        handleCloseModal(),
-        toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
-      );
+      await updateItems(editItemId, formData);
+      toast({
+        title: 'Success',
+        description: 'Successfully update product',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      handleCloseModal();
+      fetchItems();
+      fetchWarehousesStock();
       reset();
-      fetchProduct();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: 'Failed to update product',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -188,32 +172,73 @@ const Product = () => {
         display={'flex'}
         flexDirection={'row'}
         justifyContent={'space-between'}
-        py={'10'}
+        alignItems={'center'}
+        mb={10}
+        pb={'10'}
       >
         <Text fontWeight={'bold'} fontSize={'xl'}>
           Products
         </Text>
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
-          <AddProductForm />
-          <AddStockForm />
-          <MoveStock warehouseStock={warehouseStock} />
+          <AddProductForm fetchItems={() => fetchItems()} />
+          <AddStockForm fetchWarehousesStock={() => fetchWarehousesStock()} />
+          <MoveStock
+            warehouseStock={warehouseStock}
+            fetchWarehousesStock={() => fetchWarehousesStock()}
+          />
         </Box>
       </Box>
-      <TableContainer>
+      <Filter
+        page={products?.meta}
+        model={products}
+        show={products}
+        filter={filterProducts}
+        handleNextPage={() => {
+          setFilterProducts({
+            ...filterProducts,
+            page: filterProducts.page + 1,
+          });
+        }}
+        handlePrevPage={() => {
+          setFilterProducts({
+            ...filterProducts,
+            page: filterProducts.page - 1,
+          });
+        }}
+        handleLimit={(e) => {
+          setFilterProducts({
+            ...filterProducts,
+            limit: e.target.value,
+          });
+        }}
+        disableNextPage={filterProducts.page === products?.meta?.totalPages}
+        disablePrevPage={filterProducts.page === 1}
+        count={products?.meta?.totalData}
+        placeholder={'Search by Name or SKU'}
+        handleSearch={(e) => {
+          setTimeout(() => {
+            setFilterProducts({
+              ...filterProducts,
+              q: e.target.value,
+            });
+          }, 1000);
+        }}
+      />
+      <TableContainer overflowY={'auto'} h={'25em'} px={5}>
         <Table variant='simple' size={'md'}>
-          <Thead bg={'#DFF6FE'}>
+          <TableCaption>Products</TableCaption>
+          <Thead bg={'#06283D'}>
             <Tr>
-              <Th>Name</Th>
-              <Th>SKU</Th>
-              <Th>Categories</Th>
-              <Th>Warehouse</Th>
-              <Th>Image</Th>
-              <Th>Action</Th>
+              <Th color={'#EEEDED'}>Name</Th>
+              <Th color={'#EEEDED'}>SKU</Th>
+              <Th color={'#EEEDED'}>Categories</Th>
+              <Th color={'#EEEDED'}>Warehouse</Th>
+              <Th color={'#EEEDED'}>Image</Th>
+              <Th color={'#EEEDED'}>Action</Th>
             </Tr>
           </Thead>
-          <Tbody>
-            {product?.map((item) => {
-              // {warehouseName(item.id)}
+          <Tbody bg={'#EEEDED'}>
+            {products?.data?.map((item) => {
               return (
                 <Tr key={item.id}>
                   <Td
@@ -232,7 +257,7 @@ const Product = () => {
                   </Td>
                   <Td py={2}>{categoriesName(item.categoriesId)}</Td>
                   <Td py={2}>
-                    <Select>
+                    <Select border={'1px solid #9DB2BF'}>
                       {warehouseStock
                         .filter((ws) => ws.itemsName === item.name)
                         .map((wS) => {
@@ -247,7 +272,6 @@ const Product = () => {
                   <Image src={item.imageUrl} w={'50px'} h={'50px'} />
                   <Td>
                     <Icon
-                      // boxSize={5}
                       color={'#06283D'}
                       onClick={() => handleEdit(item.id)}
                       as={FiEdit}
@@ -259,7 +283,6 @@ const Product = () => {
                       title='Edit'
                     />
                     <Icon
-                      // boxSize={5}
                       color={'red'}
                       onClick={() => handleDeleteItems(item.id)}
                       as={FiDelete}
@@ -382,7 +405,7 @@ const Product = () => {
   );
 };
 
-export const AddProductForm = ({ fetchProduct }) => {
+export const AddProductForm = ({ fetchItems }) => {
   const {
     register,
     handleSubmit,
@@ -409,24 +432,21 @@ export const AddProductForm = ({ fetchProduct }) => {
       formData.append('description', data.description);
       formData.append('base_price', data.base_price);
       formData.append('selling_price', data.selling_price);
-      formData.append('image_url', data.image_url[0]);
-
-      const response = await instance.post(
-        '/items',
-        formData,
-        handleCloseModal(),
-        toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
-      );
-      if (response.status === 200) {
-        console.log('Produk berhasil ditambahkan!');
-        reset();
+      if (data.image_url[0]) {
+        formData.append('image_url', data.image_url[0]);
       }
+
+      await instance.post('/items', formData);
+      toast({
+        title: 'Created Product',
+        description: 'You have successfully Created Product.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      reset();
+      fetchItems();
+      handleCloseModal();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -460,9 +480,16 @@ export const AddProductForm = ({ fetchProduct }) => {
     <Box>
       <Button
         size='sm'
-        bgColor={''}
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
         leftIcon={<FiPlus />}
         onClick={handleOpenModal}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
       >
         Add Product
       </Button>
@@ -552,7 +579,7 @@ export const AddProductForm = ({ fetchProduct }) => {
                   <Input
                     type='file'
                     id='image_url'
-                    {...register('image_url', { required: true })}
+                    {...register('image_url')}
                   />
                   <FormErrorMessage>Gambar harus diunggah.</FormErrorMessage>
                 </FormControl>
@@ -571,7 +598,7 @@ export const AddProductForm = ({ fetchProduct }) => {
   );
 };
 
-export const AddStockForm = ({ fetchProduct }) => {
+export const AddStockForm = ({ fetchWarehousesStock }) => {
   const {
     register,
     handleSubmit,
@@ -615,38 +642,22 @@ export const AddStockForm = ({ fetchProduct }) => {
   };
 
   const onSubmit = async (data) => {
-    const jsonData = JSON.stringify(data);
-
     try {
-      const response = await instance.post(
-        '/items/stock',
-        jsonData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-        handleCloseModal(),
-        toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
-      );
-
-      if (response.status === 200) {
-        console.log('Produk berhasil ditambahkan!');
-
-        reset();
-      }
-      fetchProduct();
+      const response = await instance.post('/items/stock', data);
+      handleCloseModal();
+      toast({
+        title: 'Created Product',
+        description: 'You have successfully Created Product.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      reset();
+      fetchWarehousesStock();
     } catch (error) {
-      console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
         title: 'Failed to create product.',
-        description: err.message,
+        description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -664,7 +675,19 @@ export const AddStockForm = ({ fetchProduct }) => {
 
   return (
     <Box>
-      <Button size='sm' leftIcon={<FiArrowRight />} onClick={handleOpenModal}>
+      <Button
+        size='sm'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+        leftIcon={<FiArrowRight />}
+        onClick={handleOpenModal}
+      >
         Add Stocks
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
@@ -683,6 +706,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                     onChange={handleChange}
                     {...register('items_id', { required: true })}
                   >
+                    <option value='' selected disabled>
+                      Select Items
+                    </option>
                     {items?.data?.map((product) => (
                       <option key={product.id} value={product.id}>
                         {product.name}
@@ -700,6 +726,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                     onChange={handleChange}
                     {...register('warehouses_id', { required: true })}
                   >
+                    <option value='' selected disabled>
+                      Select Warehouse
+                    </option>
                     {warehouse.map((warehouses) => (
                       <option key={warehouses.id} value={warehouses.id}>
                         {warehouses.name}
@@ -729,6 +758,9 @@ export const AddStockForm = ({ fetchProduct }) => {
                     onChange={handleChange}
                     {...register('suppliers_id', { required: true })}
                   >
+                    <option value='' selected disabled>
+                      Select Suppliers
+                    </option>
                     {suppliers?.dataSuppliers?.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>
                         {vendor.name}
@@ -745,7 +777,7 @@ export const AddStockForm = ({ fetchProduct }) => {
                   mr={3}
                   onClick={() => console.log('Masuk')}
                 >
-                  Tambah product
+                  Add Stock Product
                 </Button>
                 <Button size={'md'} onClick={handleCloseModal}>
                   Cancel
@@ -759,7 +791,7 @@ export const AddStockForm = ({ fetchProduct }) => {
   );
 };
 
-export const MoveStock = ({ warehouseStock, fetchProduct }) => {
+export const MoveStock = ({ warehouseStock, fetchWarehousesStock }) => {
   const {
     register,
     handleSubmit,
@@ -823,7 +855,7 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
         console.log('Produk berhasil ditambahkan!');
         reset();
       }
-      fetchProduct();
+      fetchWarehousesStock();
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
@@ -840,7 +872,14 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
     <Box>
       <Button
         size='sm'
-        bgColor={''}
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
         leftIcon={<FiMove />}
         onClick={handleOpenModal}
       >
@@ -959,155 +998,5 @@ export const MoveStock = ({ warehouseStock, fetchProduct }) => {
     </Box>
   );
 };
-
-// export const FilterForm = ({ product, fetchProduct }) => {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const [items, setItems] = useState([]);
-//   const [selectedProductId, setSelectedProductId] = useState(0);
-//   const [selectedProduct, setSelectedProduct] = useState("");
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//     reset,
-//     setValue,
-//     watch,
-//   } = useForm();
-
-//   const handleOpenModal = () => {
-//     setIsOpen(true);
-//   };
-
-//   const handleCloseModal = () => {
-//     setIsOpen(false);
-//   };
-
-//   const handleSearch = async (data) => {
-//     const url = `/items?page=1&q=${encodeURIComponent(
-//       data.q
-//     )}&sort=ASC&order=name`;
-
-//     try {
-//       const response = await instance.get(url);
-//       setItems(response.data);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   // const handleSearch = async (data) => {
-//   //   try {
-//   //     const { q } = data;
-//   //     const foundProduct = await newGetAllItems(q);
-//   //     setItems(foundProduct.data);
-//   //     handleCloseModal(),
-//   //       toast({
-//   //         title: "Created Product",
-//   //         description: "You have successfully Created Product.",
-//   //         status: "success",
-//   //         duration: 3000,
-//   //         isClosable: true,
-//   //       });
-//   //     reset();
-//   //   } catch (error) {
-//   //     console.error("Terjadi kesalahan saat mengirim permintaan:", error);
-//   //     toast({
-//   //       title: "Failed to delete product.",
-//   //       description: error.message,
-//   //       status: "error",
-//   //       duration: 3000,
-//   //       isClosable: true,
-//   //     });
-//   //   }
-//   // };
-
-//   console.log("Product", items);
-
-//   // const handleProductChange = (event) => {
-//   //   setSelectedProduct(event.target.value);
-//   //   setValue("name", event.target.value);
-//   // };
-
-//   const handleProductChange = (event) => {
-//     setSelectedProduct(event.target.value);
-//     // if (!event.target.value) {
-//     //   setItems([]); // Clear the search results if the user selects the default value
-//     // }
-//     //setValue("q", event.target.value);
-//     setValue("q", setSelectedProduct);
-//   };
-
-//   return (
-//     <Box>
-//       <Button
-//         size="sm"
-//         bgColor={""}
-//         leftIcon={<FiSearch />}
-//         onClick={handleOpenModal}>
-//         Search Stock
-//       </Button>
-
-//       <Modal isOpen={isOpen} onClose={handleCloseModal}>
-//         <ModalOverlay />
-//         <ModalContent>
-//           <ModalHeader textAlign="center" fontSize="sm">
-//             Filters
-//           </ModalHeader>
-//           <ModalCloseButton />
-
-//           <ModalBody>
-//             <VStack>
-//               <form onSubmit={handleSubmit(handleSearch)}>
-//                 {/* Mapping over products */}
-//                 <FormControl mb={4} isInvalid={errors.name}>
-//                   <FormLabel>Product</FormLabel>
-//                   <Select
-//                     size="sm"
-//                     variant="filled"
-//                     defaultValue=""
-//                     onChange={handleProductChange}
-//                     name="q"
-//                     {...register("q", { required: true })}>
-//                     {product.map((product) => {
-//                       return (
-//                         <option key={product.id} value={product.name}>
-//                           {product.name}
-//                         </option>
-//                       );
-//                     })}
-//                   </Select>
-//                   {/* <Select
-//                     size="sm"
-//                     variant="filled"
-//                     defaultValue=""
-//                     onChange={handleProductChange}
-//                     name="q"
-//                     disabled>
-//                     {product
-//                       .find((product) => product.name === selectedProduct)
-//                       .product.map((product) => (
-//                         <option key={product.id} value={product.id}>
-//                           {product.SKU}
-//                         </option>
-//                       ))}
-//                   </Select> */}
-//                   {errors.name && <p>{errors.name.message}</p>}
-//                   <FormErrorMessage>Items Harus Di Isi</FormErrorMessage>
-//                 </FormControl>
-
-//                 <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
-//                   Cari product
-//                 </Button>
-//                 <Button size={"md"} onClick={handleCloseModal}>
-//                   Cancel
-//                 </Button>
-//               </form>
-//             </VStack>
-//           </ModalBody>
-//         </ModalContent>
-//       </Modal>
-//     </Box>
-//   );
-// };
 
 export default Product;
