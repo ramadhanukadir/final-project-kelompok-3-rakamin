@@ -1,16 +1,16 @@
-import { createContext, useEffect, useState } from "react";
-import { getAllOrders } from "@/api/orders";
-import { getAllItems } from "@/api/product";
-import { getAllCustomer } from "@/api/customers";
+import { createContext, useEffect, useState } from 'react';
+import { getAllOrders } from '@/api/orders';
+import { getAllItems } from '@/api/product';
+import { getAllCustomer } from '@/api/customers';
 import {
   getAllWarehouses,
   getAllWarehousesStock,
   getWarehousesById,
-} from "@/api/warehouses";
-import { fetchUser } from "@/api/auth";
-import { getAllExpenses, getAllOrdersItems, getAllRevenue } from "@/api/chart";
-import { getAllCategories } from "@/api/category";
-import { getAllSuppliers } from "@/api/suppliers";
+} from '@/api/warehouses';
+import { fetchUser } from '@/api/auth';
+import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/chart';
+import { getAllCategories } from '@/api/category';
+import { getAllSuppliers } from '@/api/suppliers';
 
 const AllDataContext = createContext();
 
@@ -33,39 +33,39 @@ const AllDataContextProvider = ({ children }) => {
   const [orderData, setOrderData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [activeItem, setActiveItem] = useState("dashboard");
+  const [activeItem, setActiveItem] = useState('dashboard');
   const [filterOrder, setFilterOrder] = useState({
-    warehouses_id: "",
-    customers_id: "",
+    warehouses_id: '',
+    customers_id: '',
     page: 1,
     limit: 5,
-    sort: "",
-    order: "",
+    sort: '',
+    order: '',
   });
   const [filterProducts, setFilterProducts] = useState({
-    q: "",
+    q: '',
     page: 1,
     limit: 5,
-    sort: "",
-    order: "",
+    sort: '',
+    order: '',
   });
   const [filterCustomer, setFilterCustomer] = useState({
     page: 1,
     limit: 5,
-    sort: "",
-    order: "",
+    sort: '',
+    order: '',
   });
   const [filterSupplier, setFilterSupplier] = useState({
     page: 1,
     limit: 5,
-    sort: "",
-    order: "",
+    sort: '',
+    order: '',
   });
 
-  let access = "";
+  let access = '';
 
-  if (typeof window !== "undefined") {
-    access = sessionStorage.getItem("token");
+  if (typeof window !== 'undefined') {
+    access = sessionStorage.getItem('token');
   }
 
   const fetchUserLogin = async () => {
@@ -74,7 +74,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchWarehouse = async () => {
-    const data = await getAllWarehouses(1, "ASC", "name");
+    const data = await getAllWarehouses(1, 'ASC', 'name');
     setWarehouses(data);
   };
 
@@ -159,7 +159,6 @@ const AllDataContextProvider = ({ children }) => {
       fetchOrderItems();
       fetchExpenses();
       fetchRevenue();
-      fetchSuppliers();
       fetchAllSuppliers();
       fetchAllItems();
     }
@@ -174,6 +173,7 @@ const AllDataContextProvider = ({ children }) => {
     filterOrder,
     filterProducts,
     filterCustomer,
+    filterSupplier,
   ]);
 
   return (
@@ -219,7 +219,9 @@ const AllDataContextProvider = ({ children }) => {
         allProducts,
         fetchAllItems,
         fetchCategories,
-      }}>
+        fetchSuppliers,
+      }}
+    >
       {children}
     </AllDataContext.Provider>
   );
