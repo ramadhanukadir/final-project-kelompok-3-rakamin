@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { instance } from "@/modules/axios";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { instance } from '@/modules/axios';
+import ReactPaginate from 'react-paginate';
+import axios from 'axios';
+
 import {
   Button,
   Text,
@@ -23,7 +25,6 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   Textarea,
   Select,
   useToast,
@@ -34,31 +35,118 @@ import {
   AlertDialogHeader,
   AlertDialogFooter,
   AlertDialogBody,
-  AlertDialogCloseButton,
   useDisclosure,
-} from "@chakra-ui/react";
-import {
-  getAllWarehouses,
-  getWarehouseId,
-  updateWarehouses,
-} from "@/modules/fetch";
-import { SearchIcon, EditIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
-import { Center } from "@chakra-ui/react";
-import { FiPlus } from "react-icons/fi";
-import { useForm } from "react-hook-form";
+  Icon,
+  IconButton,
+  Flex,
+} from '@chakra-ui/react';
 
-export default function Warehouse() {
-  const [warehouses, setWarehouse] = useState([]);
+import { SearchIcon } from '@chakra-ui/icons';
+import { Center } from '@chakra-ui/react';
+import { FiPlus, FiDelete, FiEdit, FiEye } from 'react-icons/fi';
+import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
+import Filter from '../Filter';
+
+const Warehouses = () => {
+  const router = useRouter();
+
+  const [warehouses, setWarehouses] = useState([]);
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [pages, setPages] = useState({});
+  const [rows, setRows] = useState(0);
+  const [keyword, setKeyword] = useState('');
+  const [query, setQuery] = useState('');
+  const [msg, setMsg] = useState('');
+
+  const [filterWarehouses, setFilterWarehouses] = useState({
+    search_query: '',
+    page: 1,
+    limit: 5,
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [provinces, setProvinces] = useState([]);
+  const [cities, setCities] = useState([]);
   const [isSavePopupOpen, setIsSavePopupOpen] = useState(false);
+
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
   const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
-    useState(false);
 
+  const [editWarehouseData, setEditWarehouseData] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState(null);
 
+  // Edit Warehouse
+  const handleEditWarehouse = (warehouse) => {
+    setEditWarehouseData(warehouse);
+    openEditModal();
+  };
+
+  console.log(editWarehouseData);
+
+  const onSubmitEdit = async (data) => {
+    try {
+      if (!editWarehouseData) {
+        console.log('Gudang belum dipilih untuk diedit.');
+        return;
+      }
+
+      // Panggil API untuk memperbarui data gudang
+      await instance.put(`/warehouses/${editWarehouseData.id}`, data);
+
+      // Setelah berhasil memperbarui data gudang, tutup modal edit
+      closeEditModal();
+
+      // Ambil daftar gudang yang diperbarui lagi dari server
+      getWarehouses();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const openEditModal = () => {
+    reset();
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    reset();
+    setIsEditModalOpen(false);
+  };
+
+  // Pagination & Get Warehouses
+  useEffect(() => {
+    getWarehouses();
+  }, [page, keyword, filterWarehouses]);
+
+  const getWarehouses = async () => {
+    const response = await instance.get(`/warehouses/with-filter?search_query=${filterWarehouses.search_query}&page=${filterWarehouses.page}&limit=${filterWarehouses.limit}`);
+
+    setWarehouses(response.data.result);
+    setPage(response.data.page);
+    setPages(response.data);
+    setRows(response.data.totalRows);
+  };
+
+  const changePage = ({ selected }) => {
+    setPage(selected);
+    if (selected === 9) {
+      setMsg('cari data dengan kata kunci spesifik');
+    } else {
+      setMsg('');
+    }
+  };
+
+  const searchData = (e) => {
+    e.preventDefault();
+    setPage(0);
+    setKeyword(query);
+  };
+
+  // Modal
   const {
     register,
     handleSubmit,
@@ -67,106 +155,19 @@ export default function Warehouse() {
     formState: { errors },
   } = useForm();
 
-  const handleEditWarehouse = async (warehouseId) => {
-    try {
-      const warehouse = await getWarehouseId(warehouseId);
-      console.log(warehouse);
-
-      // Set data gudang yang akan diedit ke dalam state
-      setIsModalOpen(false);
-      setSelectedWarehouse(warehouse);
-      reset();
-      setIsEditModalOpen(true);
-    } catch (error) {
-      console.log(error);
-    }
+  const openModal = () => {
+    reset();
+    setIsModalOpen(true);
   };
 
-  const onEditSubmit = async (data) => {
-    try {
-      // Validasi input
-      if (
-        !data.name ||
-        !data.address ||
-        !data.province ||
-        !data.city ||
-        !data.telephone
-      ) {
-        toast({
-          title: "Error",
-          description: "Please fill in all required fields.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
-
-      // Validasi format nomor handphone
-      const phoneRegex = /^[0-9]{10,12}$/;
-      if (!phoneRegex.test(data.telephone)) {
-        toast({
-          title: "Error",
-          description: "Please enter a valid phone number.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
-
-      // Kirim permintaan ke backend untuk memperbarui data gudang menggunakan axios atau metode lainnya
-      // await updateWarehouses(selectedWarehouse.id), data;
-      await instance.put(`warehouses/${selectedWarehouse.id}`, data);
-
-      // Dapatkan data gudang terbaru dari backend
-      const updatedWarehouses = await getAllWarehouses();
-      setWarehouse(updatedWarehouses);
-
-      // Tampilkan popup info bahwa data telah diperbarui
-      setIsEditModalOpen(false);
-      toast({
-        title: "Success",
-        description: "Warehouse data has been updated.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-
-      // Reset form jika diperlukan
-      reset();
-    } catch (error) {
-      console.log(error);
-    }
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
-
-  const [provinces, setProvinces] = useState([]);
-  const [cities, setCities] = useState([]);
-
-  const toast = useToast();
-
-  useEffect(() => {
-    const fetchWarehouse = async () => {
-      const warehouses = await getAllWarehouses();
-      setWarehouse(warehouses);
-    };
-    fetchWarehouse();
-    if (selectedWarehouse) {
-      setValue("name", selectedWarehouse.name);
-      setValue("address", selectedWarehouse.address);
-      setValue("province", selectedWarehouse.province);
-      setValue("city", selectedWarehouse.city);
-      setValue("postal_code", selectedWarehouse.postalCode);
-      setValue("telephone", selectedWarehouse.telephone);
-    }
-  }, [selectedWarehouse]);
 
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get(
-          "https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB"
-        );
+        const response = await axios.get('https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB');
         setProvinces(response.data.data);
         // console.log(response.data.data);
       } catch (error) {
@@ -178,38 +179,22 @@ export default function Warehouse() {
 
   const fetchCitiesByProvince = async (selectedProvince) => {
     try {
-      const response = await axios.get(
-        `https://api.goapi.id/v1/regional/kota?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB&provinsi_id=${selectedProvince}`
-      );
+      const response = await axios.get(`https://api.goapi.id/v1/regional/kota?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB&provinsi_id=${selectedProvince}`);
       setCities(response.data.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const openModal = () => {
-    reset();
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
+  // Save Modal
   const onSubmit = async (data) => {
     try {
       // Validasi input
-      if (
-        !data.name ||
-        !data.address ||
-        !data.province ||
-        !data.city ||
-        !data.telephone
-      ) {
+      if (!data.name || !data.address || !data.province || !data.city || !data.telephone) {
         toast({
-          title: "Error",
-          description: "Please fill in all required fields.",
-          status: "error",
+          title: 'Error',
+          description: 'Please fill in all required fields.',
+          status: 'error',
           duration: 3000,
           isClosable: true,
         });
@@ -220,9 +205,9 @@ export default function Warehouse() {
       const phoneRegex = /^[0-9]{10,12}$/;
       if (!phoneRegex.test(data.telephone)) {
         toast({
-          title: "Error",
-          description: "Please enter a valid phone number.",
-          status: "error",
+          title: 'Error',
+          description: 'Please enter a valid phone number.',
+          status: 'error',
           duration: 3000,
           isClosable: true,
         });
@@ -230,11 +215,10 @@ export default function Warehouse() {
       }
 
       // Kirim data gudang ke backend
-      await instance.post("/warehouses", data);
+      await instance.post('/warehouses', data);
 
       // Dapatkan data gudang terbaru dari backend
-      const fetchedWarehouses = await getAllWarehouses();
-      setWarehouse(fetchedWarehouses);
+      getWarehouses();
 
       // Tampilkan popup info bahwa data telah disimpan
       setIsSavePopupOpen(true);
@@ -252,6 +236,7 @@ export default function Warehouse() {
     }
   };
 
+  // Delete Warehouse
   const handleDeleteWarehouse = (warehouseId) => {
     setDeleteWarehouseId(warehouseId);
     setIsDeleteConfirmationOpen(true);
@@ -263,8 +248,7 @@ export default function Warehouse() {
       await instance.delete(`/warehouses/${deleteWarehouseId}`);
 
       // Dapatkan data gudang terbaru dari backend
-      const fetchedWarehouses = await getAllWarehouses();
-      setWarehouse(fetchedWarehouses);
+      getWarehouses();
 
       // Tampilkan popup info bahwa data telah dihapus
       setIsDeleteConfirmationOpen(false);
@@ -285,43 +269,64 @@ export default function Warehouse() {
   };
 
   return (
-    <Box marginTop={100}>
-      <Box
-        display={"flex"}
-        flexDirection={"row"}
-        justifyContent={"space-between"}
-        py={"10"}>
-        <Text fontWeight={"bold"} fontSize={"xl"}>
+    <Box width="100%">
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'} mt={10}>
+        <Text fontWeight={'bold'} fontSize={'xl'}>
           Warehouses
         </Text>
-        <Box display={"flex"} flexDirection={"row"} gap={"5"}>
-          <Button
-            size="sm"
-            bgColor={""}
-            leftIcon={<FiPlus />}
-            onClick={openModal}>
+        <Box display={'flex'} flexDirection={'row'} gap={'5'}>
+          <Button size="sm" bgColor={''} leftIcon={<FiPlus />} onClick={openModal}>
             Add Warehouse
           </Button>
         </Box>
       </Box>
 
+      <Filter
+        page={pages}
+        model={warehouses}
+        show={warehouses}
+        filter={filterWarehouses}
+        handleNextPage={() => {
+          setFilterWarehouses({
+            ...filterWarehouses,
+            page: filterWarehouses.page + 1,
+          });
+        }}
+        handlePrevPage={() => {
+          setFilterWarehouses({
+            ...filterWarehouses,
+            page: filterWarehouses.page - 1,
+          });
+        }}
+        handleLimit={(e) => {
+          setFilterWarehouses({
+            ...filterWarehouses,
+            limit: e.target.value,
+          });
+        }}
+        disableNextPage={filterWarehouses.page === pages}
+        disablePrevPage={filterWarehouses.page === 1}
+        count={rows}
+        placeholder={'Search by Name or Warehouse'}
+        handleSearch={(e) => {
+          setTimeout(() => {
+            setFilterWarehouses({
+              ...filterWarehouses,
+              search_query: e.target.value,
+            });
+          }, 1000);
+        }}
+      />
+
       <Box>
-        <Box
-          display={"flex"}
-          flexDirection={"row"}
-          alignItems={"center"}
-          justifyContent={"space-between"}>
-          <Box
-            display={"row"}
-            justifyContent={"start"}
-            alignItems={"center"}
-            gap={"10"}
-            my={"5"}></Box>
+        <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
+          <Box display={'row'} justifyContent={'start'} alignItems={'center'} gap={'10'} my={'5'}></Box>
+          <Box display={'flex'} justifyContent={'end'} mb={2}></Box>
         </Box>
         <Box>
           <TableContainer>
-            <Table variant="simple" size="sm">
-              <Thead bg={"#DFF6FE"}>
+            <Table variant="simple">
+              <Thead bg={'#DFF6FE'}>
                 <Tr>
                   <Th>Warehouse Name</Th>
                   <Th>Address</Th>
@@ -338,38 +343,74 @@ export default function Warehouse() {
                 {warehouses.map((warehouse) => (
                   <Tr key={warehouse.id}>
                     <Td>{warehouse.name}</Td>
-                    <Td style={{ width: "400px", whiteSpace: "normal" }}>
-                      {warehouse.address}
-                    </Td>
+                    <Td>{warehouse.address}</Td>
                     <Td>{warehouse.province}</Td>
-                    {/* <Td>{warehouse.city.split('-')[1]}</Td> */}
                     <Td>{warehouse.city}</Td>
-
-                    <Td>{warehouse.postalCode}</Td>
+                    <Td>{warehouse.postal_code}</Td>
                     <Td>{warehouse.telephone}</Td>
                     <Td>
-                      <Button
-                        colorScheme="blue"
-                        onClick={() => handleEditWarehouse(warehouse.id)}
-                        size={"sm"}
-                        ml={2}
-                        variant="outline">
-                        <EditIcon />
-                      </Button>
-                      <Button
-                        colorScheme="red"
+                      <Icon
+                        boxSize={5}
+                        color={'#06283D'}
+                        onClick={() => router.push(`/warehouse/${warehouse.id}`)}
+                        as={FiEye}
+                        mr={3}
+                        _hover={{
+                          cursor: 'pointer',
+                          color: '#4F709C',
+                        }}
+                        title="View"
+                      />
+                      <Icon
+                        boxSize={5}
+                        color={'#06283D'}
+                        onClick={() => handleEditWarehouse(warehouse)}
+                        as={FiEdit}
+                        mr={3}
+                        _hover={{
+                          cursor: 'pointer',
+                          color: '#4F709C',
+                        }}
+                        title="Edit"
+                      />
+                      <Icon
+                        boxSize={5}
+                        color={'red'}
                         onClick={() => handleDeleteWarehouse(warehouse.id)}
-                        size={"sm"}
-                        ml={2}
-                        variant="outline">
-                        <DeleteIcon />
-                      </Button>
+                        as={FiDelete}
+                        _hover={{
+                          cursor: 'pointer',
+                          color: '#EF6262',
+                        }}
+                        title="Delete"
+                      />
                     </Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
           </TableContainer>
+
+          {/* <Text fontWeight={'bold'} fontSize={'l'} mt={5}>
+            Total Warehouse: {rows} Page: {rows ? page + 1 : 0} of {pages}
+          </Text>
+          <p className="text-danger">{msg}</p>
+
+          <nav className="pagination is-centered" key={rows} role="navigation" aria-label="pagination">
+            <ReactPaginate
+              previousLabel={'< Prev'}
+              nextLabel={'Next >'}
+              pageCount={Math.min(10, pages)}
+              onPageChange={changePage}
+              containerClassName={'pagination-container'}
+              activeClassName={'active-page'}
+              pageLinkClassName="pagination-link"
+              previousLinkClassName="pagination-previous"
+              nextLinkClassName="pagination-next"
+              activeLinkClassName="pagination-link is-current"
+              disabledLinkClassName="pagination-link is-disabled"
+            />
+          </nav> */}
         </Box>
       </Box>
 
@@ -377,51 +418,33 @@ export default function Warehouse() {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader> Add Warehouse</ModalHeader>
-          <ModalCloseButton />
           <ModalBody>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={''}>
               <ChakraFormControl isInvalid={errors.name} isRequired>
                 <ChakraFormLabel>Name</ChakraFormLabel>
-                <Input {...register("name", { required: true })} />
-                {errors.province && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                <Input {...register('name', { required: true })} />
+                {errors.name && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.address} isRequired>
                 <ChakraFormLabel>Address</ChakraFormLabel>
-                <Textarea {...register("address", { required: true })} />
-                {errors.province && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                <Textarea {...register('address', { required: true })} />
+                {errors.address && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.province} isRequired>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select
-                  id="province"
-                  {...register("province", { required: true })}
-                  onChange={(e) =>
-                    fetchCitiesByProvince(
-                      e.target.selectedOptions[0].getAttribute("data-id")
-                    )
-                  }>
+                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))}>
                   <option value="">-Select Province-</option>
                   {provinces.map((province) => (
-                    <option
-                      key={province.id}
-                      value={province.name}
-                      data-id={province.id}>
+                    <option key={province.id} value={province.name} data-id={province.id}>
                       {province.name}
                     </option>
                   ))}
+                  {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
                 </Select>
-                {errors.province && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
               </ChakraFormControl>
-
               <ChakraFormControl isInvalid={errors.city} isRequired>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select id="city" {...register("city", { required: true })}>
+                <Select id="city" {...register('city', { required: true })}>
                   <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
@@ -429,25 +452,16 @@ export default function Warehouse() {
                     </option>
                   ))}
                 </Select>
-                {errors.province && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                {errors.city && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
-
-              <ChakraFormControl>
+              <ChakraFormControl isInvalid={errors.postal_code}>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input type="number" {...register("postal_code")} />
+                <Input type="number" {...register('postal_code')} />
               </ChakraFormControl>
-
               <ChakraFormControl isInvalid={errors.telephone} isRequired>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input
-                  type="number"
-                  {...register("telephone", { required: true })}
-                />
-                {errors.province && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                <Input type="number" {...register('telephone', { required: true })} />
+                {errors.telephone && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
             </form>
           </ModalBody>
@@ -463,49 +477,24 @@ export default function Warehouse() {
       </Modal>
 
       {isSavePopupOpen && (
-        <Box
-          position="fixed"
-          bottom={4}
-          right={4}
-          p={3}
-          bg="green.500"
-          color="white"
-          borderRadius="md"
-          zIndex={9999}>
+        <Box position="fixed" bottom={4} right={4} p={3} bg="green.500" color="white" borderRadius="md" zIndex={9999}>
           Data has been saved to the database.
         </Box>
       )}
 
       {isDeletePopupOpen && (
-        <Box
-          position="fixed"
-          bottom={4}
-          right={4}
-          p={3}
-          bg="red.700"
-          color="white"
-          borderRadius="md"
-          zIndex={9999}>
+        <Box position="fixed" bottom={4} right={4} p={3} bg="red.700" color="white" borderRadius="md" zIndex={9999}>
           Data has been deleted.
         </Box>
       )}
 
-      <AlertDialog
-        isOpen={isDeleteConfirmationOpen}
-        onClose={cancelDeleteWarehouse}>
+      <AlertDialog isOpen={isDeleteConfirmationOpen} onClose={cancelDeleteWarehouse}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Delete Warehouse
             </AlertDialogHeader>
-
-            <AlertDialogCloseButton />
-
-            <AlertDialogBody>
-              Are you sure you want to delete this warehouse? This action is
-              irreversible.
-            </AlertDialogBody>
-
+            <AlertDialogBody>Are you sure you want to delete this warehouse? This action is irreversible.</AlertDialogBody>
             <AlertDialogFooter>
               <Button onClick={cancelDeleteWarehouse}>Cancel</Button>
               <Button colorScheme="red" ml={3} onClick={confirmDeleteWarehouse}>
@@ -516,48 +505,39 @@ export default function Warehouse() {
         </AlertDialogOverlay>
       </AlertDialog>
 
-      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+      {/* Edit Modal */}
+      <Modal isOpen={isEditModalOpen} onClose={closeEditModal}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Edit Warehouse</ModalHeader>
-          <ModalCloseButton />
           <ModalBody>
-            <form onSubmit={handleSubmit(onEditSubmit)}>
-              <ChakraFormControl>
+            <form onSubmit={handleSubmit(onSubmitEdit)}>
+              <ChakraFormControl isInvalid={errors.name} isRequired>
                 <ChakraFormLabel>Name</ChakraFormLabel>
-                <Input {...register("name")} />
+                <Input defaultValue={editWarehouseData?.name} {...register('name', { required: true })} />
+                {errors.name && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
-              <ChakraFormControl>
-                <ChakraFormLabel>Address</ChakraFormLabel>
-                <Textarea
-                  defaultValue={selectedWarehouse?.address || ""}
-                  {...register("address")}
-                />
+              <ChakraFormControl isInvalid={errors.address} isRequired>
+                <ChakraFormLabel>address</ChakraFormLabel>
+                <Textarea defaultValue={editWarehouseData?.address} {...register('address', { required: true })} />
+                {errors.address && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
-              <ChakraFormControl>
+              <ChakraFormControl isInvalid={errors.province} isRequired>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select
-                  id="province"
-                  {...register("province", { required: true })}
-                  onChange={(e) =>
-                    fetchCitiesByProvince(
-                      e.target.selectedOptions[0].getAttribute("data-id")
-                    )
-                  }>
+                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))} defaultValue={editWarehouseData?.province}>
                   <option value="">-Select Province-</option>
                   {provinces.map((province) => (
-                    <option
-                      key={province.id}
-                      value={province.name}
-                      data-id={province.id}>
+                    <option key={province.id} value={province.name} data-id={province.id}>
                       {province.name}
                     </option>
                   ))}
+                  {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
                 </Select>
               </ChakraFormControl>
-              <ChakraFormControl>
+              <ChakraFormControl isInvalid={errors.city} isRequired>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select id="city" {...register("city", { required: true })}>
+                <Select id="city" {...register('city', { required: true })} defaultValue={editWarehouseData?.city}>
+                  <option value={editWarehouseData?.city}>{editWarehouseData?.city}</option>
                   <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
@@ -565,30 +545,31 @@ export default function Warehouse() {
                     </option>
                   ))}
                 </Select>
+                {errors.city && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
-              <ChakraFormControl>
+              <ChakraFormControl isInvalid={errors.postal_code}>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input {...register("postal_code")} />
+                <Input defaultValue={editWarehouseData?.postal_code} type="number" {...register('postal_code')} />
               </ChakraFormControl>
-              <ChakraFormControl>
+              <ChakraFormControl isInvalid={errors.telephone} isRequired>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input {...register("telephone")} />
+                <Input defaultValue={editWarehouseData?.telephone} type="number" {...register('telephone', { required: true })} />
+                {errors.telephone && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
-
-              <ModalFooter>
-                <Button colorScheme="blue" type="submit">
-                  Save Changes
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setIsEditModalOpen(false)}>
-                  Close
-                </Button>
-              </ModalFooter>
             </form>
           </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" onClick={handleSubmit(onSubmitEdit)}>
+              Save Changes
+            </Button>
+            <Button variant="ghost" onClick={closeEditModal}>
+              Cancel
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>
   );
-}
+};
+
+export default Warehouses;

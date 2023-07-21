@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
-  getAllCustomer,
   getCustomersById,
   editCustomersById,
   deleteCustomersById,
+  postCustomers,
 } from '@/api/customers';
 import {
   Table,
@@ -19,37 +19,30 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
-  FormControl,
   FormControl as FormErrorMessage,
-  FormLabel,
-  Input,
   Box,
   TableContainer,
-  IconButton,
   Text,
-  useDisclosure,
   useToast,
-  VStack,
+  Icon,
+  TableCaption,
 } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
-import { instance } from '../../modules/axios/index';
 import { useRouter } from 'next/router';
-import { useFieldArray, useForm, watch } from 'react-hook-form';
-import { fetchData } from '@/api/suppliers';
+import { useForm } from 'react-hook-form';
 import InputField from '../InputField/InputField';
+import { DataContext } from '@/context/AllDataContext';
+import Filter from '../Filter';
 
 const Customers = () => {
-  const [customers, setCustomers] = useState([]);
+  const { customers, filterCustomer, setFilterCustomer, fetchCustomers } =
+    useContext(DataContext);
   const toast = useToast();
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
-    control,
     reset,
-    resetField,
     setValue,
   } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,37 +50,23 @@ const Customers = () => {
   const [detailItems, setDetailItems] = useState({});
   const router = useRouter();
 
-  const fetchData = async () => {
-    try {
-      const response = await instance.get('/customer?page=1&limit=5');
-      const { dataCustomers } = response.data;
-      setCustomers(dataCustomers);
-    } catch (error) {
-      console.error('Gagal mengambil data:', error);
-    }
-  };
-  // console.log(detailItems, 'Customer');
-
   useEffect(() => {
-    fetchData();
     if (detailItems) {
       setValue('full_name', detailItems?.data?.full_name);
       setValue('address', detailItems?.data?.address);
     }
-    fetchData();
+    fetchCustomers();
   }, [detailItems, isModalOpen]);
-  // console.log("INI DETAILS ITEMS", detailItems);
 
   const handleEdit = async (id) => {
     const foundCustomers = await getCustomersById(id);
     setDetailItems(foundCustomers);
-    fetchData();
+    fetchCustomers();
     if (foundCustomers) {
       setEditCustomersId(id);
       setIsModalOpen(true);
     }
   };
-  //console.log(detailItems);
 
   const handleDelete = async (id) => {
     try {
@@ -100,7 +79,7 @@ const Customers = () => {
         duration: 3000,
         isClosable: true,
       });
-      fetchData();
+      fetchCustomers();
     } catch (error) {
       toast({
         title: 'Failed to delete product.',
@@ -114,7 +93,7 @@ const Customers = () => {
 
   const onSubmit = async (data) => {
     try {
-      await instance.put(`/customer/${editCustomersId}`, data);
+      await editCustomersById(editCustomersId, data);
       handleCloseModal();
       toast({
         title: 'Updated Customer',
@@ -123,7 +102,7 @@ const Customers = () => {
         duration: 3000,
         isClosable: true,
       });
-      fetchData();
+      fetchCustomers();
       reset();
     } catch (error) {
       toast({
@@ -141,31 +120,60 @@ const Customers = () => {
   };
 
   return (
-    <Box maxW='7xl' mx={'auto'} px={{ base: 2, sm: 12, md: 17 }} mt={50}>
+    <Box maxW='7xl' mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'3em'}>
       <Box>
         <Box
           display={'flex'}
           flexDirection={'row'}
           justifyContent={'space-between'}
-          py={'10'}
+          mb={'3em'}
+          pb={'8'}
         >
           <Text fontWeight={'bold'} fontSize={'xl'}>
             Customers
           </Text>
-          <InputCustomers fetchData={fetchData} />
+          <InputCustomers fetchData={() => fetchCustomers()} />
         </Box>
         <Box>
-          <TableContainer>
+          <Filter
+            page={customers}
+            model={customers}
+            show={!customers}
+            filter={filterCustomer}
+            handleNextPage={() => {
+              setFilterCustomer({
+                ...filterCustomer,
+                page: filterCustomer.page + 1,
+              });
+            }}
+            handlePrevPage={() => {
+              setFilterCustomer({
+                ...filterCustomer,
+                page: filterCustomer.page - 1,
+              });
+            }}
+            handleLimit={(e) => {
+              setFilterCustomer({
+                ...filterCustomer,
+                limit: e.target.value,
+              });
+            }}
+            disableNextPage={filterCustomer.page === customers?.totalPages}
+            disablePrevPage={filterCustomer.page === 1}
+            count={customers?.totalItems}
+          />
+          <TableContainer overflowY={'auto'} h={'25em'} px={5}>
             <Table variant='simple'>
-              <Thead bg={'#DFF6FE'}>
+              <TableCaption>Customers</TableCaption>
+              <Thead bg={'#06283D'}>
                 <Tr>
-                  <Th>Full Name</Th>
-                  <Th>Address</Th>
-                  <Th>Actions</Th>
+                  <Th color={'#EEEDED'}>Full Name</Th>
+                  <Th color={'#EEEDED'}>Address</Th>
+                  <Th color={'#EEEDED'}>Actions</Th>
                 </Tr>
               </Thead>
-              <Tbody>
-                {customers.map((customer) => (
+              <Tbody bg={'#EEEDED'}>
+                {customers?.dataCustomers?.map((customer) => (
                   <Tr key={customer.id}>
                     <Td
                       onClick={() => router.push(`/customers/${customer.id}`)}
@@ -175,19 +183,26 @@ const Customers = () => {
                     </Td>
                     <Td>{customer.address}</Td>
                     <Td>
-                      <IconButton
-                        icon={<FiEdit />}
-                        colorScheme={'blue'}
-                        variant={'outline'}
-                        ml={2}
+                      <Icon
+                        color={'#06283D'}
                         onClick={() => handleEdit(customer.id)}
+                        as={FiEdit}
+                        mr={3}
+                        _hover={{
+                          cursor: 'pointer',
+                          color: '#4F709C',
+                        }}
+                        title='Edit'
                       />
-                      <IconButton
-                        icon={<FiDelete />}
-                        colorScheme={'red'}
-                        variant={'outline'}
-                        ml={2}
+                      <Icon
+                        color={'red'}
                         onClick={() => handleDelete(customer.id)}
+                        as={FiDelete}
+                        _hover={{
+                          cursor: 'pointer',
+                          color: '#EF6262',
+                        }}
+                        title='Delete'
                       />
                     </Td>
                   </Tr>
@@ -226,7 +241,7 @@ const Customers = () => {
                           w={'100%'}
                           borderRadius={'full'}
                         >
-                          Update Category
+                          Update Customer
                         </Button>
                       </form>
                     </ModalBody>
@@ -252,14 +267,15 @@ export const InputCustomers = ({ fetchData }) => {
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
   } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const toast = useToast();
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/customer', data);
+      console.log(data);
+      await postCustomers(data);
+      // await instance.post('/customer', data);
       handleCloseModal(),
         toast({
           title: 'Created Product',
@@ -274,7 +290,7 @@ export const InputCustomers = ({ fetchData }) => {
     } catch (error) {
       toast({
         title: 'Failed to create product.',
-        description: err.message,
+        description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -292,8 +308,20 @@ export const InputCustomers = ({ fetchData }) => {
 
   return (
     <Box>
-      <Button size='sm' onClick={handleOpenModal}>
-        <FiPlus />
+      <Button
+        size='sm'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        leftIcon={<FiPlus />}
+        onClick={handleOpenModal}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+      >
+        Add Customer
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
@@ -329,7 +357,7 @@ export const InputCustomers = ({ fetchData }) => {
                 w={'100%'}
                 borderRadius={'full'}
               >
-                Create Category
+                Add Customer
               </Button>
             </form>
           </ModalBody>

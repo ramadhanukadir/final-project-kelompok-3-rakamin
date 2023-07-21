@@ -1,48 +1,36 @@
-import { getOrderById } from '@/api/orders';
+import { getWarehouseById } from '@/api/fetch/warehouses';
 import { DataContext } from '@/context/AllDataContext';
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Image,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Image, Text, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 
-export default function Page({ orderId }) {
+export default function Page({ warehouseId }) {
   const router = useRouter();
-  const { detailOrder, setDetailOrder } = useContext(DataContext);
+  const { detailWarehouse, setDetailWarehouse } = useContext(DataContext);
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      const data = await getOrderById(orderId);
-      setDetailOrder(data);
+    const fetchWarehouse = async () => {
+      const data = await getWarehouseById(warehouseId);
+      setDetailWarehouse(data);
     };
-    fetchOrder();
+    fetchWarehouse();
   }, []);
 
+  console.log(detailWarehouse);
+
   return (
-    <Flex
-      w={'100%'}
-      marginTop={20}
-      flexDirection={'column'}
-      justifyContent={'flex-start'}
-      zIndex={1}
-    >
+    <Flex w={'100%'} marginTop={20} flexDirection={'column'} justifyContent={'flex-start'} zIndex={1}>
       <HStack>
-        <Button size={'sm'} w={'3'} onClick={() => router.back()} title='Back'>
+        <Button size={'sm'} w={'3'} onClick={() => router.back()} title="Back">
           <ArrowBackIcon w={4} h={4} />
         </Button>
       </HStack>
       <Flex direction={'column'} mt={4}>
-        <Text fontSize='xl' fontWeight='bold'>
-          Order Detail
+        <Text fontSize="xl" fontWeight="bold">
+          Warehouse Detail
         </Text>
-        <Flex direction={'row'} columnGap={'20px'}>
+        {/* <Flex direction={'row'} columnGap={'20px'}>
           <Flex direction={'column'}>
             <Text>Cutomer </Text>
             <Text>Warehouse </Text>
@@ -50,36 +38,19 @@ export default function Page({ orderId }) {
             <Text>Date </Text>
           </Flex>
           <Flex direction={'column'}>
-            <Text>: {detailOrder.customer}</Text>
-            <Text>: {detailOrder.warehouse}</Text>
-            <Text>
-              :{' '}
-              {detailOrder.totalRevenue?.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-              })}
-            </Text>
-            <Text>: {detailOrder.date}</Text>
+            <Text>: {detailWarehouse.name}</Text>
+            <Text>: {detailWarehouse.address}</Text>
+            <Text>: {detailWarehouse.date}</Text>
           </Flex>
-        </Flex>
-        <VStack mt={6}>
-          <Text fontSize='md' fontWeight='bold'>
+        </Flex> */}
+        {/* <VStack mt={6}>
+          <Text fontSize="md" fontWeight="bold">
             Detail Product
           </Text>
           <Flex alignSelf={'flex-start'} w={'100%'}>
             <Flex flexDirection={'column'} w={'100%'} gap={3}>
-              {detailOrder?.items?.map((item) => (
-                <HStack
-                  display={'flex'}
-                  justifyContent={'space-between'}
-                  w={'100%'}
-                  key={item.id}
-                  py={{ base: 2, md: 3 }}
-                  px={{ base: 4, md: 6 }}
-                  border={'1px'}
-                  borderColor={'gray.300'}
-                  borderRadius={'lg'}
-                >
+              {detailWarehouse?.items?.map((item) => (
+                <HStack display={'flex'} justifyContent={'space-between'} w={'100%'} key={item.id} py={{ base: 2, md: 3 }} px={{ base: 4, md: 6 }} border={'1px'} borderColor={'gray.300'} borderRadius={'lg'}>
                   <Flex flexDirection={'row'} gap={4}>
                     <Image
                       src={item.image}
@@ -88,6 +59,7 @@ export default function Page({ orderId }) {
                       h={12}
                       objectFit={'contain'}
                       borderRadius={'xl'}
+                      // bg={'black'}
                     />
                     <Box>
                       <Text fontSize={'sm'} fontWeight={'semibold'}>
@@ -109,12 +81,7 @@ export default function Page({ orderId }) {
                       </HStack>
                     </Box>
                   </Flex>
-                  <Flex
-                    flexDirection={'column'}
-                    w={'13%'}
-                    alignItems={'flex-start'}
-                    pl={3}
-                  >
+                  <Flex flexDirection={'column'} w={'13%'} alignItems={'flex-start'} pl={3}>
                     <Text fontSize={'xs'} fontWeight={'normal'}>
                       Total Price
                     </Text>
@@ -129,7 +96,7 @@ export default function Page({ orderId }) {
               ))}
             </Flex>
           </Flex>
-        </VStack>
+        </VStack> */}
       </Flex>
     </Flex>
   );
@@ -138,5 +105,5 @@ export default function Page({ orderId }) {
 export const getServerSideProps = async (ctx) => {
   const { id } = ctx.query;
 
-  return { props: { orderId: id } };
+  return { props: { warehouseId: id } };
 };

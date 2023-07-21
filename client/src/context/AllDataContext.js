@@ -1,15 +1,16 @@
-import { createContext, useEffect, useState } from 'react';
-import { getAllOrders } from '@/api/orders';
-import { getAllItems } from '@/api/product';
-import { getAllCustomer } from '@/api/customers';
+import { createContext, useEffect, useState } from "react";
+import { getAllOrders } from "@/api/orders";
+import { getAllItems } from "@/api/product";
+import { getAllCustomer } from "@/api/customers";
 import {
   getAllWarehouses,
   getAllWarehousesStock,
   getWarehousesById,
-} from '@/api/warehouses';
-import { fetchUser } from '@/api/auth';
-import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/chart';
-import { getAllCategories } from '@/api/category';
+} from "@/api/warehouses";
+import { fetchUser } from "@/api/auth";
+import { getAllExpenses, getAllOrdersItems, getAllRevenue } from "@/api/chart";
+import { getAllCategories } from "@/api/category";
+import { getAllSuppliers } from "@/api/suppliers";
 
 const AllDataContext = createContext();
 
@@ -18,9 +19,12 @@ const AllDataContextProvider = ({ children }) => {
   const [warehouses, setWarehouses] = useState([]);
   const [warehouseItems, setWarehouseItems] = useState([]);
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [customers, setCustomers] = useState([]);
-  const [suppliers, setSuppliers] = useState([]);
+  const [customers, setCustomers] = useState({});
+  const [allCustomers, setAllCustomers] = useState({});
+  const [suppliers, setSuppliers] = useState({});
+  const [allSuppliers, setAllSuppliers] = useState({});
   const [orders, setOrders] = useState([]);
   const [detailOrder, setDetailOrder] = useState({});
   const [itemsId, setItemsId] = useState(0);
@@ -29,20 +33,39 @@ const AllDataContextProvider = ({ children }) => {
   const [orderData, setOrderData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [activeItem, setActiveItem] = useState('dashboard');
+  const [activeItem, setActiveItem] = useState("dashboard");
   const [filterOrder, setFilterOrder] = useState({
-    warehouses_id: '',
-    customers_id: '',
+    warehouses_id: "",
+    customers_id: "",
     page: 1,
     limit: 5,
-    sort: '',
-    order: '',
+    sort: "",
+    order: "",
+  });
+  const [filterProducts, setFilterProducts] = useState({
+    q: "",
+    page: 1,
+    limit: 5,
+    sort: "",
+    order: "",
+  });
+  const [filterCustomer, setFilterCustomer] = useState({
+    page: 1,
+    limit: 5,
+    sort: "",
+    order: "",
+  });
+  const [filterSupplier, setFilterSupplier] = useState({
+    page: 1,
+    limit: 5,
+    sort: "",
+    order: "",
   });
 
-  let access = '';
+  let access = "";
 
-  if (typeof window !== 'undefined') {
-    access = sessionStorage.getItem('token');
+  if (typeof window !== "undefined") {
+    access = sessionStorage.getItem("token");
   }
 
   const fetchUserLogin = async () => {
@@ -51,14 +74,17 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchWarehouse = async () => {
-    const data = await getAllWarehouses();
+    const data = await getAllWarehouses(1, "ASC", "name");
     setWarehouses(data);
   };
 
   const fetchItems = async () => {
-    const { meta, data } = await getAllItems(1, 'ASC', 'name', '', 10);
+    const data = await getAllItems(filterProducts);
     setProducts(data);
-    return meta;
+  };
+  const fetchAllItems = async () => {
+    const data = await getAllItems();
+    setAllProducts(data);
   };
 
   const fetchCategories = async () => {
@@ -67,13 +93,22 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   const fetchCustomers = async () => {
-    const { dataCustomers } = await getAllCustomer();
-    setCustomers(dataCustomers);
+    const data = await getAllCustomer(filterCustomer);
+    setCustomers(data);
+  };
+
+  const fetchAllCustomers = async () => {
+    const data = await getAllCustomer();
+    setAllCustomers(data);
   };
 
   const fetchSuppliers = async () => {
-    const { data } = await getAllSuppliers();
+    const data = await getAllSuppliers(filterSupplier);
     setSuppliers(data);
+  };
+  const fetchAllSuppliers = async () => {
+    const data = await getAllSuppliers();
+    setAllSuppliers(data);
   };
 
   const fetchWarehouseById = async (warehouseId) => {
@@ -113,8 +148,10 @@ const AllDataContextProvider = ({ children }) => {
   useEffect(() => {
     if (access !== null) {
       fetchCustomers();
+      fetchAllCustomers();
       fetchItems();
       fetchWarehouse();
+      fetchSuppliers();
       fetchOrders();
       fetchUserLogin();
       fetchCategories();
@@ -122,12 +159,22 @@ const AllDataContextProvider = ({ children }) => {
       fetchOrderItems();
       fetchExpenses();
       fetchRevenue();
+      fetchSuppliers();
+      fetchAllSuppliers();
+      fetchAllItems();
     }
 
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [access, warehouseId, itemsId, filterOrder]);
+  }, [
+    access,
+    warehouseId,
+    itemsId,
+    filterOrder,
+    filterProducts,
+    filterCustomer,
+  ]);
 
   return (
     <AllDataContext.Provider
@@ -137,10 +184,14 @@ const AllDataContextProvider = ({ children }) => {
         setWarehouseId,
         warehouseItems,
         warehouseStock,
+        fetchWarehousesStock,
         products,
         categories,
         customers,
+        allCustomers,
+        fetchCustomers,
         suppliers,
+        allSuppliers,
         orders,
         detailOrder,
         setDetailOrder,
@@ -158,8 +209,17 @@ const AllDataContextProvider = ({ children }) => {
         fetchItems,
         filterOrder,
         setFilterOrder,
-      }}
-    >
+        filterProducts,
+        setFilterProducts,
+        filterCustomer,
+        setFilterCustomer,
+        filterSupplier,
+        setFilterSupplier,
+        fetchAllSuppliers,
+        allProducts,
+        fetchAllItems,
+        fetchCategories,
+      }}>
       {children}
     </AllDataContext.Provider>
   );
