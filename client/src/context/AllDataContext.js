@@ -173,9 +173,7 @@ const AllDataContextProvider = ({ children }) => {
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    setIsLoading(false);
   }, [
     access,
     warehouseId,
