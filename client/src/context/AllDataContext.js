@@ -173,7 +173,9 @@ const AllDataContextProvider = ({ children }) => {
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-    setIsLoading(false);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }, [
     access,
     warehouseId,
@@ -231,6 +233,7 @@ const AllDataContextProvider = ({ children }) => {
         fetchCategories,
         isLogin,
         isLoading,
+        setIsLogin,
         fetchSuppliers,
       }}
     >
