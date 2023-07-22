@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { instance } from '@/modules/axios';
+import React, { useState, useEffect, useContext } from "react";
+import { instance } from "@/modules/axios";
 import {
   Box,
   Grid,
@@ -12,7 +12,6 @@ import {
   Th,
   Td,
   Tbody,
-  useBreakpointValue,
   Modal,
   ModalBody,
   ModalContent,
@@ -20,29 +19,27 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalFooter,
-  VStack,
-  FormLabel,
-  FormControl,
   FormControl as FormErrorMessage,
   FormLabel as ChakraFormLabel,
-  Input,
   useToast,
   Icon,
-} from '@chakra-ui/react';
-import { useFieldArray, useForm, watch } from 'react-hook-form';
+  Skeleton,
+} from "@chakra-ui/react";
+import { useFieldArray, useForm, watch } from "react-hook-form";
 import {
   getAllCategories,
   getCategoriesId,
   updateCategories,
   deleteCategories,
-} from '@/modules/fetch';
-import { FiPlus, FiEdit, FiDelete } from 'react-icons/fi';
-import { useRouter } from 'next/router';
-import { DataContext } from '@/context/AllDataContext';
-import InputField from '../InputField/InputField';
+} from "@/modules/fetch";
+import { FiPlus, FiEdit, FiDelete } from "react-icons/fi";
+import { useRouter } from "next/router";
+import { DataContext } from "@/context/AllDataContext";
+import InputField from "../InputField/InputField";
+import SkeletonLoading from "@/component/SkeletonLoading";
 
 const Categories = () => {
-  const { categories, fetchCategories } = useContext(DataContext);
+  const { categories, fetchCategories, isLoading } = useContext(DataContext);
   const toast = useToast();
   const {
     register,
@@ -55,11 +52,12 @@ const Categories = () => {
   const [editItemId, setEditItemId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
   const router = useRouter();
+  console.log(isLoading);
 
   useEffect(() => {
     if (detailItems) {
-      setValue('name', detailItems.name);
-      setValue('description', detailItems.description);
+      setValue("name", detailItems.name);
+      setValue("description", detailItems.description);
     }
   }, [detailItems, isModalOpen]);
 
@@ -77,22 +75,22 @@ const Categories = () => {
       await deleteCategories(id);
       handleCloseModal(),
         toast({
-          title: 'Delete Product',
-          description: 'You have successfully deleted Product.',
-          status: 'success',
+          title: "Delete Product",
+          description: "You have successfully deleted Product.",
+          status: "success",
           duration: 3000,
           isClosable: true,
-          position: 'top',
+          position: "top",
         });
       fetchCategories();
     } catch (error) {
       toast({
-        title: 'Failed to delete product.',
+        title: "Failed to delete product.",
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
-        position: 'top',
+        position: "top",
       });
     }
   };
@@ -102,23 +100,23 @@ const Categories = () => {
       await instance.put(`/categories/${editItemId}`, data);
       handleCloseModal();
       toast({
-        title: 'Update Product',
-        description: 'You have successfully updated Product.',
-        status: 'success',
+        title: "Update Product",
+        description: "You have successfully updated Product.",
+        status: "success",
         duration: 3000,
         isClosable: true,
-        position: 'top',
+        position: "top",
       });
       fetchCategories();
       reset();
     } catch (error) {
       toast({
-        title: 'Failed to update product.',
+        title: "Failed to update product.",
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
-        position: 'top',
+        position: "top",
       });
     }
   };
@@ -128,113 +126,123 @@ const Categories = () => {
   };
 
   return (
-    <Box maxW='7xl' mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'5em'}>
+    <Box maxW="7xl" mx={"auto"} pt={{ base: 2, sm: 12, md: 17 }} mt={"5em"}>
       <Box>
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          mb={'6em'}
-          pb={'10'}
-        >
-          <Text fontWeight={'bold'} fontSize={'xl'}>
+          display={"flex"}
+          flexDirection={"row"}
+          justifyContent={"space-between"}
+          mb={"6em"}
+          pb={"10"}>
+          <Text fontWeight={"bold"} fontSize={"xl"}>
             Category
           </Text>
           <InputCategory fetchCategories={() => fetchCategories()} />
         </Box>
         <Box>
-          <TableContainer overflowY={'auto'} h={'25em'} px={5}>
-            <Table variant='simple'>
-              <Thead bg={'#06283D'}>
+          <TableContainer overflowY={"auto"} h={"25em"} px={5}>
+            <Table variant="simple">
+              <Thead bg={"#06283D"}>
                 <Tr>
-                  <Th color={'#EEEDED'}>Name</Th>
-                  <Th color={'#EEEDED'}>Description</Th>
-                  <Th color={'#EEEDED'}>Action</Th>
+                  <Th color={"#EEEDED"}>Name</Th>
+                  <Th color={"#EEEDED"}>Description</Th>
+                  <Th color={"#EEEDED"}>Action</Th>
                 </Tr>
               </Thead>
-              <Tbody bg={'#EEEDED'}>
-                {categories?.map((c) => (
-                  <Tr key={c.id}>
-                    <Td
-                      onClick={() => router.push(`/category/${c.id}`)}
-                      cursor={'pointer'}
-                      _hover={'black'}
-                    >
-                      {c.name}
-                    </Td>
-                    <Tr>
-                      <Td>{c.description}</Td>
-                    </Tr>
-
+              <Tbody bg={"#EEEDED"}>
+                {isLoading ? (
+                  <Tr>
                     <Td>
-                      <Icon
-                        color={'#06283D'}
-                        onClick={() => handleEdit(c.id)}
-                        as={FiEdit}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title='Edit'
-                      />
-                      <Icon
-                        color={'red'}
-                        onClick={() => handleDeleteItems(c.id)}
-                        as={FiDelete}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#EF6262',
-                        }}
-                        title='Delete'
-                      />
+                      <Skeleton height="20px" width="80%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="60%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="40%" />
                     </Td>
                   </Tr>
-                ))}
+                ) : (
+                  categories?.map((c) => (
+                    <Tr key={c.id}>
+                      <Td
+                        onClick={() => router.push(`/category/${c.id}`)}
+                        cursor={"pointer"}
+                        _hover={"black"}>
+                        {c.name}
+                      </Td>
+                      <Tr>
+                        <Td>{c.description}</Td>
+                      </Tr>
+
+                      <Td>
+                        <Icon
+                          color={"#06283D"}
+                          onClick={() => handleEdit(c.id)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: "pointer",
+                            color: "#4F709C",
+                          }}
+                          title="Edit"
+                        />
+                        <Icon
+                          color={"red"}
+                          onClick={() => handleDeleteItems(c.id)}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: "pointer",
+                            color: "#EF6262",
+                          }}
+                          title="Delete"
+                        />
+                      </Td>
+                    </Tr>
+                  ))
+                )}
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader textAlign='center'>Edit Category</ModalHeader>
+                    <ModalHeader textAlign="center">Edit Category</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <InputField
-                          label={'Category Name'}
-                          name={'name'}
-                          placeholder={'Insert name'}
-                          register={register('name', {
-                            required: 'This is required',
+                          label={"Category Name"}
+                          name={"name"}
+                          placeholder={"Insert name"}
+                          register={register("name", {
+                            required: "This is required",
                           })}
                           errors={errors.name}
                         />
                         <InputField
-                          label={'Description'}
-                          name={'description'}
-                          placeholder={'Insert description'}
-                          register={register('description', {
-                            required: 'This is required',
+                          label={"Description"}
+                          name={"description"}
+                          placeholder={"Insert description"}
+                          register={register("description", {
+                            required: "This is required",
                           })}
                           errors={errors.description}
                         />
                         <Button
-                          type='submit'
-                          size={'md'}
-                          colorScheme='blue'
+                          type="submit"
+                          size={"md"}
+                          colorScheme="blue"
                           isLoading={isSubmitting}
-                          rounded={'full'}
-                          w={'100%'}
-                        >
+                          rounded={"full"}
+                          w={"100%"}>
                           Update Category
                         </Button>
                       </form>
                     </ModalBody>
                     <ModalFooter>
                       <Button
-                        size={'sm'}
-                        colorScheme='red'
-                        rounded={'full'}
-                        fontWeight={'semibold'}
-                        onClick={handleCloseModal}
-                      >
+                        size={"sm"}
+                        colorScheme="red"
+                        rounded={"full"}
+                        fontWeight={"semibold"}
+                        onClick={handleCloseModal}>
                         Cancel
                       </Button>
                     </ModalFooter>
@@ -261,26 +269,26 @@ export const InputCategory = ({ fetchCategories }) => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await instance.post('/categories', data);
+      const response = await instance.post("/categories", data);
       handleCloseModal(),
         toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
+          title: "Created Product",
+          description: "You have successfully Created Product.",
+          status: "success",
           duration: 3000,
           isClosable: true,
-          position: 'top',
+          position: "top",
         });
       fetchCategories();
       reset();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: "Failed to create product.",
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
-        position: 'top',
+        position: "top",
       });
     }
   };
@@ -296,62 +304,59 @@ export const InputCategory = ({ fetchCategories }) => {
   return (
     <Box>
       <Button
-        size='sm'
-        bgColor={'#06283D'}
-        color={'#EEEDED'}
+        size="sm"
+        bgColor={"#06283D"}
+        color={"#EEEDED"}
         leftIcon={<FiPlus />}
         onClick={handleOpenModal}
-        borderRadius={'full'}
-        boxShadow={'0px 0px 3px 0px #06283D'}
+        borderRadius={"full"}
+        boxShadow={"0px 0px 3px 0px #06283D"}
         _hover={{
-          bg: '#164B60',
-          color: '#EEEDED',
-        }}
-      >
+          bg: "#164B60",
+          color: "#EEEDED",
+        }}>
         Add Category
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Category Form</ModalHeader>
+          <ModalHeader textAlign="center">Category Form</ModalHeader>
           <ModalBody>
             <form onSubmit={handleSubmit(onSubmit)}>
               <InputField
-                label={'Category Name'}
-                name={'name'}
-                placeholder={'Insert name'}
-                register={register('name', { required: 'This is required' })}
+                label={"Category Name"}
+                name={"name"}
+                placeholder={"Insert name"}
+                register={register("name", { required: "This is required" })}
                 errors={errors.name}
               />
               <InputField
-                label={'Description'}
-                name={'description'}
-                placeholder={'Insert description'}
-                register={register('description', {
-                  required: 'This is required',
+                label={"Description"}
+                name={"description"}
+                placeholder={"Insert description"}
+                register={register("description", {
+                  required: "This is required",
                 })}
                 errors={errors.description}
               />
               <Button
-                type='submit'
-                size={'md'}
-                colorScheme='blue'
+                type="submit"
+                size={"md"}
+                colorScheme="blue"
                 mt={3}
-                rounded={'full'}
-                w={'100%'}
-              >
+                rounded={"full"}
+                w={"100%"}>
                 Create Category
               </Button>
             </form>
           </ModalBody>
           <ModalFooter>
             <Button
-              size={'sm'}
-              colorScheme='red'
-              rounded={'full'}
-              fontWeight={'semibold'}
-              onClick={handleCloseModal}
-            >
+              size={"sm"}
+              colorScheme="red"
+              rounded={"full"}
+              fontWeight={"semibold"}
+              onClick={handleCloseModal}>
               Cancel
             </Button>
           </ModalFooter>
