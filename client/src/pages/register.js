@@ -82,8 +82,8 @@ const register = () => {
           <Image
             src='/StocktrackrLogo-01.png'
             alt='logo'
-            width={'250px'}
-            height={'80px'}
+            width={'200px'}
+            height={'50px'}
             onClick={handleHome}
             mb={6}
           />
@@ -207,13 +207,16 @@ const register = () => {
               </Button>
             </InputRightElement>
           </InputField>
-          <Text>
-            Have an Account?{' '}
-            <Link href='/login' fontWeight='bold'>
-              {' '}
+          <HStack>
+            <Text>Already have an account?</Text>
+            <Text
+              onClick={() => router.push('/login')}
+              fontWeight='bold'
+              cursor={'pointer'}
+            >
               Sign in!
-            </Link>
-          </Text>
+            </Text>
+          </HStack>
           <Button
             type='submit'
             rounded={'lg'}

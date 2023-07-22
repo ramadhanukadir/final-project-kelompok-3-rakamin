@@ -21,7 +21,10 @@ const getAllOrders = async (req, res) => {
     const { rows, count } = await Orders.findAndCountAll({
       offset: page && limit ? (page - 1) * limit : 0,
       limit: limit ? parseInt(limit) : 20,
-      order: sort && order ? [[order, sort]] : [['createdAt', sort || 'DESC']],
+      order:
+        sort && order
+          ? [[order, sort]]
+          : [[order || 'createdAt', sort || 'DESC']],
       where: {
         users_id: id,
       },

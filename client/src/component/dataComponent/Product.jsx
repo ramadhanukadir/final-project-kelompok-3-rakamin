@@ -27,14 +27,10 @@ import {
   FormLabel,
   FormControl,
   Input,
-  useDisclosure,
   useToast,
-  InputGroup,
-  InputRightElement,
   Icon,
-  PageSelect,
-  Flex,
   TableCaption,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { getAllItems, getAllItemsById, getAllWarehouses, getAllSuppliers } from '@/modules/fetch';
 import { FiPlus, FiArrowRight, FiDelete, FiMove, FiEdit } from 'react-icons/fi';
@@ -43,7 +39,9 @@ import { useRouter } from 'next/router';
 import { DataContext } from '@/context/AllDataContext';
 import SelectField from '../SelectField/SelectField';
 import Filter from '../Filter';
-import { updateItems, deleteItems } from '@/api/product';
+import { updateItems, deleteItems, addStock } from '@/api/product';
+import ModalConfirmation from '../ModalConfirmation';
+import { moveStock } from '@/api/warehouses';
 
 const Product = () => {
   const toast = useToast();
@@ -54,21 +52,12 @@ const Product = () => {
     formState: { errors },
     setValue,
   } = useForm();
-  const {
-    categories,
-    warehouseStock,
-    products,
-    fetchItems,
-    allProducts,
-    fetchAllItems,
-    filterProducts,
-    setFilterProducts,
-    fetchWarehousesStock,
-    fetchCategories,
-  } = useContext(DataContext);
+  const { allProducts, categories, warehouseStock, products, fetchItems, fetchAllItems, filterProducts, fetchCategories, setFilterProducts, fetchWarehousesStock, isLoading } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
+  const [id, setId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const router = useRouter();
 
@@ -174,18 +163,14 @@ const Product = () => {
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
           <AddProductForm fetchItems={() => fetchItems()} />
           <AddStockForm fetchWarehousesStock={() => fetchWarehousesStock()} />
-          <MoveStock
-            allProducts={allProducts}
-            fetchAllItems={() => fetchAllItems()}
-            warehouseStock={warehouseStock}
-            fetchWarehousesStock={() => fetchWarehousesStock()}
-          />
+          <MoveStock allProducts={allProducts} fetchAllItems={() => fetchAllItems()} warehouseStock={warehouseStock} fetchWarehousesStock={() => fetchWarehousesStock()} />
         </Box>
       </Box>
       <Filter
         page={products?.meta}
         model={products}
         show={products}
+        hide={products}
         filter={filterProducts}
         handleNextPage={() => {
           setFilterProducts({
@@ -217,6 +202,22 @@ const Product = () => {
             });
           }, 1000);
         }}
+        handleOrder={(e) => {
+          console.log(e.target.value);
+          setFilterProducts({
+            ...filterProducts,
+            order: e.target.value,
+          });
+        }}
+        handleSort={(e) => {
+          console.log(e.target.value);
+          setFilterProducts({
+            ...filterProducts,
+            sort: e.target.value,
+          });
+        }}
+        value={'name'}
+        textValue={'Name'}
       />
       <TableContainer overflowY={'auto'} h={'25em'} px={5}>
         <Table variant="simple" size={'md'}>
@@ -235,7 +236,7 @@ const Product = () => {
             {products?.data?.map((item) => {
               return (
                 <Tr key={item.id}>
-                  <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'} py={2}>
+                  <Td whiteSpace={'nowrap'} textOverflow={'ellipsis'} overflow={'hidden'} title={item.name} maxWidth={'250px'} onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'} py={2}>
                     {item.name}
                   </Td>
                   <Td onClick={() => router.push(`/product/${item.id}`)} cursor={'pointer'} py={2}>
@@ -266,7 +267,10 @@ const Product = () => {
                     />
                     <Icon
                       color={'red'}
-                      onClick={() => handleDeleteItems(item.id)}
+                      onClick={() => {
+                        setId(item.id);
+                        onOpen();
+                      }}
                       as={FiDelete}
                       _hover={{
                         cursor: 'pointer',
@@ -348,6 +352,15 @@ const Product = () => {
           </Tbody>
         </Table>
       </TableContainer>
+      <ModalConfirmation
+        isOpen={isOpen}
+        onClose={onClose}
+        name={'product'}
+        onClick={() => {
+          handleDeleteItems(id);
+          onClose();
+        }}
+      />
     </Box>
   );
 };
@@ -386,7 +399,7 @@ export const AddProductForm = ({ fetchItems }) => {
       await instance.post('/items', formData);
       toast({
         title: 'Created Product',
-        description: 'You have successfully Created Product.',
+        description: 'Successfully Created product',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -408,19 +421,6 @@ export const AddProductForm = ({ fetchItems }) => {
 
   const handleCloseModal = () => {
     setIsOpen(false);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setDetails((prev) => {
-      return { ...prev, [name]: value };
-    });
-  };
-
-  const handleImageChange = (e) => {
-    setDetails((prev) => {
-      return { ...prev, image: e.target.files[0] };
-    });
   };
 
   return (
@@ -453,6 +453,7 @@ export const AddProductForm = ({ fetchItems }) => {
                   register={register('categories_id', {
                     required: 'This is required',
                   })}
+                  variant={'filled'}
                   errors={errors.categories_id}
                   mapping={categories}
                   option={(opt) => opt.name}
@@ -460,53 +461,55 @@ export const AddProductForm = ({ fetchItems }) => {
                 />
                 <FormControl isInvalid={errors.name} mb={4}>
                   <FormLabel htmlFor="name">Name:</FormLabel>
-                  <Input type="text" id="name" {...register('name', { required: true })} />
+                  <Input variant={'filled'} type="text" id="name" {...register('name', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.SKU} mb={4}>
                   <FormLabel htmlFor="SKU">SKU:</FormLabel>
-                  <Input type="text" id="SKU" {...register('SKU', { required: true })} />
+                  <Input variant={'filled'} type="text" id="SKU" {...register('SKU', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.size} mb={4}>
                   <FormLabel htmlFor="size">size:</FormLabel>
-                  <Input type="number" id="size" {...register('size', { required: true })} />
+                  <Input variant={'filled'} type="number" id="size" {...register('size', { required: true })} min={0} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.weight} mb={4}>
                   <FormLabel htmlFor="weight">weight:</FormLabel>
-                  <Input type="number" id="weight" {...register('weight', { required: true })} />
+                  <Input variant={'filled'} type="number" id="weight" {...register('weight', { required: true })} min={0} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.description} mb={4}>
                   <FormLabel htmlFor="description">Description:</FormLabel>
-                  <Input type="text" id="description" {...register('description', { required: true })} />
+                  <Input variant={'filled'} type="text" id="description" {...register('description', { required: true })} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.base_price} mb={4}>
                   <FormLabel htmlFor="base_price">Base Price:</FormLabel>
-                  <Input type="number" id="base_price" {...register('base_price', { required: true })} />
+                  <Input variant={'filled'} type="number" id="base_price" {...register('base_price', { required: true })} min={0} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.selling_price} mb={4}>
                   <FormLabel htmlFor="selling_price">Selling price:</FormLabel>
-                  <Input type="number" id="selling_price" {...register('selling_price', { required: true })} />
+                  <Input variant={'filled'} type="number" id="selling_price" {...register('selling_price', { required: true })} min={0} />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.image_url} mb={4}>
                   <FormLabel htmlFor="image_url">Gambar:</FormLabel>
-                  <Input type="file" id="image_url" {...register('image_url')} />
+                  <Input variant={'filled'} type="file" id="image_url" {...register('image_url')} />
                   <FormErrorMessage>Gambar harus diunggah.</FormErrorMessage>
                 </FormControl>
-                <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
+                <Button rounded={'full'} width={'100%'} type="submit" size={'md'} colorScheme="blue" mr={3}>
                   Tambah product
-                </Button>
-                <Button size={'md'} onClick={handleCloseModal}>
-                  Cancel
                 </Button>
               </form>
             </VStack>
           </ModalBody>
+          <ModalFooter>
+            <Button rounded={'full'} colorScheme="red" size={'md'} onClick={handleCloseModal}>
+              Cancel
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>
@@ -521,8 +524,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
     reset,
     setValue,
   } = useForm();
-  const { allSuppliers, allProducts, fetchAllItems, fetchAllSuppliers } =
-    useContext(DataContext);
+  const { allSuppliers, allProducts, fetchAllItems, fetchAllSuppliers } = useContext(DataContext);
   const [warehouse, setWarehouse] = useState([]);
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -547,11 +549,11 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await instance.post('/items/stock', data);
+      await addStock(data);
       handleCloseModal();
       toast({
-        title: 'Created Product',
-        description: 'You have successfully Created Product.',
+        title: 'Add Stock',
+        description: 'Successfully Add Stock Product.',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -560,7 +562,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
       fetchWarehousesStock();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: 'Failed to add stock product.',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -603,14 +605,8 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl mb={4} isInvalid={errors.items_id}>
                   <FormLabel>Product</FormLabel>
-                  <Select
-                    size='sm'
-                    variant='filled'
-                    name='Items Id'
-                    onChange={handleChange}
-                    {...register('items_id', { required: true })}
-                  >
-                    <option value='' selected disabled h={'2rem'}>
+                  <Select size="sm" variant="filled" name="Items Id" onChange={handleChange} {...register('items_id', { required: true })}>
+                    <option value="" selected disabled>
                       Select Items
                     </option>
                     {allProducts?.data?.map((product) => (
@@ -637,7 +633,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.stock}>
                   <FormLabel>Stock</FormLabel>
-                  <Input size="sm" variant="filled" type="text" name="quantity" onChange={handleChange} {...register('stock', { required: true })} />
+                  <Input size="sm" variant="filled" type="number" name="quantity" onChange={handleChange} {...register('stock', { required: true })} min={1} />
                   <FormErrorMessage>Stock Harus Di Isi</FormErrorMessage>
                 </FormControl>
                 <FormControl mb={4} isInvalid={errors.suppliers_id}>
@@ -670,12 +666,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
   );
 };
 
-export const MoveStock = ({
-  allProducts,
-  warehouseStock,
-  fetchWarehousesStock,
-  fetchAllItems,
-}) => {
+export const MoveStock = ({ allProducts, warehouseStock, fetchWarehousesStock, fetchAllItems }) => {
   const {
     register,
     handleSubmit,
@@ -717,14 +708,11 @@ export const MoveStock = ({
 
   const onSubmit = async (data) => {
     try {
-      const response = await instance.post(
-        '/warehouses-stock/move-items',
-        data,
-        handleCloseModal()
-      );
+      await moveStock(data);
+      handleCloseModal();
       toast({
-        title: 'Created Product',
-        description: 'You have successfully Created Product.',
+        title: 'Product Moved',
+        description: 'Successfully move product.',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -733,10 +721,9 @@ export const MoveStock = ({
       reset();
       fetchWarehousesStock();
     } catch (error) {
-      console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
-        title: 'Failed to create product.',
-        description: error.response.data.message,
+        title: 'Failed to move product.',
+        description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true,
@@ -783,11 +770,7 @@ export const MoveStock = ({
                       Select Items
                     </option>
                     {allProducts?.data?.map((product) => (
-                      <option
-                        onClick={() => setItemsId(product.id)}
-                        key={product.id}
-                        value={product.id}
-                      >
+                      <option onClick={() => setItemsId(product.id)} key={product.id} value={product.id}>
                         {product.name}
                       </option>
                     ))}
@@ -828,6 +811,9 @@ export const MoveStock = ({
                       required: true,
                     })}
                   >
+                    <option value="" selected disabled>
+                      Select Destination Warehouse
+                    </option>
                     {warehouse
                       .filter((ws) => ws.id !== warehouseId)
                       .map((warehouses) => (
@@ -838,16 +824,17 @@ export const MoveStock = ({
                   </Select>
                   <FormErrorMessage>Suppliers Harus Di Isi</FormErrorMessage>
                 </FormControl>
-
-                <Button type="submit" size={'md'} colorScheme="blue" mr={3}>
-                  Tambah product
-                </Button>
-                <Button size={'md'} onClick={handleCloseModal}>
-                  Cancel
+                <Button rounded={'full'} width={'100%'} type="submit" size={'md'} colorScheme="blue" mr={3}>
+                  Move product
                 </Button>
               </form>
             </VStack>
           </ModalBody>
+          <ModalFooter>
+            <Button size={'md'} rounded={'full'} colorScheme="red" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>

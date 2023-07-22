@@ -17,7 +17,7 @@ import React, { useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 function FormEditProfile() {
-  const { userLogin, fetchUserLogin } = useContext(DataContext);
+  const { userLogin, fetchUserLogin, access } = useContext(DataContext);
   const {
     register,
     handleSubmit,
@@ -60,7 +60,19 @@ function FormEditProfile() {
 
   return (
     <>
-      <Button onClick={onOpen}>Edit Profile</Button>
+      <Button
+        rounded={'full'}
+        size='md'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        onClick={onOpen}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+      >
+        Edit Profile
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

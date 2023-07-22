@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { instance } from '@/modules/axios';
 import axios from 'axios';
 
@@ -16,8 +16,6 @@ import {
   Td,
   Tbody,
   Input,
-  InputGroup,
-  InputRightElement,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -26,7 +24,6 @@ import {
   ModalBody,
   Textarea,
   Select,
-  useToast,
   FormErrorMessage,
   AlertDialog,
   AlertDialogOverlay,
@@ -39,6 +36,7 @@ import {
   IconButton,
   Flex,
   TableCaption,
+  Skeleton,
 } from '@chakra-ui/react';
 
 import { SearchIcon } from '@chakra-ui/icons';
@@ -47,13 +45,14 @@ import { FiPlus, FiDelete, FiEdit, FiEye } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import Filter from '../Filter';
+import { DataContext } from '@/context/AllDataContext';
 
 const Warehouses = () => {
   const router = useRouter();
 
+  const { isLoading } = useContext(DataContext);
   const [warehouses, setWarehouses] = useState([]);
   const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
   const [pages, setPages] = useState({});
   const [rows, setRows] = useState(0);
   const [keyword, setKeyword] = useState('');
@@ -286,6 +285,7 @@ const Warehouses = () => {
         page={pages}
         model={warehouses}
         show={warehouses}
+        hide={!warehouses}
         filter={filterWarehouses}
         handleNextPage={() => {
           setFilterWarehouses({
@@ -341,9 +341,13 @@ const Warehouses = () => {
                     <Td onClick={() => router.push(`/warehouse/${warehouse.id}`)} cursor={'pointer'}>
                       {warehouse.name}
                     </Td>
-                    <Td>{warehouse.address}</Td>
+                    <Td whiteSpace={'nowrap'} textOverflow={'ellipsis'} overflow={'hidden'} title={warehouse.address} maxWidth={'300px'}>
+                      {warehouse.address}
+                    </Td>
                     <Td>{warehouse.province}</Td>
-                    <Td>{warehouse.city}</Td>
+                    <Td whiteSpace={'nowrap'} textOverflow={'ellipsis'} overflow={'hidden'} title={warehouse.city} maxWidth={'200px'}>
+                      {warehouse.city}
+                    </Td>
                     <Td>
                       <Icon
                         color={'#06283D'}
@@ -378,7 +382,7 @@ const Warehouses = () => {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader> Add Warehouse</ModalHeader>
+          <ModalHeader textAlign={'center'}> Warehouse Form</ModalHeader>
           <ModalBody>
             <form onSubmit={''}>
               <ChakraFormControl isInvalid={errors.name} isRequired>
@@ -424,13 +428,13 @@ const Warehouses = () => {
                 <Input type="number" {...register('telephone', { required: true })} />
                 {errors.telephone && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
+              <Button colorScheme="blue" width={'100%'} rounded={'full'} mt={5} onClick={handleSubmit(onSubmit)}>
+                Create
+              </Button>
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
-              Save
-            </Button>
-            <Button variant="ghost" onClick={closeModal}>
+            <Button colorScheme="red" rounded={'full'} onClick={closeModal}>
               Cancel
             </Button>
           </ModalFooter>

@@ -12,7 +12,6 @@ import {
   Th,
   Td,
   Tbody,
-  useBreakpointValue,
   Modal,
   ModalBody,
   ModalContent,
@@ -20,14 +19,12 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalFooter,
-  VStack,
-  FormLabel,
-  FormControl,
   FormControl as FormErrorMessage,
   FormLabel as ChakraFormLabel,
-  Input,
   useToast,
   Icon,
+  useDisclosure,
+  Skeleton,
 } from '@chakra-ui/react';
 import { useFieldArray, useForm, watch } from 'react-hook-form';
 import {
@@ -40,9 +37,10 @@ import { FiPlus, FiEdit, FiDelete } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import { DataContext } from '@/context/AllDataContext';
 import InputField from '../InputField/InputField';
+import ModalConfirmation from '../ModalConfirmation';
 
 const Categories = () => {
-  const { categories, fetchCategories } = useContext(DataContext);
+  const { categories, fetchCategories, isLoading } = useContext(DataContext);
   const toast = useToast();
   const {
     register,
@@ -53,19 +51,21 @@ const Categories = () => {
   } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
-  const [detailItems, setDetailItems] = useState({});
+  const [deleteId, setDeleteId] = useState(null);
+  const [detailCategory, setDetailCategory] = useState({});
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    if (detailItems) {
-      setValue('name', detailItems.name);
-      setValue('description', detailItems.description);
+    if (detailCategory) {
+      setValue('name', detailCategory.name);
+      setValue('description', detailCategory.description);
     }
-  }, [detailItems, isModalOpen]);
+  }, [detailCategory, isModalOpen]);
 
   const handleEdit = async (id) => {
     const foundProduct = await getCategoriesId(id);
-    setDetailItems(foundProduct);
+    setDetailCategory(foundProduct);
     if (foundProduct) {
       setEditItemId(id);
       setIsModalOpen(true);
@@ -77,8 +77,8 @@ const Categories = () => {
       await deleteCategories(id);
       handleCloseModal(),
         toast({
-          title: 'Delete Product',
-          description: 'You have successfully deleted Product.',
+          title: 'Delete Category',
+          description: 'Successfully deleted category',
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -87,7 +87,7 @@ const Categories = () => {
       fetchCategories();
     } catch (error) {
       toast({
-        title: 'Failed to delete product.',
+        title: 'Failed to delete category',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -103,7 +103,7 @@ const Categories = () => {
       handleCloseModal();
       toast({
         title: 'Update Product',
-        description: 'You have successfully updated Product.',
+        description: 'Successfully updated Product',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -113,7 +113,7 @@ const Categories = () => {
       reset();
     } catch (error) {
       toast({
-        title: 'Failed to update product.',
+        title: 'Failed to update product',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -153,44 +153,61 @@ const Categories = () => {
                 </Tr>
               </Thead>
               <Tbody bg={'#EEEDED'}>
-                {categories?.map((c) => (
-                  <Tr key={c.id}>
-                    <Td
-                      onClick={() => router.push(`/category/${c.id}`)}
-                      cursor={'pointer'}
-                      _hover={'black'}
-                    >
-                      {c.name}
-                    </Td>
-                    <Tr>
-                      <Td>{c.description}</Td>
-                    </Tr>
-
+                {isLoading ? (
+                  <Tr>
                     <Td>
-                      <Icon
-                        color={'#06283D'}
-                        onClick={() => handleEdit(c.id)}
-                        as={FiEdit}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title='Edit'
-                      />
-                      <Icon
-                        color={'red'}
-                        onClick={() => handleDeleteItems(c.id)}
-                        as={FiDelete}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#EF6262',
-                        }}
-                        title='Delete'
-                      />
+                      <Skeleton height='20px' width='80%' />
+                    </Td>
+                    <Td>
+                      <Skeleton height='20px' width='60%' />
+                    </Td>
+                    <Td>
+                      <Skeleton height='20px' width='40%' />
                     </Td>
                   </Tr>
-                ))}
+                ) : (
+                  categories?.map((c) => (
+                    <Tr key={c.id}>
+                      <Td
+                        onClick={() => router.push(`/category/${c.id}`)}
+                        cursor={'pointer'}
+                        _hover={'black'}
+                      >
+                        {c.name}
+                      </Td>
+                      <Tr>
+                        <Td>{c.description}</Td>
+                      </Tr>
+
+                      <Td>
+                        <Icon
+                          color={'#06283D'}
+                          onClick={() => handleEdit(c.id)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#4F709C',
+                          }}
+                          title='Edit'
+                        />
+                        <Icon
+                          color={'red'}
+                          onClick={() => {
+                            setDeleteId(c.id);
+                            onOpen();
+                          }}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#EF6262',
+                          }}
+                          title='Delete'
+                        />
+                      </Td>
+                    </Tr>
+                  ))
+                )}
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
@@ -243,6 +260,64 @@ const Categories = () => {
               </Tbody>
             </Table>
           </TableContainer>
+          <ModalConfirmation
+            isOpen={isOpen}
+            onClose={onClose}
+            name={'category'}
+            onClick={() => {
+              handleDeleteItems(deleteId);
+              onClose();
+            }}
+          />
+          <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader textAlign='center'>Edit Category</ModalHeader>
+              <ModalBody>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <InputField
+                    label={'Category Name'}
+                    name={'name'}
+                    placeholder={'Insert name'}
+                    register={register('name', {
+                      required: 'This is required',
+                    })}
+                    errors={errors.name}
+                  />
+                  <InputField
+                    label={'Description'}
+                    name={'description'}
+                    placeholder={'Insert description'}
+                    register={register('description', {
+                      required: 'This is required',
+                    })}
+                    errors={errors.description}
+                  />
+                  <Button
+                    type='submit'
+                    size={'md'}
+                    colorScheme='blue'
+                    isLoading={isSubmitting}
+                    rounded={'full'}
+                    w={'100%'}
+                  >
+                    Update Category
+                  </Button>
+                </form>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  size={'sm'}
+                  colorScheme='red'
+                  rounded={'full'}
+                  fontWeight={'semibold'}
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         </Box>
       </Box>
     </Box>
@@ -264,8 +339,8 @@ export const InputCategory = ({ fetchCategories }) => {
       const response = await instance.post('/categories', data);
       handleCloseModal(),
         toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
+          title: 'Created Category',
+          description: 'Successfully created category',
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -275,10 +350,10 @@ export const InputCategory = ({ fetchCategories }) => {
       reset();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: 'Failed to create category',
         description: error.message,
         status: 'error',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: 'top',
       });

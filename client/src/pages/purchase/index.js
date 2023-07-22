@@ -21,6 +21,7 @@ const index = () => {
           page={orders?.meta}
           model={orders}
           show={!orders}
+          hide={orders}
           filter={filterOrder}
           handleNextPage={() => {
             setFilterOrder({ ...filterOrder, page: filterOrder.page + 1 });
@@ -34,6 +35,14 @@ const index = () => {
             setFilterOrder({ ...filterOrder, limit: e.target.value });
           }}
           count={orders?.meta?.totalData}
+          handleOrder={(e) => {
+            setFilterOrder({ ...filterOrder, order: e.target.value });
+          }}
+          handleSort={(e) => {
+            setFilterOrder({ ...filterOrder, sort: e.target.value });
+          }}
+          value={'customers_id'}
+          textValue={'Customers ID'}
         />
         <OrderList orders={orders.data} />
       </Box>

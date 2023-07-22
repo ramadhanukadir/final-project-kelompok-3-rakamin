@@ -23,9 +23,10 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
-);
-
-const MyChart = () => {
+  );
+  
+  const MyChart = () => {
+  const { orderData } = useContext(DataContext);
   const getTotalPriceForLast7Days = () => {
     const currentDate = new Date();
     const startDate = new Date();
@@ -36,7 +37,7 @@ const MyChart = () => {
     orderData.forEach((order) => {
       const createdAt = new Date(order.createdAt);
       if (createdAt >= startDate && createdAt <= currentDate) {
-        totalPrice += order.total_price;
+        totalPrice += order.total_revenue;
       }
     });
 
@@ -46,8 +47,6 @@ const MyChart = () => {
     });
     // return formatter.format(totalPrice);
   };
-
-  const { orderData } = useContext(DataContext);
 
   const currentDate = new Date();
   const endDate = new Date();
@@ -64,10 +63,8 @@ const MyChart = () => {
   orderData.forEach((order) => {
     const createdAt = new Date(order.createdAt);
     if (createdAt >= startDate && createdAt <= endDate) {
-      const dayIndex = Math.floor(
-        (createdAt - startDate + 7 * 60 * 60 * 1000) / (24 * 60 * 60 * 1000)
-      );
-      const total_price = order.total_price;
+      const dayIndex = Math.floor((createdAt - startDate + (7 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+      const total_price = order.total_revenue;
       dailyData[dayIndex] += total_price;
     }
   });
@@ -142,7 +139,7 @@ const MyChart = () => {
       h='350px'
     >
       <Text color='gray' fontSize='sm'>
-        Total Revenue
+        Total Revenue on Last 7 Days
       </Text>
       <Text fontWeight='bold' fontSize='2xl'>
         {getTotalPriceForLast7Days()}

@@ -2,7 +2,11 @@ import { createContext, useEffect, useState } from 'react';
 import { getAllOrders } from '@/api/orders';
 import { getAllItems } from '@/api/product';
 import { getAllCustomer } from '@/api/customers';
-import { getAllWarehouses, getAllWarehousesStock, getWarehousesById } from '@/api/warehouses';
+import {
+  getAllWarehouses,
+  getAllWarehousesStock,
+  getWarehousesById,
+} from '@/api/warehouses';
 import { fetchUser } from '@/api/auth';
 import { getAllExpenses, getAllOrdersItems, getAllRevenue } from '@/api/chart';
 import { getAllCategories } from '@/api/category';
@@ -31,6 +35,8 @@ const AllDataContextProvider = ({ children }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [activeItem, setActiveItem] = useState('dashboard');
+  const [isLogin, setIsLogin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [filterOrder, setFilterOrder] = useState({
     warehouses_id: '',
     customers_id: '',
@@ -135,11 +141,15 @@ const AllDataContextProvider = ({ children }) => {
 
   const fetchRevenue = async () => {
     const data = await getAllRevenue();
-    const revenueSum = data.reduce((sum, revenue) => sum + revenue.totalRevenue, 0);
+    const revenueSum = data.reduce(
+      (sum, revenue) => sum + revenue.totalRevenue,
+      0
+    );
     setTotalRevenue(revenueSum);
   };
 
   useEffect(() => {
+    setIsLoading(true);
     if (access !== null) {
       fetchCustomers();
       fetchAllCustomers();
@@ -153,15 +163,26 @@ const AllDataContextProvider = ({ children }) => {
       fetchOrderItems();
       fetchExpenses();
       fetchRevenue();
-      fetchSuppliers();
       fetchAllSuppliers();
       fetchAllItems();
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
     }
 
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
-  }, [access, warehouseId, itemsId, filterOrder, filterProducts, filterCustomer]);
+    setIsLoading(false);
+  }, [
+    access,
+    warehouseId,
+    itemsId,
+    filterOrder,
+    filterProducts,
+    filterCustomer,
+    filterSupplier,
+  ]);
 
   return (
     <AllDataContext.Provider
@@ -208,6 +229,9 @@ const AllDataContextProvider = ({ children }) => {
         allProducts,
         fetchAllItems,
         fetchCategories,
+        isLogin,
+        isLoading,
+        fetchSuppliers,
       }}
     >
       {children}
