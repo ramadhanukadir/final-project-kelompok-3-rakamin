@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { instance } from '@/modules/axios';
-import ReactPaginate from 'react-paginate';
 import axios from 'axios';
 
 import {
@@ -168,7 +167,7 @@ const Warehouses = () => {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get('https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB');
+        const response = await axios.get(`https://api.goapi.id/v1/regional/provinsi?api_key=${process.env.REACT_APP_API_KEY}`);
         setProvinces(response.data.data);
         // console.log(response.data.data);
       } catch (error) {
@@ -180,7 +179,7 @@ const Warehouses = () => {
 
   const fetchCitiesByProvince = async (selectedProvince) => {
     try {
-      const response = await axios.get(`https://api.goapi.id/v1/regional/kota?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB&provinsi_id=${selectedProvince}`);
+      const response = await axios.get(`https://api.goapi.id/v1/regional/kota?api_key=${process.env.REACT_APP_API_KEY}&provinsi_id=${selectedProvince}`);
       setCities(response.data.data);
     } catch (error) {
       console.log(error);
@@ -384,27 +383,6 @@ const Warehouses = () => {
               </Tbody>
             </Table>
           </TableContainer>
-
-          {/* <Text fontWeight={'bold'} fontSize={'l'} mt={5}>
-            Total Warehouse: {rows} Page: {rows ? page + 1 : 0} of {pages}
-          </Text>
-          <p className="text-danger">{msg}</p>
-
-          <nav className="pagination is-centered" key={rows} role="navigation" aria-label="pagination">
-            <ReactPaginate
-              previousLabel={'< Prev'}
-              nextLabel={'Next >'}
-              pageCount={Math.min(10, pages)}
-              onPageChange={changePage}
-              containerClassName={'pagination-container'}
-              activeClassName={'active-page'}
-              pageLinkClassName="pagination-link"
-              previousLinkClassName="pagination-previous"
-              nextLinkClassName="pagination-next"
-              activeLinkClassName="pagination-link is-current"
-              disabledLinkClassName="pagination-link is-disabled"
-            />
-          </nav> */}
         </Box>
       </Box>
 
