@@ -1,8 +1,8 @@
-const ownedData = async (table_name, data_id, users_id, options = {}) => {
-  const data = await table_name.findOne({
+const ownedData = async (tableName, dataID, usersId, options = {}) => {
+  const data = await tableName.findOne({
     where: {
-      id: data_id,
-      users_id: users_id,
+      id: dataID,
+      users_id: usersId,
     },
     include: options.include || [],
   });

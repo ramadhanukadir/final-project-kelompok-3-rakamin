@@ -71,8 +71,7 @@ const Warehouses = () => {
   const [isSavePopupOpen, setIsSavePopupOpen] = useState(false);
 
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
-    useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
   const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
 
   const [editWarehouseData, setEditWarehouseData] = useState(null);
@@ -123,9 +122,7 @@ const Warehouses = () => {
   }, [page, keyword, filterWarehouses]);
 
   const getWarehouses = async () => {
-    const response = await instance.get(
-      `/warehouses/with-filter?search_query=${filterWarehouses.search_query}&page=${filterWarehouses.page}&limit=${filterWarehouses.limit}`
-    );
+    const response = await instance.get(`/warehouses/with-filter?search_query=${filterWarehouses.search_query}&page=${filterWarehouses.page}&limit=${filterWarehouses.limit}`);
 
     setWarehouses(response.data.result);
     setPage(response.data.page);
@@ -169,9 +166,7 @@ const Warehouses = () => {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get(
-          'https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB'
-        );
+        const response = await axios.get(`https://api.goapi.id/v1/regional/provinsi?api_key=${process.env.REACT_APP_API_KEY}`);
         setProvinces(response.data.data);
         // console.log(response.data.data);
       } catch (error) {
@@ -183,9 +178,7 @@ const Warehouses = () => {
 
   const fetchCitiesByProvince = async (selectedProvince) => {
     try {
-      const response = await axios.get(
-        `https://api.goapi.id/v1/regional/kota?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB&provinsi_id=${selectedProvince}`
-      );
+      const response = await axios.get(`https://api.goapi.id/v1/regional/kota?api_key=${process.env.REACT_APP_API_KEY}&provinsi_id=${selectedProvince}`);
       setCities(response.data.data);
     } catch (error) {
       console.log(error);
@@ -195,34 +188,17 @@ const Warehouses = () => {
   // Save Modal
   const onSubmit = async (data) => {
     try {
+      const { name, address, province, city, telephone } = data;
       // Validasi input
-      if (
-        !data.name ||
-        !data.address ||
-        !data.province ||
-        !data.city ||
-        !data.telephone
-      ) {
-        toast({
-          title: 'Error',
-          description: 'Please fill in all required fields.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
+      if (!name || !address || !province || !city || !telephone) {
+        toast.error('Silakan lengkapi semua kolom yang wajib diisi.', { duration: 3000 });
         return;
       }
 
       // Validasi format nomor handphone
       const phoneRegex = /^[0-9]{10,12}$/;
       if (!phoneRegex.test(data.telephone)) {
-        toast({
-          title: 'Error',
-          description: 'Please enter a valid phone number.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
+        toast.error('Silakan masukkan nomor telepon yang valid.', { duration: 3000 });
         return;
       }
 
@@ -281,20 +257,14 @@ const Warehouses = () => {
   };
 
   return (
-    <Box maxW='7xl' mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'3em'}>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        justifyContent={'space-between'}
-        mb={'3em'}
-        pb={'8'}
-      >
+    <Box maxW="7xl" mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'3em'}>
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} mb={'3em'} pb={'8'}>
         <Text fontWeight={'bold'} fontSize={'xl'}>
           Warehouses
         </Text>
         <Box display={'flex'} flexDirection={'row'} gap={'5'}>
           <Button
-            size='sm'
+            size="sm"
             bgColor={'#06283D'}
             color={'#EEEDED'}
             leftIcon={<FiPlus />}
@@ -315,6 +285,7 @@ const Warehouses = () => {
         page={pages}
         model={warehouses}
         show={warehouses}
+        hide={!warehouses}
         filter={filterWarehouses}
         handleNextPage={() => {
           setFilterWarehouses({
@@ -350,7 +321,7 @@ const Warehouses = () => {
       <Box>
         <Box>
           <TableContainer overflowY={'auto'} h={'25em'} px={5}>
-            <Table variant='simple'>
+            <Table variant="simple">
               <TableCaption>Warehouses</TableCaption>
               <Thead bg={'#06283D'}>
                 <Tr>
@@ -367,15 +338,16 @@ const Warehouses = () => {
               <Tbody bg={'#EEEDED'}>
                 {warehouses.map((warehouse) => (
                   <Tr key={warehouse.id}>
-                    <Td
-                      onClick={() => router.push(`/warehouse/${warehouse.id}`)}
-                      cursor={'pointer'}
-                    >
+                    <Td onClick={() => router.push(`/warehouse/${warehouse.id}`)} cursor={'pointer'}>
                       {warehouse.name}
                     </Td>
-                    <Td>{warehouse.address}</Td>
+                    <Td whiteSpace={'nowrap'} textOverflow={'ellipsis'} overflow={'hidden'} title={warehouse.address} maxWidth={'300px'}>
+                      {warehouse.address}
+                    </Td>
                     <Td>{warehouse.province}</Td>
-                    <Td>{warehouse.city}</Td>
+                    <Td whiteSpace={'nowrap'} textOverflow={'ellipsis'} overflow={'hidden'} title={warehouse.city} maxWidth={'200px'}>
+                      {warehouse.city}
+                    </Td>
                     <Td>
                       <Icon
                         color={'#06283D'}
@@ -386,7 +358,7 @@ const Warehouses = () => {
                           cursor: 'pointer',
                           color: '#4F709C',
                         }}
-                        title='Edit'
+                        title="Edit"
                       />
                       <Icon
                         color={'red'}
@@ -396,7 +368,7 @@ const Warehouses = () => {
                           cursor: 'pointer',
                           color: '#EF6262',
                         }}
-                        title='Delete'
+                        title="Delete"
                       />
                     </Td>
                   </Tr>
@@ -410,84 +382,59 @@ const Warehouses = () => {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader> Add Warehouse</ModalHeader>
+          <ModalHeader textAlign={'center'}> Warehouse Form</ModalHeader>
           <ModalBody>
             <form onSubmit={''}>
               <ChakraFormControl isInvalid={errors.name} isRequired>
                 <ChakraFormLabel>Name</ChakraFormLabel>
                 <Input {...register('name', { required: true })} />
-                {errors.name && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                {errors.name && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.address} isRequired>
                 <ChakraFormLabel>Address</ChakraFormLabel>
                 <Textarea {...register('address', { required: true })} />
-                {errors.address && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                {errors.address && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.province} isRequired>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select
-                  id='province'
-                  {...register('province', { required: true })}
-                  onChange={(e) =>
-                    fetchCitiesByProvince(
-                      e.target.selectedOptions[0].getAttribute('data-id')
-                    )
-                  }
-                >
-                  <option value=''>-Select Province-</option>
+                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))}>
+                  <option value="">-Select Province-</option>
                   {provinces.map((province) => (
-                    <option
-                      key={province.id}
-                      value={province.name}
-                      data-id={province.id}
-                    >
+                    <option key={province.id} value={province.name} data-id={province.id}>
                       {province.name}
                     </option>
                   ))}
-                  {errors.province && (
-                    <FormErrorMessage>This field is required</FormErrorMessage>
-                  )}
+                  {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
                 </Select>
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.city} isRequired>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select id='city' {...register('city', { required: true })}>
-                  <option value=''>-Select City-</option>
+                <Select id="city" {...register('city', { required: true })}>
+                  <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
                       {city.name}
                     </option>
                   ))}
                 </Select>
-                {errors.city && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                {errors.city && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.postal_code}>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input type='number' {...register('postal_code')} />
+                <Input type="number" {...register('postal_code')} />
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.telephone} isRequired>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input
-                  type='number'
-                  {...register('telephone', { required: true })}
-                />
-                {errors.telephone && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                <Input type="number" {...register('telephone', { required: true })} />
+                {errors.telephone && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
+              <Button colorScheme="blue" width={'100%'} rounded={'full'} mt={5} onClick={handleSubmit(onSubmit)}>
+                Create
+              </Button>
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='blue' onClick={handleSubmit(onSubmit)}>
-              Save
-            </Button>
-            <Button variant='ghost' onClick={closeModal}>
+            <Button colorScheme="red" rounded={'full'} onClick={closeModal}>
               Cancel
             </Button>
           </ModalFooter>
@@ -495,55 +442,26 @@ const Warehouses = () => {
       </Modal>
 
       {isSavePopupOpen && (
-        <Box
-          position='fixed'
-          bottom={4}
-          right={4}
-          p={3}
-          bg='green.500'
-          color='white'
-          borderRadius='md'
-          zIndex={9999}
-        >
+        <Box position="fixed" bottom={4} right={4} p={3} bg="green.500" color="white" borderRadius="md" zIndex={9999}>
           Data has been saved to the database.
         </Box>
       )}
 
       {isDeletePopupOpen && (
-        <Box
-          position='fixed'
-          bottom={4}
-          right={4}
-          p={3}
-          bg='red.700'
-          color='white'
-          borderRadius='md'
-          zIndex={9999}
-        >
+        <Box position="fixed" bottom={4} right={4} p={3} bg="red.700" color="white" borderRadius="md" zIndex={9999}>
           Data has been deleted.
         </Box>
       )}
 
-      <AlertDialog
-        isOpen={isDeleteConfirmationOpen}
-        onClose={cancelDeleteWarehouse}
-      >
+      <AlertDialog isOpen={isDeleteConfirmationOpen} onClose={cancelDeleteWarehouse}>
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Delete Warehouse
             </AlertDialogHeader>
-            <AlertDialogBody>
-              Are you sure you want to delete this warehouse? This action is
-              irreversible.
-            </AlertDialogBody>
+            <AlertDialogBody>Are you sure you want to delete this warehouse? This action is irreversible.</AlertDialogBody>
             <AlertDialogFooter>
-              <Button
-                rounded={'full'}
-                colorScheme='red'
-                mr={3}
-                onClick={confirmDeleteWarehouse}
-              >
+              <Button rounded={'full'} colorScheme="red" mr={3} onClick={confirmDeleteWarehouse}>
                 Delete
               </Button>
               <Button rounded={'full'} onClick={cancelDeleteWarehouse}>
@@ -563,98 +481,55 @@ const Warehouses = () => {
             <form onSubmit={handleSubmit(onSubmitEdit)}>
               <ChakraFormControl isInvalid={errors.name} isRequired>
                 <ChakraFormLabel>Name</ChakraFormLabel>
-                <Input
-                  defaultValue={editWarehouseData?.name}
-                  {...register('name', { required: true })}
-                />
-                {errors.name && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                <Input defaultValue={editWarehouseData?.name} {...register('name', { required: true })} />
+                {errors.name && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.address} isRequired>
                 <ChakraFormLabel>address</ChakraFormLabel>
-                <Textarea
-                  defaultValue={editWarehouseData?.address}
-                  {...register('address', { required: true })}
-                />
-                {errors.address && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                <Textarea defaultValue={editWarehouseData?.address} {...register('address', { required: true })} />
+                {errors.address && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.province} isRequired>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select
-                  id='province'
-                  {...register('province', { required: true })}
-                  onChange={(e) =>
-                    fetchCitiesByProvince(
-                      e.target.selectedOptions[0].getAttribute('data-id')
-                    )
-                  }
-                  defaultValue={editWarehouseData?.province}
-                >
-                  <option value=''>-Select Province-</option>
+                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))} defaultValue={editWarehouseData?.province}>
+                  <option value="">-Select Province-</option>
                   {provinces.map((province) => (
-                    <option
-                      key={province.id}
-                      value={province.name}
-                      data-id={province.id}
-                    >
+                    <option key={province.id} value={province.name} data-id={province.id}>
                       {province.name}
                     </option>
                   ))}
-                  {errors.province && (
-                    <FormErrorMessage>This field is required</FormErrorMessage>
-                  )}
+                  {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
                 </Select>
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.city} isRequired>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select
-                  id='city'
-                  {...register('city', { required: true })}
-                  defaultValue={editWarehouseData?.city}
-                >
-                  <option value={editWarehouseData?.city}>
-                    {editWarehouseData?.city}
-                  </option>
-                  <option value=''>-Select City-</option>
+                <Select id="city" {...register('city', { required: true })} defaultValue={editWarehouseData?.city}>
+                  <option value={editWarehouseData?.city}>{editWarehouseData?.city}</option>
+                  <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
                       {city.name}
                     </option>
                   ))}
                 </Select>
-                {errors.city && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                {errors.city && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.postal_code}>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input
-                  defaultValue={editWarehouseData?.postal_code}
-                  type='number'
-                  {...register('postal_code')}
-                />
+                <Input defaultValue={editWarehouseData?.postal_code} type="number" {...register('postal_code')} />
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.telephone} isRequired>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input
-                  defaultValue={editWarehouseData?.telephone}
-                  type='number'
-                  {...register('telephone', { required: true })}
-                />
-                {errors.telephone && (
-                  <FormErrorMessage>This field is required</FormErrorMessage>
-                )}
+                <Input defaultValue={editWarehouseData?.telephone} type="number" {...register('telephone', { required: true })} />
+                {errors.telephone && <FormErrorMessage>This field is required</FormErrorMessage>}
               </ChakraFormControl>
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='blue' onClick={handleSubmit(onSubmitEdit)}>
+            <Button colorScheme="blue" onClick={handleSubmit(onSubmitEdit)}>
               Save Changes
             </Button>
-            <Button variant='ghost' onClick={closeEditModal}>
+            <Button variant="ghost" onClick={closeEditModal}>
               Cancel
             </Button>
           </ModalFooter>

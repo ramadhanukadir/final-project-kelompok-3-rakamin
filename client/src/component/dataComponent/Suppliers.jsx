@@ -26,6 +26,7 @@ import {
   Icon,
   useToast,
   TableCaption,
+  Center,
 } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
 import { instance } from '@/modules/axios';
@@ -38,8 +39,7 @@ import Filter from '../Filter';
 import { deleteSupplier, postSupplier, putSupplier } from '@/api/suppliers';
 
 const Suppliers = () => {
-  const { suppliers, fetchSuppliers, filterSupplier, setFilterSupplier } =
-    useContext(DataContext);
+  const { suppliers, fetchSuppliers, filterSupplier, setFilterSupplier } = useContext(DataContext);
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [telephone, setTelephone] = useState('');
@@ -56,21 +56,9 @@ const Suppliers = () => {
     reset,
   } = useForm();
 
-  const {
-    isOpen: isModalOpen,
-    onOpen: openModal,
-    onClose: closeModal,
-  } = useDisclosure();
-  const {
-    isOpen: isUpdateModalOpen,
-    onOpen: openUpdateModal,
-    onClose: closeUpdateModal,
-  } = useDisclosure();
-  const {
-    isOpen: isDeleteModalOpen,
-    onOpen: openDeleteModal,
-    onClose: closeDeleteModal,
-  } = useDisclosure();
+  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
+  const { isOpen: isUpdateModalOpen, onOpen: openUpdateModal, onClose: closeUpdateModal } = useDisclosure();
+  const { isOpen: isDeleteModalOpen, onOpen: openDeleteModal, onClose: closeDeleteModal } = useDisclosure();
 
   const toast = useToast();
   const router = useRouter();
@@ -177,19 +165,12 @@ const Suppliers = () => {
 
   return (
     <Box marginTop={'4.5em'}>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
-        mb={'3em'}
-        pb={'10'}
-      >
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} mb={'3em'} pb={'10'}>
         <Text fontWeight={'bold'} fontSize={'xl'}>
           Supplier
         </Text>
         <Button
-          size='sm'
+          size="sm"
           bgColor={'#06283D'}
           color={'#EEEDED'}
           leftIcon={<FiPlus />}
@@ -208,13 +189,13 @@ const Suppliers = () => {
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Tambah Supplier</ModalHeader>
+            <ModalHeader textAlign={'center'}>Supplier Form</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <InputField
-                  label='Name'
-                  type='text'
+                  label="Name"
+                  type="text"
                   name={'name'}
                   placeholder={'Insert Name'}
                   register={register('name', {
@@ -223,8 +204,8 @@ const Suppliers = () => {
                   errors={errors.name}
                 />
                 <InputField
-                  label='Address'
-                  type='text'
+                  label="Address"
+                  type="text"
                   name={'address'}
                   placeholder={'Insert Address'}
                   register={register('address', {
@@ -233,8 +214,8 @@ const Suppliers = () => {
                   errors={errors.address}
                 />
                 <InputField
-                  label='Telephone'
-                  type='text'
+                  label="Telephone"
+                  type="text"
                   name={'telephone'}
                   placeholder={'Insert Telephone'}
                   register={register('telephone', {
@@ -242,26 +223,13 @@ const Suppliers = () => {
                   })}
                   errors={errors.telephone}
                 />
-                <Button
-                  type='submit'
-                  size={'md'}
-                  colorScheme='blue'
-                  isLoading={isSubmitting}
-                  rounded={'full'}
-                  w={'100%'}
-                >
-                  Add Supplier
+                <Button type="submit" size={'md'} colorScheme="blue" isLoading={isSubmitting} rounded={'full'} w={'100%'}>
+                  Create Supplier
                 </Button>
               </form>
             </ModalBody>
             <ModalFooter>
-              <Button
-                size={'sm'}
-                colorScheme='red'
-                rounded={'full'}
-                fontWeight={'semibold'}
-                onClick={closeModal}
-              >
+              <Button size={'sm'} colorScheme="red" rounded={'full'} fontWeight={'semibold'} onClick={closeModal}>
                 Cancel
               </Button>
             </ModalFooter>
@@ -278,47 +246,22 @@ const Suppliers = () => {
             <ModalBody>
               <FormControl>
                 <FormLabel>Nama:</FormLabel>
-                <Input
-                  type='text'
-                  defaultValue={detail.name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+                <Input type="text" defaultValue={detail.name} onChange={(e) => setName(e.target.value)} />
               </FormControl>
               <FormControl mt={4}>
                 <FormLabel>Alamat:</FormLabel>
-                <Input
-                  type='text'
-                  defaultValue={detail.address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
+                <Input type="text" defaultValue={detail.address} onChange={(e) => setAddress(e.target.value)} />
               </FormControl>
               <FormControl my={4}>
                 <FormLabel>Telepon:</FormLabel>
-                <Input
-                  type='text'
-                  defaultValue={detail.telephone}
-                  onChange={(e) => setTelephone(e.target.value)}
-                />
+                <Input type="number" defaultValue={detail.telephone} onChange={(e) => setTelephone(e.target.value)} />
               </FormControl>
-              <Button
-                type='submit'
-                size={'md'}
-                colorScheme='blue'
-                rounded={'full'}
-                w={'100%'}
-                onClick={handleUpdate}
-              >
+              <Button type="submit" size={'md'} colorScheme="blue" rounded={'full'} w={'100%'} onClick={handleUpdate}>
                 Update
               </Button>
             </ModalBody>
             <ModalFooter>
-              <Button
-                size={'sm'}
-                colorScheme='red'
-                rounded={'full'}
-                fontWeight={'semibold'}
-                onClick={toggleCancelModal}
-              >
+              <Button size={'sm'} colorScheme="red" rounded={'full'} fontWeight={'semibold'} onClick={toggleCancelModal}>
                 Cancel
               </Button>
             </ModalFooter>
@@ -335,7 +278,7 @@ const Suppliers = () => {
             <ModalFooter>
               <Button
                 rounded={'full'}
-                colorScheme='red'
+                colorScheme="red"
                 mr={3}
                 onClick={() => {
                   handleDelete(deleteSupplierId);
@@ -355,6 +298,7 @@ const Suppliers = () => {
         page={suppliers}
         model={suppliers}
         show={!suppliers}
+        hide={suppliers}
         filter={filterSupplier}
         handleNextPage={() => {
           setFilterSupplier({ ...filterSupplier, page: suppliers.page + 1 });
@@ -378,7 +322,7 @@ const Suppliers = () => {
         textValue={'Name'}
       />
       <TableContainer overflowY={'auto'} h={'25em'} px={5}>
-        <Table variant='simple'>
+        <Table variant="simple">
           <TableCaption>Supplier</TableCaption>
           <Thead bg={'#06283D'}>
             <Tr>
@@ -391,10 +335,7 @@ const Suppliers = () => {
           <Tbody bg={'#EEEDED'}>
             {suppliers?.dataSuppliers?.map((supplier) => (
               <Tr key={supplier.id}>
-                <Td
-                  onClick={() => router.push(`/supplier/${supplier.id}`)}
-                  cursor={'pointer'}
-                >
+                <Td onClick={() => router.push(`/supplier/${supplier.id}`)} cursor={'pointer'}>
                   {supplier.name}
                 </Td>
                 <Td>{supplier.address}</Td>
@@ -409,7 +350,7 @@ const Suppliers = () => {
                       cursor: 'pointer',
                       color: '#4F709C',
                     }}
-                    title='Edit'
+                    title="Edit"
                   />
                   <Icon
                     color={'red'}
@@ -422,7 +363,7 @@ const Suppliers = () => {
                       cursor: 'pointer',
                       color: '#EF6262',
                     }}
-                    title='Delete'
+                    title="Delete"
                   />
                 </Td>
               </Tr>

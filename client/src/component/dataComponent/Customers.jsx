@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-  getCustomersById,
-  editCustomersById,
-  deleteCustomersById,
-  postCustomers,
-} from '@/api/customers';
+import { getCustomersById, editCustomersById, deleteCustomersById, postCustomers } from '@/api/customers';
 import {
   Table,
   Thead,
@@ -38,13 +33,7 @@ import Filter from '../Filter';
 import ModalConfirmation from '../ModalConfirmation';
 
 const Customers = () => {
-  const {
-    customers,
-    filterCustomer,
-    setFilterCustomer,
-    fetchCustomers,
-    isLoading,
-  } = useContext(DataContext);
+  const { customers, filterCustomer, setFilterCustomer, fetchCustomers, isLoading } = useContext(DataContext);
   const toast = useToast();
   const {
     register,
@@ -131,15 +120,9 @@ const Customers = () => {
   };
 
   return (
-    <Box maxW='7xl' mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'3em'}>
+    <Box maxW="7xl" mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'3em'}>
       <Box>
-        <Box
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          mb={'3em'}
-          pb={'8'}
-        >
+        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} mb={'3em'} pb={'8'}>
           <Text fontWeight={'bold'} fontSize={'xl'}>
             Customers
           </Text>
@@ -150,6 +133,7 @@ const Customers = () => {
             page={customers}
             model={customers}
             show={!customers}
+            hide={customers}
             filter={filterCustomer}
             handleNextPage={() => {
               setFilterCustomer({
@@ -188,7 +172,7 @@ const Customers = () => {
             textValue={'Full Name'}
           />
           <TableContainer overflowY={'auto'} h={'25em'} px={5}>
-            <Table variant='simple'>
+            <Table variant="simple">
               <TableCaption>Customers</TableCaption>
               <Thead bg={'#06283D'}>
                 <Tr>
@@ -201,22 +185,19 @@ const Customers = () => {
                 {isLoading ? (
                   <Tr>
                     <Td>
-                      <Skeleton height='20px' width='80%' />
+                      <Skeleton height="20px" width="80%" />
                     </Td>
                     <Td>
-                      <Skeleton height='20px' width='60%' />
+                      <Skeleton height="20px" width="60%" />
                     </Td>
                     <Td>
-                      <Skeleton height='20px' width='40%' />
+                      <Skeleton height="20px" width="40%" />
                     </Td>
                   </Tr>
                 ) : (
                   customers?.dataCustomers?.map((customer) => (
                     <Tr key={customer.id}>
-                      <Td
-                        onClick={() => router.push(`/customers/${customer.id}`)}
-                        cursor={'pointer'}
-                      >
+                      <Td onClick={() => router.push(`/customers/${customer.id}`)} cursor={'pointer'}>
                         {customer.full_name}
                       </Td>
                       <Td>{customer.address}</Td>
@@ -230,7 +211,7 @@ const Customers = () => {
                             cursor: 'pointer',
                             color: '#4F709C',
                           }}
-                          title='Edit'
+                          title="Edit"
                         />
                         <Icon
                           color={'red'}
@@ -243,7 +224,7 @@ const Customers = () => {
                             cursor: 'pointer',
                             color: '#EF6262',
                           }}
-                          title='Delete'
+                          title="Delete"
                         />
                       </Td>
                     </Tr>
@@ -252,7 +233,7 @@ const Customers = () => {
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
+                    <ModalHeader textAlign="center">Edit Customers</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <InputField
@@ -275,14 +256,7 @@ const Customers = () => {
                           })}
                           errors={errors.address}
                         />
-                        <Button
-                          type='submit'
-                          size={'md'}
-                          colorScheme='blue'
-                          mt={3}
-                          w={'100%'}
-                          borderRadius={'full'}
-                        >
+                        <Button type="submit" size={'md'} colorScheme="blue" mt={3} w={'100%'} borderRadius={'full'}>
                           Update Customer
                         </Button>
                       </form>
@@ -309,7 +283,7 @@ const Customers = () => {
           <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
+              <ModalHeader textAlign="center">Edit Customers</ModalHeader>
               <ModalBody>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <InputField
@@ -332,26 +306,13 @@ const Customers = () => {
                     })}
                     errors={errors.address}
                   />
-                  <Button
-                    type='submit'
-                    size={'md'}
-                    colorScheme='blue'
-                    mt={3}
-                    w={'100%'}
-                    borderRadius={'full'}
-                  >
-                    Update Customer
+                  <Button type="submit" size={'md'} colorScheme="blue" mt={3} w={'100%'} borderRadius={'full'}>
+                    Update
                   </Button>
                 </form>
               </ModalBody>
               <ModalFooter>
-                <Button
-                  size={'sm'}
-                  colorScheme='red'
-                  rounded={'full'}
-                  fontWeight={'semibold'}
-                  onClick={handleCloseModal}
-                >
+                <Button size={'sm'} colorScheme="red" rounded={'full'} fontWeight={'semibold'} onClick={handleCloseModal}>
                   Cancel
                 </Button>
               </ModalFooter>
@@ -412,7 +373,7 @@ export const InputCustomers = ({ fetchData }) => {
   return (
     <Box>
       <Button
-        size='sm'
+        size="sm"
         bgColor={'#06283D'}
         color={'#EEEDED'}
         leftIcon={<FiPlus />}
@@ -429,7 +390,7 @@ export const InputCustomers = ({ fetchData }) => {
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Stock Form</ModalHeader>
+          <ModalHeader textAlign="center">Customer Form</ModalHeader>
           <ModalBody pb={2}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <InputField
@@ -452,26 +413,13 @@ export const InputCustomers = ({ fetchData }) => {
                 })}
                 errors={errors.address}
               />
-              <Button
-                type='submit'
-                size={'md'}
-                colorScheme='blue'
-                mt={3}
-                w={'100%'}
-                borderRadius={'full'}
-              >
-                Add Customer
+              <Button type="submit" size={'md'} colorScheme="blue" mt={3} w={'100%'} borderRadius={'full'}>
+                Create Customer
               </Button>
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button
-              size={'sm'}
-              colorScheme='red'
-              rounded={'full'}
-              fontWeight={'semibold'}
-              onClick={handleCloseModal}
-            >
+            <Button size={'sm'} colorScheme="red" rounded={'full'} fontWeight={'semibold'} onClick={handleCloseModal}>
               Cancel
             </Button>
           </ModalFooter>

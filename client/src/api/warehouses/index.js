@@ -29,11 +29,8 @@ export const getWarehousesById = async (id) => {
 
 export const moveStock = async (payload) => {
   try {
-    const { data } = await instance.post(
-      '/warehouses-stock/move-items',
-      payload
-    );
-    return response;
+    const { data } = await instance.post('/warehouses-stock/move-items', payload);
+    return data;
   } catch (error) {
     throw new Error(error.response.data.message);
   }
