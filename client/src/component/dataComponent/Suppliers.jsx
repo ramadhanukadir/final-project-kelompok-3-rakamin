@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   Table,
@@ -25,6 +25,7 @@ import {
   useDisclosure,
   Icon,
   useToast,
+  TableCaption,
 } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
 import { instance } from '@/modules/axios';
@@ -32,23 +33,29 @@ import Link from 'next/link';
 import { Link as ChakraLink } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import InputField from '../InputField/InputField';
+import { DataContext } from '@/context/AllDataContext';
+import Filter from '../Filter';
+import { deleteSupplier, postSupplier, putSupplier } from '@/api/suppliers';
 
 const Suppliers = () => {
+  const { suppliers, fetchSuppliers, filterSupplier, setFilterSupplier } =
+    useContext(DataContext);
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [telephone, setTelephone] = useState('');
+  const [currentSupplierId, setCurrentSupplierId] = useState('');
+  const [detail, setDetail] = useState({});
+  const [deleteSupplierId, setDeleteSupplierId] = useState('');
+
+  console.log('detail', suppliers);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setValue,
   } = useForm();
-  const [suppliers, setSuppliers] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [telephone, setTelephone] = useState('');
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [currentSupplierId, setCurrentSupplierId] = useState('');
-  const [detail, setDetail] = useState({});
+
   const {
     isOpen: isModalOpen,
     onOpen: openModal,
@@ -64,27 +71,9 @@ const Suppliers = () => {
     onOpen: openDeleteModal,
     onClose: closeDeleteModal,
   } = useDisclosure();
+
   const toast = useToast();
-  const [deleteSupplierId, setDeleteSupplierId] = useState('');
   const router = useRouter();
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await instance.get('/suppliers');
-      const { dataSuppliers } = response.data;
-      setSuppliers(dataSuppliers);
-    } catch (error) {
-      console.error('Gagal mengambil data:', error);
-    }
-  };
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
 
   const toggleUpdateModal = async (id) => {
     const { data } = await instance.get(`suppliers/${id}`);
@@ -107,8 +96,7 @@ const Suppliers = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
-      await instance.post('suppliers', data);
+      await postSupplier(data);
       toast({
         title: 'Created Supplier',
         description: 'You have successfully created Supplier.',
@@ -125,7 +113,7 @@ const Suppliers = () => {
         title: 'Failed to create supplier.',
         description: error.response.data.message,
         status: 'error',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: 'top',
       });
@@ -139,7 +127,7 @@ const Suppliers = () => {
         address: address,
         telephone: telephone,
       };
-      await instance.put(`suppliers/${currentSupplierId}`, updatedSupplier);
+      await putSupplier(currentSupplierId, updatedSupplier);
       toast({
         title: 'Updated Supplier',
         description: 'You have successfully updated Supplier.',
@@ -151,31 +139,50 @@ const Suppliers = () => {
       closeUpdateModal();
       fetchSuppliers();
     } catch (error) {
-      console.error('Gagal memperbarui supplier:', error);
+      toast({
+        title: 'Failed to update supplier.',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top',
+      });
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await instance.delete(`suppliers/${id}`);
-      const updatedSuppliers = suppliers.filter(
-        (supplier) => supplier.id !== id
-      );
-      setSuppliers(updatedSuppliers);
+      await deleteSupplier(id);
+      toast({
+        title: 'Supplier Deleted',
+        description: 'You have successfully deleted Supplier.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top',
+      });
+      fetchSuppliers();
       closeDeleteModal();
     } catch (error) {
-      console.error('Gagal menghapus supplier:', error);
+      toast({
+        title: 'Failed to delete supplier.',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top',
+      });
     }
   };
 
   return (
-    <Box marginTop={'5em'}>
+    <Box marginTop={'4.5em'}>
       <Box
         display={'flex'}
         flexDirection={'row'}
         justifyContent={'space-between'}
         alignItems={'center'}
-        mb={'6em'}
+        mb={'3em'}
         pb={'10'}
       >
         <Text fontWeight={'bold'} fontSize={'xl'}>
@@ -237,11 +244,13 @@ const Suppliers = () => {
                 />
                 <Button
                   type='submit'
-                  isLoading={isSubmitting}
+                  size={'md'}
                   colorScheme='blue'
-                  mr={3}
+                  isLoading={isSubmitting}
+                  rounded={'full'}
+                  w={'100%'}
                 >
-                  Simpan
+                  Add Supplier
                 </Button>
               </form>
             </ModalBody>
@@ -328,7 +337,10 @@ const Suppliers = () => {
                 rounded={'full'}
                 colorScheme='red'
                 mr={3}
-                onClick={() => handleDelete(deleteSupplierId)}
+                onClick={() => {
+                  handleDelete(deleteSupplierId);
+                  closeDeleteModal();
+                }}
               >
                 Delete
               </Button>
@@ -339,8 +351,35 @@ const Suppliers = () => {
           </ModalContent>
         </Modal>
       </Box>
+      <Filter
+        page={suppliers}
+        model={suppliers}
+        show={!suppliers}
+        filter={filterSupplier}
+        handleNextPage={() => {
+          setFilterSupplier({ ...filterSupplier, page: suppliers.page + 1 });
+        }}
+        handlePrevPage={() => {
+          setFilterSupplier({ ...filterSupplier, page: suppliers.page - 1 });
+        }}
+        handleLimit={(e) => {
+          setFilterSupplier({ ...filterSupplier, limit: e.target.value });
+        }}
+        disableNextPage={filterSupplier.page === suppliers.totalPages}
+        disablePrevPage={filterSupplier.page === 1}
+        count={suppliers.totalItems}
+        handleOrder={(e) => {
+          setFilterSupplier({ ...filterSupplier, order: e.target.value });
+        }}
+        handleSort={(e) => {
+          setFilterSupplier({ ...filterSupplier, sort: e.target.value });
+        }}
+        value={'name'}
+        textValue={'Name'}
+      />
       <TableContainer overflowY={'auto'} h={'25em'} px={5}>
         <Table variant='simple'>
+          <TableCaption>Supplier</TableCaption>
           <Thead bg={'#06283D'}>
             <Tr>
               <Th color={'#EEEDED'}>Name</Th>
@@ -350,7 +389,7 @@ const Suppliers = () => {
             </Tr>
           </Thead>
           <Tbody bg={'#EEEDED'}>
-            {suppliers.map((supplier) => (
+            {suppliers?.dataSuppliers?.map((supplier) => (
               <Tr key={supplier.id}>
                 <Td
                   onClick={() => router.push(`/supplier/${supplier.id}`)}
