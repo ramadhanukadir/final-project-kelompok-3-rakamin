@@ -185,8 +185,8 @@ function OrderForm() {
                       size={'md'}
                       fontWeight={'Bold'}
                       px={20}
-                      colorScheme={'red'}
                       bg={'blue.400'}
+                      color={'#EEEDED'}
                       _hover={{ bg: 'blue.500' }}
                       onClick={() => append({ items_id: '', quantity: '' })}
                       isDisabled={fields.length === warehouseItems.length}
@@ -199,8 +199,8 @@ function OrderForm() {
                       size={'md'}
                       fontWeight={'Bold'}
                       px={20}
-                      colorScheme={'red'}
                       bg={'blue.400'}
+                      color={'#EEEDED'}
                       _hover={{ bg: 'blue.500' }}
                       isLoading={isSubmitting}
                       isDisabled={fields.length === 0}
@@ -214,7 +214,7 @@ function OrderForm() {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={onClose}>
+            <Button colorScheme='red' rounded={'full'} mr={3} onClick={onClose}>
               Close
             </Button>
           </ModalFooter>
