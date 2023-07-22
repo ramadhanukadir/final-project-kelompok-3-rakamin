@@ -32,6 +32,7 @@ const moveItems = async (req, res) => {
     });
 
     if (!sourceStock || sourceStock.stock < stock) {
+      await t.rollback();
       return res.status(400).json({ message: 'Empty stock or less' });
     }
 

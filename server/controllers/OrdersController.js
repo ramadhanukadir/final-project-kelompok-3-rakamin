@@ -17,17 +17,27 @@ const {
 const getAllOrders = async (req, res) => {
   try {
     const { id } = req.loggedUser;
-    const orders = await Orders.findAll({
+    const { page, limit, order, sort } = req.query;
+    const { rows, count } = await Orders.findAndCountAll({
+      offset: page && limit ? (page - 1) * limit : 0,
+      limit: limit ? parseInt(limit) : 20,
+      order: sort && order ? [[order, sort]] : [['createdAt', sort || 'DESC']],
       where: {
         users_id: id,
       },
-      order: [['createdAt', 'DESC']],
     });
     const warehouse = await Warehouses.findAll();
     const customer = await Customers.findAll();
-    const response = mappingOrders(orders, warehouse, customer);
+    const response = mappingOrders(rows, warehouse, customer);
 
-    return res.status(200).json({ data: response });
+    return res.status(200).json({
+      meta: {
+        page: page ? parseInt(page) : 1,
+        totalPages: limit ? Math.ceil(count / limit) : Math.ceil(count / 20),
+        totalData: count,
+      },
+      data: response,
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -49,7 +59,6 @@ const getOrdersById = async (req, res) => {
     const items = await order.getItems();
     const orderDetail = mappingOrderDetail(items);
 
-    console.log(orderDetail);
     const totalRevenue = orderDetail.map((item) => {
       return item.totalPrice;
     });
@@ -110,6 +119,7 @@ const postOrders = async (req, res) => {
       }
 
       if (foundStock.stock < items.quantity) {
+        await t.rollback();
         return res.status(400).json({ message: 'Stock Insufficient' });
       }
 

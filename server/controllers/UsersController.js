@@ -21,16 +21,12 @@ const loginUsers = async (req, res) => {
     if (!isPasswordMatch) {
       return res.status(404).json({ message: 'Invalid Credential' });
     }
-    const token = jwt.sign(
-      { userId: user.id, fName: user.first_name, lname: user.last_name },
-      process.env.JWT_SECRETKEY
-    );
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRETKEY);
+
     return res.status(200).json({
       accessToken: token,
       dataUser: {
         id: user.id,
-        firstName: user.first_name,
-        lastName: user.last_name,
       },
     });
   } catch (error) {
@@ -81,24 +77,48 @@ const getUsersById = async (req, res) => {
 };
 
 const updateUsers = async (req, res) => {
-  const imagePath = `http://localhost:${process.env.PORT}/${req.file.path}`;
   try {
-    const { first_name, last_name, username, email, password } = req.body;
-    const hashPassword = await bcrypt.hash(password, 10);
-    await Users.update(
-      {
-        first_name,
-        last_name,
-        username,
-        email,
-        password: hashPassword,
-        image_url: imagePath,
+    const { id } = req.loggedUser;
+    const { first_name, last_name, username, email, oldPassword, newPassword } =
+      req.body;
+
+    const user = await Users.findOne({
+      where: {
+        id: id,
       },
-      { where: { id: req.params.id } }
-    );
+    });
+
+    let updatedUser = {
+      first_name,
+      last_name,
+      username,
+      email,
+    };
+
+    if (oldPassword) {
+      const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+      if (isPasswordMatch) {
+        const hashPassword = await bcrypt.hash(newPassword, 10);
+        updatedUser = {
+          ...updatedUser,
+          password: hashPassword,
+        };
+      } else {
+        return res.status(404).json({ message: 'Please Check Password' });
+      }
+    }
+
+    if (req.file) {
+      const imagePath = `http://localhost:${process.env.PORT}/${req.file.path}`;
+      updatedUser = {
+        ...updatedUser,
+        image_url: imagePath,
+      };
+    }
+    await Users.update(updatedUser, { where: { id: id } });
     return res.status(200).json({ message: 'Successfully updated' });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ error: error.message });
   }
 };
 

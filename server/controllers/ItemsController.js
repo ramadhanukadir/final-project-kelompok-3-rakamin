@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op } = require("sequelize");
 const {
   Items,
   Warehouses,
@@ -7,33 +7,21 @@ const {
   Suppliers_Items,
   Expenses,
   sequelize,
-} = require('../models');
-const { mappingItems, responseItemsId } = require('../utils/response');
+} = require("../models");
+const { mappingItems, responseItemsId } = require("../utils/response");
 
 const getAllItems = async (req, res) => {
   const { id } = req.loggedUser;
-  const { page, limit, sort, q, order } = req.query;
+  const { page, limit } = req.query;
   try {
-    const { rows, count } = await Items.findAndCountAll({
-      offset: page && limit ? (page - 1) * limit : (page - 1) * 20,
-      limit: limit ? parseInt(limit) : 20,
-      order: sort && order ? [[order, sort]] : [['name', sort || 'ASC']],
-      where: {
-        users_id: id,
-        [Op.or]: [
-          { name: { [Op.iLike]: `%${q}%` } },
-          { SKU: { [Op.iLike]: `%${q}%` } },
-        ],
-      },
-    });
+    const { rows, count } = await Items.findAndCountAll(query(req.query, id));
 
     const response = mappingItems(rows);
 
     res.status(200).json({
       meta: {
-        page: page ? parseInt(page) : page,
-        totalPages:
-          page && limit ? Math.ceil(count / limit) : Math.ceil(count / 20),
+        page: page && limit ? parseInt(page) : 1,
+        totalPages: limit ? Math.ceil(count / limit) : Math.ceil(count / 20),
         totalData: count,
       },
       data: response,
@@ -47,7 +35,7 @@ const getItemsById = async (req, res) => {
   try {
     const items = await Items.findByPk(req.params.id);
 
-    if (!items) res.status(404).json({ message: 'Items not found' });
+    if (!items) res.status(404).json({ message: "Items not found" });
 
     const response = responseItemsId(items);
 
@@ -74,7 +62,7 @@ const createItems = async (req, res) => {
 
     const items = await Items.create({
       users_id: id,
-      categories_id,
+      categories_id: parseInt(categories_id),
       name,
       description,
       SKU,
@@ -93,13 +81,22 @@ const createItems = async (req, res) => {
 
 const updateItems = async (req, res) => {
   const { id } = req.params;
-  const { name, description, SKU, size, weight, base_price, selling_price } =
-    req.body;
+  const {
+    name,
+    categories_id,
+    description,
+    SKU,
+    size,
+    weight,
+    base_price,
+    selling_price,
+  } = req.body;
 
   try {
     const items = await Items.findByPk(id);
     let updatedData = {
       name,
+      categories_id: parseInt(categories_id),
       description,
       SKU,
       size,
@@ -116,7 +113,7 @@ const updateItems = async (req, res) => {
       };
     }
 
-    if (!items) res.status(404).json({ message: 'Items not found' });
+    if (!items) res.status(404).json({ message: "Items not found" });
 
     await Items.update(updatedData, {
       where: {
@@ -124,7 +121,7 @@ const updateItems = async (req, res) => {
       },
       returning: true,
     });
-    res.status(200).json({ message: 'Successfully updated' });
+    res.status(200).json({ message: "Successfully updated" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -138,9 +135,9 @@ const deleteItems = async (req, res) => {
       },
     });
 
-    if (!items) res.status(404).json({ message: 'Items not found' });
+    if (!items) res.status(404).json({ message: "Items not found" });
 
-    res.status(200).json({ message: 'Successfully deleted' });
+    res.status(200).json({ message: "Successfully deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -178,7 +175,7 @@ const addStockItems = async (req, res) => {
       });
 
       if (!findItems || !findWarehouses || !findSuppliers)
-        return res.status(404).json({ message: 'Not found' });
+        return res.status(404).json({ message: "Not found" });
 
       const findStock = await Warehouses_Stock.findOne({
         where: {
@@ -217,7 +214,7 @@ const addStockItems = async (req, res) => {
           );
         }
 
-        return res.status(201).json({ message: 'Successfully add stock' });
+        return res.status(201).json({ message: "Successfully add stock" });
       } else {
         await Warehouses_Stock.update(
           {
@@ -253,12 +250,34 @@ const addStockItems = async (req, res) => {
           );
         }
 
-        res.status(200).json({ message: 'Successfully update stock' });
+        res.status(200).json({ message: "Successfully update stock" });
       }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+const query = (query, user) => {
+  const { q, limit, page, sort, order } = query;
+  const offset = page && limit ? (page - 1) * limit : 0;
+
+  const result = {
+    where: { users_id: user },
+    limit: limit,
+    offset: offset,
+    distinct: true,
+    order: sort && order ? [[order, sort]] : [["name", sort || "ASC"]],
+  };
+
+  if (q) {
+    result.where[Op.or] = [
+      { name: { [Op.iLike]: `%${q}%` } },
+      { SKU: { [Op.iLike]: `%${q}%` } },
+    ];
+  }
+
+  return result;
 };
 
 module.exports = {

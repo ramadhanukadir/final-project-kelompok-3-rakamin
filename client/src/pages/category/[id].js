@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import { getCategoriesId, getAllCategories } from "@/modules/fetch";
-import { useRouter } from "next/router";
-import { DataContext } from "@/context/AllDataContext";
+import React, { useState, useEffect, useContext } from 'react';
+import { getCategoriesId, getAllCategories } from '@/modules/fetch';
+import { useRouter } from 'next/router';
+import { DataContext } from '@/context/AllDataContext';
 import {
   Box,
   Text,
@@ -14,12 +14,18 @@ import {
   Tbody,
   Image,
   Button,
-} from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+  Flex,
+  HStack,
+  VStack,
+  Stack,
+  useBreakpointValue,
+} from '@chakra-ui/react';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 export default function Page({ categoryId }) {
-  const router = useRouter();
   const [category, setCategory] = useState({});
+  const router = useRouter();
+  const tableSize = useBreakpointValue({ base: 'lg', lg: 'lg', sm: 'sm' });
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -30,48 +36,64 @@ export default function Page({ categoryId }) {
   }, []);
 
   return (
-    <Box
-      margin={50}
+    <Flex
+      w={'100%'}
       marginTop={100}
-      display={"flex"}
-      flexDirection={"column"}
-      justifyContent={"center"}
-      alignItems={"center"}>
-      {" "}
-      <Box display={"flex"} justifyContent={"start"} my={5}>
-        <Button size={"sm"} w={"3"} onClick={() => router.back()}>
+      flexDirection={'column'}
+      justifyContent={'flex-start'}
+      zIndex={1}
+    >
+      <HStack display={'flex'} justifyContent={'space-between'}>
+        <Button size={'sm'} w={'3'} onClick={() => router.back()}>
           <ArrowBackIcon w={4} h={4} />
         </Button>
-      </Box>
-      <TableContainer>
-        <Table variant="simple">
-          <Thead bg={"#DFF6FE"}>
-            <Tr>
-              <Th>Categories Id</Th>
-              <Th>SKU</Th>
-              <Th>Base Price</Th>
-              <Th>Selling Price</Th>
-              <Th>Name</Th>
-              <Th>Description</Th>
-              <Th>Image</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {category?.items?.map((item) => (
-              <Tr key={item.id}>
-                <Td>{item.categoriesId}</Td>
-                <Td>{item.SKU}</Td>
-                <Td>{item.basePrice}</Td>
-                <Td>{item.sellingPrice}</Td>
-                <Td>{item.name}</Td>
-                <Td>{item.description}</Td>
-                <Image src={item.imageUrl} boxSize="50px" />
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </Box>
+        <Text fontSize={'xl'} fontWeight={'bold'}>
+          CATEGORY
+        </Text>
+      </HStack>
+      <Flex direction={'column'}>
+        <Flex direction={'column'} columnGap={'20px'}>
+          <Flex direction={'column'}></Flex>
+          <VStack mt={6}>
+            <Text fontSize='md' fontWeight='bold'>
+              List Product
+            </Text>
+            <TableContainer w={'100%'}>
+              <Table size={tableSize} variant='simple'>
+                <Thead bg={'#DFF6FE'}>
+                  <Tr>
+                    <Th>Name</Th>
+                    <Th>SKU</Th>
+                    <Th>Base Price</Th>
+                    <Th>Selling Price</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {category?.items?.map((item) => (
+                    <Tr key={item.id}>
+                      <Td>{item.name}</Td>
+                      <Td>{item.SKU}</Td>
+                      <Td>
+                        {item.basePrice?.toLocaleString('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR',
+                        })}
+                      </Td>
+                      <Td>
+                        {item.sellingPrice?.toLocaleString('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR',
+                        })}
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </VStack>
+        </Flex>
+      </Flex>
+    </Flex>
   );
 }
 

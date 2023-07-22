@@ -104,9 +104,9 @@ const mappingWarehouseStock = (warehouseStock, warehouse, items) => {
     return {
       id: ws.id,
       warehouseId: ws.warehouses_id,
-      warehouseName: findWarehouse.name,
+      warehouseName: findWarehouse?.name,
       itemsId: ws.items_id,
-      itemsName: findItem.name,
+      itemsName: findItem?.name,
       stock: ws.stock,
     };
   });

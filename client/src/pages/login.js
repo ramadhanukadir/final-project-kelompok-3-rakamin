@@ -22,13 +22,13 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import Image from 'next/image';
 import Image2 from '../image/cloud-01.png';
 import { useRouter } from 'next/router';
-import { handleLogin } from '@/api/fetch/auth';
+import { handleLogin } from '@/api/auth';
 import InputField from '@/component/InputField/InputField';
 import { DataContext } from '@/context/AllDataContext';
 
 const login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const router = useRouter();
   const {
     register,

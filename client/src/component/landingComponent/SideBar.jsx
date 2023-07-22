@@ -23,39 +23,31 @@ import {
   MenuItem,
   MenuList,
   Image,
-  Button,
-  useColorMode,
 } from "@chakra-ui/react";
 import {
   FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
   FiMenu,
   FiBell,
   FiChevronDown,
-  FiBarChart,
-  FiLayout,
-  FiCodesandbox,
   FiPackage,
   FiUser,
-  FiSliders,
+  FiShoppingCart,
+  FiUsers,
+  FiSettings,
 } from "react-icons/fi";
-import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { BiCategory } from "react-icons/bi";
+import { MdOutlineWarehouse } from "react-icons/md";
 import { useSwipeable } from "react-swipeable";
 import SideItem from "./SideItem";
 import { DataContext } from "@/context/AllDataContext";
 const SideBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
-  const { userLogin, setIsLogin } = useContext(DataContext);
-  console.log('name', userLogin);
+  const { userLogin } = useContext(DataContext);
 
   const handleLogout = () => {
     sessionStorage.clear();
     router.push("/");
-    setIsLogin(false);
   };
 
   return (
@@ -86,8 +78,7 @@ const SideBar = () => {
 };
 
 const SidebarContent = ({ onClose, ...rest }) => {
-  const [activeItem, setActiveItem] = useState("dashboard");
-  const [isOpen, setIsOpen] = useState(false);
+  const { activeItem, setActiveItem } = useContext(DataContext);
   const router = useRouter();
 
   const handleItemClick = (item) => {
@@ -134,7 +125,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
           }}
         />
         <SideItem
-          icon={FiCodesandbox}
+          icon={BiCategory}
           title="Category"
           active={activeItem === "category"}
           activeColor={"#1363DF"}
@@ -143,7 +134,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
           }}
         />
         <SideItem
-          icon={FiUser}
+          icon={FiShoppingCart}
           title="Purchase"
           active={activeItem === "purchase"}
           activeColor={"#1363DF"}
@@ -152,7 +143,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
           }}
         />
         <SideItem
-          icon={FiUser}
+          icon={FiPackage}
           title="Product"
           active={activeItem === "product"}
           activeColor={"#1363DF"}
@@ -170,7 +161,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
           }}
         />
         <SideItem
-          icon={FiUser}
+          icon={FiUsers}
           title="Customers"
           active={activeItem === "customers"}
           activeColor={"#1363DF"}
@@ -179,12 +170,21 @@ const SidebarContent = ({ onClose, ...rest }) => {
           }}
         />
         <SideItem
-          icon={FiUser}
+          icon={MdOutlineWarehouse}
           title="Warehouse"
           active={activeItem === "warehouse"}
           activeColor={"#1363DF"}
           onClick={() => {
             handleItemClick("warehouse"), router.push("/warehouse");
+          }}
+        />
+        <SideItem
+          icon={FiSettings}
+          title="Account Setting"
+          active={activeItem === "profile"}
+          activeColor={"#1363DF"}
+          onClick={() => {
+            handleItemClick("profile"), router.push("/profile");
           }}
         />
       </VStack>
@@ -193,9 +193,10 @@ const SidebarContent = ({ onClose, ...rest }) => {
 };
 
 const MobileNav = ({ user, handleLogout, onOpen, ...rest }) => {
+  const { setActiveItem } = useContext(DataContext);
+  const router = useRouter();
   return (
     <Flex
-      // ml={{ base: 0, md: 60 }}
       as={"nav"}
       position={"fixed"}
       top={0}
@@ -204,7 +205,6 @@ const MobileNav = ({ user, handleLogout, onOpen, ...rest }) => {
       px={{ base: 4, md: 4 }}
       alignItems="center"
       bg={"white"}
-      // boxShadow={'md'}
       justifyContent={{ base: "space-between", md: "flex-end" }}
       zIndex={5}
       {...rest}>
@@ -225,12 +225,6 @@ const MobileNav = ({ user, handleLogout, onOpen, ...rest }) => {
       </Text>
 
       <HStack spacing={{ base: "0", md: "6" }}>
-        <IconButton
-          size="lg"
-          variant="ghost"
-          aria-label="open menu"
-          icon={<FiBell />}
-        />
         <Flex alignItems={"center"}>
           <Menu>
             <MenuButton
@@ -244,9 +238,7 @@ const MobileNav = ({ user, handleLogout, onOpen, ...rest }) => {
                   alignItems="flex-start"
                   spacing="1px"
                   ml="2">
-                  <Text fontSize="sm">
-                    {`${user?.first_name}  ${user?.last_name}`}
-                  </Text>
+                  <Text fontSize="sm">{`${user?.first_name}  ${user?.last_name}`}</Text>
                   <Text fontSize="xs" color="gray.600">
                     @{user?.username}
                   </Text>
@@ -258,15 +250,16 @@ const MobileNav = ({ user, handleLogout, onOpen, ...rest }) => {
             </MenuButton>
             <MenuList
               bg={useColorModeValue("white", "gray.900")}
-              borderColor={useColorModeValue("gray.200", "gray.700")}
-              zIndex={"10"}>
-              <MenuItem zIndex={"10"}>Profile</MenuItem>
-              <MenuItem zIndex={"10"}>Settings</MenuItem>
-              <MenuItem zIndex={"10"}>Billing</MenuItem>
-              <MenuDivider />
-              <MenuItem onClick={handleLogout} zIndex={"10"}>
-                Sign out
+              borderColor={useColorModeValue("gray.200", "gray.700")}>
+              <MenuItem
+                onClick={() => {
+                  setActiveItem("profile");
+                  router.push("/profile");
+                }}>
+                Profile
               </MenuItem>
+              <MenuDivider />
+              <MenuItem onClick={handleLogout}>Sign out</MenuItem>
             </MenuList>
           </Menu>
         </Flex>

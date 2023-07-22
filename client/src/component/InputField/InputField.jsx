@@ -24,7 +24,7 @@ function InputField({
 }) {
   return (
     <FormControl
-      mt={{ base: 3, sm: 4, md: 5, lg: 5 }}
+      my={{ base: 2, sm: 2, md: 3, lg: 3 }}
       isInvalid={errors}
       key={keyProp}
     >
@@ -32,9 +32,9 @@ function InputField({
         htmlFor={name}
         mt={2}
         mb={1}
-        fontSize={{ base: 'md', sm: 'md', md: 'md', lg: 'lg' }}
+        fontSize={{ base: 'sm', sm: 'sm', md: 'md', lg: 'md' }}
         fontWeight={'normal'}
-        color='#8c8c8c'
+        color='#06283D'
       >
         {label}
       </FormLabel>
