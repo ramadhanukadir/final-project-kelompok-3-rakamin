@@ -12,7 +12,6 @@ import {
   Th,
   Td,
   Tbody,
-  useBreakpointValue,
   Modal,
   ModalBody,
   ModalContent,
@@ -20,15 +19,12 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalFooter,
-  VStack,
-  FormLabel,
-  FormControl,
   FormControl as FormErrorMessage,
   FormLabel as ChakraFormLabel,
-  Input,
   useToast,
   Icon,
   useDisclosure,
+  Skeleton,
 } from '@chakra-ui/react';
 import { useFieldArray, useForm, watch } from 'react-hook-form';
 import {
@@ -44,7 +40,7 @@ import InputField from '../InputField/InputField';
 import ModalConfirmation from '../ModalConfirmation';
 
 const Categories = () => {
-  const { categories, fetchCategories } = useContext(DataContext);
+  const { categories, fetchCategories, isLoading } = useContext(DataContext);
   const toast = useToast();
   const {
     register,
@@ -157,46 +153,110 @@ const Categories = () => {
                 </Tr>
               </Thead>
               <Tbody bg={'#EEEDED'}>
-                {categories?.map((c) => (
-                  <Tr key={c.id}>
-                    <Td
-                      onClick={() => router.push(`/category/${c.id}`)}
-                      cursor={'pointer'}
-                      _hover={'black'}
-                    >
-                      {c.name}
-                    </Td>
-                    <Tr>
-                      <Td>{c.description}</Td>
-                    </Tr>
+                {isLoading ? (
+                  <Tr>
                     <Td>
-                      <Icon
-                        color={'#06283D'}
-                        onClick={() => handleEdit(c.id)}
-                        as={FiEdit}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title='Edit'
-                      />
-                      <Icon
-                        color={'red'}
-                        onClick={() => {
-                          onOpen();
-                          setDeleteId(c.id);
-                        }}
-                        as={FiDelete}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#EF6262',
-                        }}
-                        title='Delete'
-                      />
+                      <Skeleton height='20px' width='80%' />
+                    </Td>
+                    <Td>
+                      <Skeleton height='20px' width='60%' />
+                    </Td>
+                    <Td>
+                      <Skeleton height='20px' width='40%' />
                     </Td>
                   </Tr>
-                ))}
+                ) : (
+                  categories?.map((c) => (
+                    <Tr key={c.id}>
+                      <Td
+                        onClick={() => router.push(`/category/${c.id}`)}
+                        cursor={'pointer'}
+                        _hover={'black'}
+                      >
+                        {c.name}
+                      </Td>
+                      <Tr>
+                        <Td>{c.description}</Td>
+                      </Tr>
+
+                      <Td>
+                        <Icon
+                          color={'#06283D'}
+                          onClick={() => handleEdit(c.id)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#4F709C',
+                          }}
+                          title='Edit'
+                        />
+                        <Icon
+                          color={'red'}
+                          onClick={() => {
+                            setDeleteId(c.id);
+                            onOpen();
+                          }}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#EF6262',
+                          }}
+                          title='Delete'
+                        />
+                      </Td>
+                    </Tr>
+                  ))
+                )}
+                <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader textAlign='center'>Edit Category</ModalHeader>
+                    <ModalBody>
+                      <form onSubmit={handleSubmit(onSubmit)}>
+                        <InputField
+                          label={'Category Name'}
+                          name={'name'}
+                          placeholder={'Insert name'}
+                          register={register('name', {
+                            required: 'This is required',
+                          })}
+                          errors={errors.name}
+                        />
+                        <InputField
+                          label={'Description'}
+                          name={'description'}
+                          placeholder={'Insert description'}
+                          register={register('description', {
+                            required: 'This is required',
+                          })}
+                          errors={errors.description}
+                        />
+                        <Button
+                          type='submit'
+                          size={'md'}
+                          colorScheme='blue'
+                          isLoading={isSubmitting}
+                          rounded={'full'}
+                          w={'100%'}
+                        >
+                          Update Category
+                        </Button>
+                      </form>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button
+                        size={'sm'}
+                        colorScheme='red'
+                        rounded={'full'}
+                        fontWeight={'semibold'}
+                        onClick={handleCloseModal}
+                      >
+                        Cancel
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
               </Tbody>
             </Table>
           </TableContainer>

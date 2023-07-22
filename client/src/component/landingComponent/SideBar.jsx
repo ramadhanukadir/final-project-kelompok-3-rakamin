@@ -23,6 +23,8 @@ import {
   MenuItem,
   MenuList,
   Image,
+  SkeletonCircle,
+  Skeleton,
 } from '@chakra-ui/react';
 import {
   FiHome,
@@ -43,7 +45,7 @@ import { DataContext } from '@/context/AllDataContext';
 const SideBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
-  const { userLogin, setActiveItem, setIsLogin } = useContext(DataContext);
+  const { userLogin, isLoading } = useContext(DataContext);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -76,7 +78,12 @@ const SideBar = () => {
       </Drawer>
 
       {/* mobilenav */}
-      <MobileNav user={userLogin} onOpen={onOpen} handleLogout={handleLogout} />
+      <MobileNav
+        user={userLogin}
+        onOpen={onOpen}
+        handleLogout={handleLogout}
+        isLoading={isLoading}
+      />
     </Box>
   );
 };
@@ -198,7 +205,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
   );
 };
 
-const MobileNav = ({ user, handleLogout, onOpen, ...rest }) => {
+const MobileNav = ({ user, handleLogout, isLoading, onOpen, ...rest }) => {
   const { setActiveItem } = useContext(DataContext);
   const router = useRouter();
   return (
@@ -241,18 +248,36 @@ const MobileNav = ({ user, handleLogout, onOpen, ...rest }) => {
               _focus={{ boxShadow: 'none' }}
             >
               <HStack>
-                <Avatar size={'sm'} src={user?.image_url} />
-                <VStack
-                  display={{ base: 'none', md: 'flex' }}
-                  alignItems='flex-start'
-                  spacing='1px'
-                  ml='2'
-                >
-                  <Text fontSize='sm'>{`${user?.first_name}  ${user?.last_name}`}</Text>
-                  <Text fontSize='xs' color='gray.600'>
-                    @{user?.username}
-                  </Text>
-                </VStack>
+                {isLoading ? (
+                  <>
+                    <SkeletonCircle />
+                    <VStack
+                      display={{ base: 'none', md: 'flex' }}
+                      alignItems='flex-start'
+                      spacing='1px'
+                      ml='2'
+                    >
+                      <Skeleton height={'10px'} width={'50px'} />
+                      <Skeleton height={'10px'} width={'50px'} />
+                    </VStack>
+                  </>
+                ) : (
+                  <>
+                    <Avatar size={'sm'} src={user?.image_url} />
+                    <VStack
+                      display={{ base: 'none', md: 'flex' }}
+                      alignItems='flex-start'
+                      spacing='1px'
+                      ml='2'
+                    >
+                      <Text fontSize='sm'>{`${user?.first_name}  ${user?.last_name}`}</Text>
+                      <Text fontSize='xs' color='gray.600'>
+                        @{user?.username}
+                      </Text>
+                    </VStack>
+                  </>
+                )}
+
                 <Box display={{ base: 'none', md: 'flex' }}>
                   <FiChevronDown />
                 </Box>

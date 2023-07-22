@@ -36,6 +36,7 @@ const AllDataContextProvider = ({ children }) => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [activeItem, setActiveItem] = useState('dashboard');
   const [isLogin, setIsLogin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [filterOrder, setFilterOrder] = useState({
     warehouses_id: '',
     customers_id: '',
@@ -64,7 +65,7 @@ const AllDataContextProvider = ({ children }) => {
     order: '',
   });
 
-  let access = null;
+  let access = '';
 
   if (typeof window !== 'undefined') {
     access = sessionStorage.getItem('token');
@@ -148,6 +149,7 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     if (access !== null) {
       fetchCustomers();
       fetchAllCustomers();
@@ -171,15 +173,14 @@ const AllDataContextProvider = ({ children }) => {
     if (warehouseId > 0) {
       fetchWarehouseById(warehouseId);
     }
+    setIsLoading(false);
   }, [
     access,
-    isLogin,
     warehouseId,
     itemsId,
     filterOrder,
     filterProducts,
     filterCustomer,
-    filterSupplier,
   ]);
 
   return (
@@ -227,9 +228,8 @@ const AllDataContextProvider = ({ children }) => {
         allProducts,
         fetchAllItems,
         fetchCategories,
-        fetchSuppliers,
         isLogin,
-        setIsLogin,
+        isLoading,
       }}
     >
       {children}

@@ -27,6 +27,7 @@ import {
   Icon,
   TableCaption,
   useDisclosure,
+  Skeleton,
 } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
 import { useRouter } from 'next/router';
@@ -37,8 +38,13 @@ import Filter from '../Filter';
 import ModalConfirmation from '../ModalConfirmation';
 
 const Customers = () => {
-  const { customers, filterCustomer, setFilterCustomer, fetchCustomers } =
-    useContext(DataContext);
+  const {
+    customers,
+    filterCustomer,
+    setFilterCustomer,
+    fetchCustomers,
+    isLoading,
+  } = useContext(DataContext);
   const toast = useToast();
   const {
     register,
@@ -192,43 +198,102 @@ const Customers = () => {
                 </Tr>
               </Thead>
               <Tbody bg={'#EEEDED'}>
-                {customers?.dataCustomers?.map((customer) => (
-                  <Tr key={customer.id}>
-                    <Td
-                      onClick={() => router.push(`/customers/${customer.id}`)}
-                      cursor={'pointer'}
-                    >
-                      {customer.full_name}
-                    </Td>
-                    <Td>{customer.address}</Td>
+                {isLoading ? (
+                  <Tr>
                     <Td>
-                      <Icon
-                        color={'#06283D'}
-                        onClick={() => handleEdit(customer.id)}
-                        as={FiEdit}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title='Edit'
-                      />
-                      <Icon
-                        color={'red'}
-                        onClick={() => {
-                          onOpen();
-                          setDeleteId(customer.id);
-                        }}
-                        as={FiDelete}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#EF6262',
-                        }}
-                        title='Delete'
-                      />
+                      <Skeleton height='20px' width='80%' />
+                    </Td>
+                    <Td>
+                      <Skeleton height='20px' width='60%' />
+                    </Td>
+                    <Td>
+                      <Skeleton height='20px' width='40%' />
                     </Td>
                   </Tr>
-                ))}
+                ) : (
+                  customers?.dataCustomers?.map((customer) => (
+                    <Tr key={customer.id}>
+                      <Td
+                        onClick={() => router.push(`/customers/${customer.id}`)}
+                        cursor={'pointer'}
+                      >
+                        {customer.full_name}
+                      </Td>
+                      <Td>{customer.address}</Td>
+                      <Td>
+                        <Icon
+                          color={'#06283D'}
+                          onClick={() => handleEdit(customer.id)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#4F709C',
+                          }}
+                          title='Edit'
+                        />
+                        <Icon
+                          color={'red'}
+                          onClick={() => {
+                            setDeleteId(customer.id);
+                            onOpen();
+                          }}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: 'pointer',
+                            color: '#EF6262',
+                          }}
+                          title='Delete'
+                        />
+                      </Td>
+                    </Tr>
+                  ))
+                )}
+                <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
+                    <ModalBody>
+                      <form onSubmit={handleSubmit(onSubmit)}>
+                        <InputField
+                          name={'full_name'}
+                          label={'Full Name'}
+                          type={'text'}
+                          placeholder={'Please Input Your Full Name'}
+                          register={register('full_name', {
+                            required: 'This is required',
+                          })}
+                          errors={errors.full_name}
+                        />
+                        <InputField
+                          name={'address'}
+                          label={'Address'}
+                          type={'text'}
+                          placeholder={'Please Input Your Address'}
+                          register={register('address', {
+                            required: 'This is required',
+                          })}
+                          errors={errors.address}
+                        />
+                        <Button
+                          type='submit'
+                          size={'md'}
+                          colorScheme='blue'
+                          mt={3}
+                          w={'100%'}
+                          borderRadius={'full'}
+                        >
+                          Update Customer
+                        </Button>
+                      </form>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button size={'md'} onClick={handleCloseModal}>
+                        Cancel
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
               </Tbody>
             </Table>
           </TableContainer>

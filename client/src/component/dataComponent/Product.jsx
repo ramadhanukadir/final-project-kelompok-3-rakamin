@@ -27,14 +27,10 @@ import {
   FormLabel,
   FormControl,
   Input,
-  useDisclosure,
   useToast,
-  InputGroup,
-  InputRightElement,
   Icon,
-  PageSelect,
-  Flex,
   TableCaption,
+  useDisclosure,
 } from '@chakra-ui/react';
 import {
   getAllItems,
@@ -61,16 +57,17 @@ const Product = () => {
     setValue,
   } = useForm();
   const {
+    allProducts,
     categories,
     warehouseStock,
     products,
     fetchItems,
-    allProducts,
     fetchAllItems,
     filterProducts,
+    fetchCategories,
     setFilterProducts,
     fetchWarehousesStock,
-    fetchCategories,
+    isLoading,
   } = useContext(DataContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
@@ -312,8 +309,8 @@ const Product = () => {
                     <Icon
                       color={'red'}
                       onClick={() => {
-                        onOpen();
                         setId(item.id);
+                        onOpen();
                       }}
                       as={FiDelete}
                       _hover={{
@@ -733,7 +730,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
                     onChange={handleChange}
                     {...register('items_id', { required: true })}
                   >
-                    <option value='' selected disabled h={'2rem'}>
+                    <option value='' selected disabled>
                       Select Items
                     </option>
                     {allProducts?.data?.map((product) => (

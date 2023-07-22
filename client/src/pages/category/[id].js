@@ -80,7 +80,7 @@ export default function Page({ categoryId }) {
           <Flex direction={'column'}></Flex>
           <VStack mt={6}>
             <Text fontSize='md' fontWeight='bold'>
-              List Product
+              List Category
             </Text>
             <TableContainer overflowY={'auto'} h={'25em'} px={5} w={'100%'}>
               <Table size={tableSize} variant='simple'>
@@ -92,7 +92,7 @@ export default function Page({ categoryId }) {
                     <Th color={'#EEEDED'}>Selling Price</Th>
                   </Tr>
                 </Thead>
-                <Tbody>
+                <Tbody bg={'#EEEDED'}>
                   {category?.items?.map((item) => (
                     <Tr key={item.id}>
                       <Td>{item.name}</Td>

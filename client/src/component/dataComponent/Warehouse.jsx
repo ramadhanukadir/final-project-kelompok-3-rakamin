@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { instance } from '@/modules/axios';
 import axios from 'axios';
 
@@ -36,17 +36,21 @@ import {
   IconButton,
   Flex,
   TableCaption,
+  Skeleton,
 } from '@chakra-ui/react';
 
+import { SearchIcon } from '@chakra-ui/icons';
 import { Center } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiEye } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import Filter from '../Filter';
+import { DataContext } from '@/context/AllDataContext';
 
 const Warehouses = () => {
   const router = useRouter();
 
+  const { isLoading } = useContext(DataContext);
   const [warehouses, setWarehouses] = useState([]);
   const [page, setPage] = useState(0);
   const [pages, setPages] = useState({});
