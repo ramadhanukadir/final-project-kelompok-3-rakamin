@@ -1,5 +1,5 @@
 const db = require("../models");
-const { Expenses, Items, Warehouses_Stock, Orders_Items } = db;
+const { Expenses, Items, Warehouses_Stock, Orders } = db;
 
 const postExpenses = async (req, res) => {
   try {
@@ -134,13 +134,17 @@ const updateExpenses = async (req, res) => {
     res.status(400).json({
       message: "Server Internal Error",
       error,
-    });
+  });
   }
 };
 
 const getTotalExpenses = async (req, res) => {
   try {
+    const {id} = req.loggedUser;
     const allExpenses = await Expenses.findAll({
+      where: {
+        users_id: id,
+      },
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });
 
@@ -151,7 +155,11 @@ const getTotalExpenses = async (req, res) => {
       });
     }
 
-    const expenses = await Expenses.findAll();
+    const expenses = await Expenses.findAll({
+      where: {
+        users_id: id,
+      },
+    });
     let totalExpenses = 0;
     expenses.forEach((expenses) => {
       totalExpenses += expenses.total_expenses;
@@ -234,14 +242,12 @@ const deleteExpenses = async (req, res) => {
 
 const getAllitemsOrders = async (req, res) => {
   try {
-    const findAllItems = await Orders_Items.findAll({
-      attributes: { exclude: ["updatedAt"] },
-      include: [
-        {
-          model: Items,
-          attributes: { exclude: ["createdAt", "updatedAt"] },
-        },
-      ],
+    const {id} = req.loggedUser
+    const findAllItems = await Orders.findAll( { 
+  
+     where: {
+      users_id: id
+     }
     });
 
     if (!findAllItems) {
