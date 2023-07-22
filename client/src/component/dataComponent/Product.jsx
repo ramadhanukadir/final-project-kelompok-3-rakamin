@@ -429,15 +429,28 @@ const Product = () => {
                         {...register('image_url')}
                       />
                     </FormControl>
-                    <Button type='submit' size={'md'} colorScheme='blue' mr={3}>
+                    <Button
+                      type='submit'
+                      size={'md'}
+                      rounded={'full'}
+                      colorScheme='blue'
+                      w={'100%'}
+                      mr={3}
+                    >
                       Update product
-                    </Button>
-                    <Button size={'md'} onClick={handleCloseModal}>
-                      Cancel
                     </Button>
                   </form>
                 </ModalBody>
-                <ModalFooter></ModalFooter>
+                <ModalFooter>
+                  <Button
+                    size={'md'}
+                    rounded={'full'}
+                    colorScheme='red'
+                    onClick={handleCloseModal}
+                  >
+                    Cancel
+                  </Button>
+                </ModalFooter>
               </ModalContent>
             </Modal>
           </Tbody>
@@ -829,17 +842,26 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
                   type='submit'
                   size={'md'}
                   colorScheme='blue'
+                  rounded={'full'}
+                  w={'100%'}
                   mr={3}
                   onClick={() => console.log('Masuk')}
                 >
                   Add Stock Product
                 </Button>
-                <Button size={'md'} onClick={handleCloseModal}>
-                  Cancel
-                </Button>
               </form>
             </VStack>
           </ModalBody>
+          <ModalFooter>
+            <Button
+              size={'md'}
+              rounded={'full'}
+              colorScheme='red'
+              onClick={handleCloseModal}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>
