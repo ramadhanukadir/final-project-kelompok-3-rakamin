@@ -17,6 +17,7 @@ import {
   Link,
   FormErrorMessage,
   useToast,
+  HStack,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import Image from 'next/image';
@@ -68,8 +69,6 @@ const login = () => {
       <Stack
         align={'center'}
         maxH={'full'}
-        // spacing={{ base: 8, md: 10 }}
-        // py={{ base: 20, md: 28 }}
         direction={{ base: 'column', md: 'row' }}
       >
         <Stack flex={1} height={'inherit'}>
@@ -132,13 +131,16 @@ const login = () => {
                 </Button>
               </InputRightElement>
             </InputField>
-            <Text>
-              New here?{' '}
-              <Link href='/register' fontWeight='bold'>
-                {' '}
+            <HStack mb={2}>
+              <Text>New here?</Text>
+              <Text
+                onClick={() => router.push('/register')}
+                fontWeight='bold'
+                cursor={'pointer'}
+              >
                 Create an Account!
-              </Link>
-            </Text>
+              </Text>
+            </HStack>
 
             <Stack
               spacing={{ base: 4, sm: 6 }}
@@ -164,23 +166,14 @@ const login = () => {
           flex={1}
           justify={'center'}
           align={'center'}
-          // position={'relative'}
           width={'full'}
           height={'auto'}
-          // p={5}
         >
-          <Box
-            // position={'relative'}
-            // height={{ base: '300px', sm: '300px', lg: '500px' }}
-            // rounded={'2xl'}
-            width={'full'}
-            // overflow={'hidden'}
-          >
+          <Box width={'full'}>
             <Image
               src={Image2}
               alt={'Hero Image'}
               fit={'cover'}
-              // align={'center'}
               w={'100%'}
               h={'auto'}
             />

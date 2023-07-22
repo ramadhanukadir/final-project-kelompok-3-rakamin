@@ -329,19 +329,21 @@ const Suppliers = () => {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Confirmation</ModalHeader>
-            <ModalCloseButton />
             <ModalBody>
               <Text>Are you sure you want to delete this supplier?</Text>
             </ModalBody>
             <ModalFooter>
               <Button
+                rounded={'full'}
                 colorScheme='red'
                 mr={3}
                 onClick={() => handleDelete(deleteSupplierId)}
               >
                 Delete
               </Button>
-              <Button onClick={closeDeleteModal}>Cancel</Button>
+              <Button rounded={'full'} onClick={closeDeleteModal}>
+                Cancel
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>

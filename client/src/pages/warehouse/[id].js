@@ -1,13 +1,37 @@
 import { getWarehouseById } from '@/api/fetch/warehouses';
 import { DataContext } from '@/context/AllDataContext';
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, HStack, Image, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  HStack,
+  Image,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 
 export default function Page({ warehouseId }) {
   const router = useRouter();
-  const { detailWarehouse, setDetailWarehouse } = useContext(DataContext);
+  const { detailWarehouse, setDetailWarehouse, categories } =
+    useContext(DataContext);
+  const [sortedStockItems, setSortedStockItems] = useState([]);
+
+  const categoriesName = (id) => {
+    const categoryName = categories.find((item) => item.id === id);
+    return categoryName?.name;
+  };
+
+  useEffect(() => {
+    if (detailWarehouse?.stockItems) {
+      const sortedItems = [...detailWarehouse.stockItems].sort(
+        (a, b) => a.stock - b.stock
+      );
+      setSortedStockItems(sortedItems);
+    }
+  }, [detailWarehouse?.stockItems]);
 
   useEffect(() => {
     const fetchWarehouse = async () => {
@@ -17,86 +41,121 @@ export default function Page({ warehouseId }) {
     fetchWarehouse();
   }, []);
 
-  console.log(detailWarehouse);
-
   return (
-    <Flex w={'100%'} marginTop={20} flexDirection={'column'} justifyContent={'flex-start'} zIndex={1}>
-      <HStack>
-        <Button size={'sm'} w={'3'} onClick={() => router.back()} title="Back">
+    <Flex
+      w={'100%'}
+      marginTop={20}
+      flexDirection={'column'}
+      justifyContent={'flex-start'}
+      zIndex={1}
+    >
+      <HStack display={'flex'} justifyContent={'space-between'}>
+        <Button size={'sm'} w={'3'} onClick={() => router.back()} title='Back'>
           <ArrowBackIcon w={4} h={4} />
         </Button>
-      </HStack>
-      <Flex direction={'column'} mt={4}>
-        <Text fontSize="xl" fontWeight="bold">
+        <Text fontSize='xl' fontWeight='bold'>
           Warehouse Detail
         </Text>
-        {/* <Flex direction={'row'} columnGap={'20px'}>
+      </HStack>
+      <Flex direction={'column'} mt={4}>
+        <Flex direction={'row'} columnGap={'20px'}>
           <Flex direction={'column'}>
-            <Text>Cutomer </Text>
-            <Text>Warehouse </Text>
-            <Text>Total Revenue </Text>
-            <Text>Date </Text>
+            <Text>Warehouse Name </Text>
+            <Text>Address </Text>
+            <Text>Province </Text>
+            <Text>City </Text>
+            <Text>Postal Code </Text>
+            <Text>Telephone </Text>
           </Flex>
           <Flex direction={'column'}>
-            <Text>: {detailWarehouse.name}</Text>
-            <Text>: {detailWarehouse.address}</Text>
-            <Text>: {detailWarehouse.date}</Text>
+            <Text>: {detailWarehouse?.warehouse?.name}</Text>
+            <Text>: {detailWarehouse?.warehouse?.address}</Text>
+            <Text>: {detailWarehouse?.warehouse?.province}</Text>
+            <Text>: {detailWarehouse?.warehouse?.city}</Text>
+            <Text>: {detailWarehouse?.warehouse?.postalCode}</Text>
+            <Text>: {detailWarehouse?.warehouse?.telephone}</Text>
           </Flex>
-        </Flex> */}
-        {/* <VStack mt={6}>
-          <Text fontSize="md" fontWeight="bold">
+        </Flex>
+        <VStack mt={6}>
+          <Text fontSize='md' fontWeight='bold'>
             Detail Product
           </Text>
           <Flex alignSelf={'flex-start'} w={'100%'}>
             <Flex flexDirection={'column'} w={'100%'} gap={3}>
-              {detailWarehouse?.items?.map((item) => (
-                <HStack display={'flex'} justifyContent={'space-between'} w={'100%'} key={item.id} py={{ base: 2, md: 3 }} px={{ base: 4, md: 6 }} border={'1px'} borderColor={'gray.300'} borderRadius={'lg'}>
+              {sortedStockItems?.map((item) => (
+                <HStack
+                  display={'flex'}
+                  justifyContent={'space-between'}
+                  w={'100%'}
+                  key={item.id}
+                  py={{ base: 2, md: 3 }}
+                  px={{ base: 4, md: 6 }}
+                  border={'1px'}
+                  borderColor={'gray.300'}
+                  borderRadius={'lg'}
+                >
                   <Flex flexDirection={'row'} gap={4}>
                     <Image
-                      src={item.image}
+                      src={item.items.imageUrl}
                       aspectRatio={'1/1'}
                       w={12}
                       h={12}
+                      mr={7}
                       objectFit={'contain'}
                       borderRadius={'xl'}
-                      // bg={'black'}
                     />
                     <Box>
-                      <Text fontSize={'sm'} fontWeight={'semibold'}>
-                        {item.name}
+                      <Text fontSize={'lg'} fontWeight={'semibold'}>
+                        {item.items.name} -{' '}
+                        {categoriesName(item.items.categoriesId)}
                       </Text>
+                      <Text fontSize={'sm'} fontWeight={'semibold'}></Text>
+
                       <HStack>
                         <Text fontSize={'sm'} fontWeight={'light'}>
-                          {item.quantity}
-                        </Text>
-                        <Text fontSize={'sm'} fontWeight={'light'}>
-                          x
-                        </Text>
-                        <Text fontSize={'sm'} fontWeight={'light'}>
-                          {item.price.toLocaleString('id-ID', {
-                            style: 'currency',
-                            currency: 'IDR',
-                          })}
+                          {item.items.SKU}
                         </Text>
                       </HStack>
+                      <Text fontSize={'sm'} fontWeight={'light'}>
+                        Size: {item.items.size}
+                      </Text>
+                      <Text fontSize={'sm'} fontWeight={'light'}>
+                        Weight: {item.items.weight}
+                      </Text>
+                      <Text fontSize={'sm'} fontWeight={'light'}>
+                        {item.items.description}
+                      </Text>
                     </Box>
                   </Flex>
-                  <Flex flexDirection={'column'} w={'13%'} alignItems={'flex-start'} pl={3}>
-                    <Text fontSize={'xs'} fontWeight={'normal'}>
-                      Total Price
-                    </Text>
+                  <Flex
+                    flexDirection={'column'}
+                    w={'13%'}
+                    alignItems={'flex-start'}
+                    pl={3}
+                  >
                     <Text fontSize={'sm'} fontWeight={'bold'}>
-                      {item.totalPrice.toLocaleString('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                      })}
+                      Stock
+                    </Text>
+                    <Text
+                      fontSize={'lg'}
+                      fontWeight={'bold'}
+                      style={{
+                        color:
+                          item.stock === 0
+                            ? 'red'
+                            : item.stock > 0 && item.stock < 10
+                            ? 'orange'
+                            : 'green',
+                      }}
+                    >
+                      {item.stock}
                     </Text>
                   </Flex>
                 </HStack>
               ))}
             </Flex>
           </Flex>
-        </VStack> */}
+        </VStack>
       </Flex>
     </Flex>
   );

@@ -31,7 +31,6 @@ export default function Page({ supplierId }) {
     };
     fetchSupplier();
   }, []);
-  console.log('INI SUPPLIERS', supplier);
 
   useEffect(() => {
     const fetchSupplierItems = async () => {
@@ -44,7 +43,6 @@ export default function Page({ supplierId }) {
     };
     fetchSupplierItems();
   }, []);
-  //console.log("INI SUPLLIERS ITEMS", supplierItems);
 
   const filteredItems = supplierItems.filter(
     (supplierItems) => supplierItems.suppliers_id === supplier.id
@@ -53,7 +51,7 @@ export default function Page({ supplierId }) {
   return (
     <Flex
       w={'100%'}
-      marginTop={100}
+      marginTop={'5em'}
       flexDirection={'column'}
       justifyContent={'flex-start'}
       zIndex={1}
@@ -63,162 +61,151 @@ export default function Page({ supplierId }) {
           <ArrowBackIcon w={4} h={4} />
         </Button>
         <Text fontSize={'xl'} fontWeight={'bold'}>
-          SUPPLIERS
+          Detail Supplier
         </Text>
       </HStack>
-      <Flex direction={'column'}>
-        <Flex direction={'column'} columnGap={'20px'}>
-          <Flex direction={'column'}>
-            <Stack direction={'row'}>
-              <Text fontSize={'xl'} fontWeight={'bold'}>
-                Name :
-              </Text>
-              <Text fontSize={'xl'} fontWeight={'bold'}>
-                {supplier.name}
-              </Text>
-            </Stack>
-            <Stack direction={'row'}>
-              <Text fontSize={'xl'} fontWeight={'bold'}>
-                Address :
-              </Text>
-              <Text fontSize={'xl'} fontWeight={'bold'}>
-                {supplier.address}
-              </Text>
-            </Stack>
-            <Stack direction={'row'}>
-              <Text fontSize={'xl'} fontWeight={'bold'}>
-                Address :
-              </Text>
-              <Text fontSize={'xl'} fontWeight={'bold'}>
-                {supplier.telephone}
-              </Text>
-            </Stack>
-            <Stack direction={'row'}>
-              <Text fontSize={'xl'} fontWeight={'bold'}>
-                No Id :
-              </Text>
-              <Text fontSize={'xl'} fontWeight={'bold'}>
-                {supplier.users_id}
-              </Text>
-            </Stack>
-          </Flex>
-          <Flex direction={'column'}></Flex>
-          <VStack mt={6}>
-            <Text fontSize='md' fontWeight='bold'>
-              List of Product
-            </Text>
-            <Flex
-              alignSelf={'flex-start'}
-              w={'100%'}
-              py={{ base: 2, md: 4 }}
-              px={{ base: 4, md: 8 }}
-              border={'1px'}
-              borderColor={'gray.300'}
-              borderRadius={'lg'}
-            >
-              <HStack w={'100%'}>
-                <HStack
-                  display={'flex'}
-                  justifyContent={'space-between'}
-                  w={'100%'}
-                >
-                  <Flex flexDirection={'row'} gap={4}>
-                    <Box>
-                      <Grid
-                        templateColumns={`repeat(${columns}, 1fr)`}
-                        gap={4}
-                        w={'100%'}
-                        justifyContent={'center'}
-                      >
-                        {filteredItems?.map((item) => (
-                          <Box
-                            role={'group'}
-                            p={5}
-                            maxW={'330px'}
-                            w={'full'}
-                            bg={useColorModeValue('white', 'gray.900')}
-                            boxShadow={'2xl'}
-                            rounded={'lg'}
-                            pos={'relative'}
-                            zIndex={1}
-                            key={item.Item.id}
-                          >
-                            <Box
-                              rounded={'lg'}
-                              mt={15}
-                              height={'230px'}
-                              pos={'relative'}
-                              _after={{
-                                transition: 'all .3s ease',
-                                content: '""',
-                                w: 'full',
-                                h: 'full',
-                                pos: 'absolute',
-                                top: 5,
-                                left: 0,
-                                backgroundImage: `url(${item.Item.image_url})`,
-                                filter: 'blur(15px)',
-                                zIndex: -1,
-                              }}
-                              _groupHover={{
-                                _after: {
-                                  filter: 'blur(20px)',
-                                },
-                              }}
-                            >
-                              <Image
-                                rounded={'lg'}
-                                height={230}
-                                width={250}
-                                src={item.Item.image_url}
-                                objectFit={'cover'}
-                              />
-                            </Box>
-                            <Stack pt={10} align={'center'}>
-                              <Text
-                                color={'gray.500'}
-                                fontSize={'sm'}
-                                textTransform={'uppercase'}
-                              >
-                                {item.Item.SKU}
-                              </Text>
-                              <Text
-                                color={'gray.500'}
-                                fontSize={'sm'}
-                                textTransform={'uppercase'}
-                              >
-                                {item.Item.name}
-                              </Text>
-                              <Heading
-                                fontSize={'2xl'}
-                                fontFamily={'body'}
-                                fontWeight={500}
-                              >
-                                {item.Item.description}
-                              </Heading>
-                              <Stack direction={'row'} align={'center'}>
-                                <Text fontWeight={800} fontSize={'xl'}>
-                                  {item.Item.base_price?.toLocaleString(
-                                    'id-ID',
-                                    {
-                                      style: 'currency',
-                                      currency: 'IDR',
-                                    }
-                                  )}
-                                </Text>
-                              </Stack>
-                            </Stack>
-                          </Box>
-                        ))}
-                      </Grid>
-                    </Box>
-                  </Flex>
-                </HStack>
-              </HStack>
-            </Flex>
-          </VStack>
+
+      <Flex direction={'row'} columnGap={'15px'} mt={6}>
+        <Flex direction={'column'}>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Name
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Address
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Telepohone
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Total Product
+          </Text>
+        </Flex>
+        <Flex direction={'column'}>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${supplier.name}`}
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${supplier.address}`}
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${supplier.telephone}`}
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${filteredItems.length}`}
+          </Text>
         </Flex>
       </Flex>
+      <VStack mt={6}>
+        <Text fontSize='md' fontWeight='bold'>
+          List of Product
+        </Text>
+        <Flex
+          alignSelf={'flex-start'}
+          w={'100%'}
+          py={{ base: 2, md: 4 }}
+          px={{ base: 4, md: 8 }}
+          border={'1px'}
+          borderColor={'gray.300'}
+          borderRadius={'lg'}
+        >
+          <HStack w={'100%'}>
+            <HStack
+              display={'flex'}
+              justifyContent={'space-between'}
+              w={'100%'}
+            >
+              <Flex flexDirection={'row'} gap={4}>
+                <Box>
+                  <Grid
+                    templateColumns={`repeat(${columns}, 1fr)`}
+                    gap={4}
+                    w={'100%'}
+                    justifyContent={'center'}
+                  >
+                    {filteredItems?.map((item) => (
+                      <Box
+                        role={'group'}
+                        p={5}
+                        maxW={'330px'}
+                        w={'full'}
+                        bg={useColorModeValue('white', 'gray.900')}
+                        boxShadow={'2xl'}
+                        rounded={'lg'}
+                        pos={'relative'}
+                        zIndex={1}
+                        key={item.Item.id}
+                      >
+                        <Box
+                          rounded={'lg'}
+                          mt={15}
+                          height={'230px'}
+                          pos={'relative'}
+                          _after={{
+                            transition: 'all .3s ease',
+                            content: '""',
+                            w: 'full',
+                            h: 'full',
+                            pos: 'absolute',
+                            top: 5,
+                            left: 0,
+                            backgroundImage: `url(${item.Item.image_url})`,
+                            filter: 'blur(15px)',
+                            zIndex: -1,
+                          }}
+                          _groupHover={{
+                            _after: {
+                              filter: 'blur(20px)',
+                            },
+                          }}
+                        >
+                          <Image
+                            rounded={'lg'}
+                            height={230}
+                            width={250}
+                            src={item.Item.image_url}
+                            objectFit={'cover'}
+                          />
+                        </Box>
+                        <Stack pt={10} align={'center'}>
+                          <Text
+                            color={'gray.500'}
+                            fontSize={'sm'}
+                            textTransform={'uppercase'}
+                          >
+                            {item.Item.SKU}
+                          </Text>
+                          <Text
+                            color={'gray.500'}
+                            fontSize={'sm'}
+                            textTransform={'uppercase'}
+                          >
+                            {item.Item.name}
+                          </Text>
+                          <Heading
+                            fontSize={'2xl'}
+                            fontFamily={'body'}
+                            fontWeight={500}
+                          >
+                            {item.Item.description}
+                          </Heading>
+                          <Stack direction={'row'} align={'center'}>
+                            <Text fontWeight={800} fontSize={'xl'}>
+                              {item.Item.base_price?.toLocaleString('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                              })}
+                            </Text>
+                          </Stack>
+                        </Stack>
+                      </Box>
+                    ))}
+                  </Grid>
+                </Box>
+              </Flex>
+            </HStack>
+          </HStack>
+        </Flex>
+      </VStack>
     </Flex>
   );
 }

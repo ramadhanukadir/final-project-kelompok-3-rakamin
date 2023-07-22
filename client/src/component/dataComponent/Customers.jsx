@@ -26,6 +26,7 @@ import {
   useToast,
   Icon,
   TableCaption,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
 import { useRouter } from 'next/router';
@@ -33,6 +34,7 @@ import { useForm } from 'react-hook-form';
 import InputField from '../InputField/InputField';
 import { DataContext } from '@/context/AllDataContext';
 import Filter from '../Filter';
+import ModalConfirmation from '../ModalConfirmation';
 
 const Customers = () => {
   const { customers, filterCustomer, setFilterCustomer, fetchCustomers } =
@@ -47,8 +49,10 @@ const Customers = () => {
   } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editCustomersId, setEditCustomersId] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     if (detailItems) {
@@ -73,16 +77,17 @@ const Customers = () => {
       await deleteCustomersById(id);
       handleCloseModal();
       toast({
-        title: 'Delete Product',
-        description: 'You have successfully Created Product.',
+        title: 'Delete Customer',
+        description: 'Successfully Delete Customer',
         status: 'success',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
       fetchCustomers();
     } catch (error) {
       toast({
-        title: 'Failed to delete product.',
+        title: 'Failed to delete customer',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -97,7 +102,7 @@ const Customers = () => {
       handleCloseModal();
       toast({
         title: 'Updated Customer',
-        description: 'You have successfully Updated Customers.',
+        description: 'Successfully Updated Customers',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -106,7 +111,7 @@ const Customers = () => {
       reset();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: 'Failed to create customer',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -196,7 +201,10 @@ const Customers = () => {
                       />
                       <Icon
                         color={'red'}
-                        onClick={() => handleDelete(customer.id)}
+                        onClick={() => {
+                          onOpen();
+                          setDeleteId(customer.id);
+                        }}
                         as={FiDelete}
                         _hover={{
                           cursor: 'pointer',
@@ -207,60 +215,69 @@ const Customers = () => {
                     </Td>
                   </Tr>
                 ))}
-                <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-                  <ModalOverlay />
-                  <ModalContent>
-                    <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
-                    <ModalBody>
-                      <form onSubmit={handleSubmit(onSubmit)}>
-                        <InputField
-                          name={'full_name'}
-                          label={'Full Name'}
-                          type={'text'}
-                          placeholder={'Please Input Your Full Name'}
-                          register={register('full_name', {
-                            required: 'This is required',
-                          })}
-                          errors={errors.full_name}
-                        />
-                        <InputField
-                          name={'address'}
-                          label={'Address'}
-                          type={'text'}
-                          placeholder={'Please Input Your Address'}
-                          register={register('address', {
-                            required: 'This is required',
-                          })}
-                          errors={errors.address}
-                        />
-                        <Button
-                          type='submit'
-                          size={'md'}
-                          colorScheme='blue'
-                          mt={3}
-                          w={'100%'}
-                          borderRadius={'full'}
-                        >
-                          Update Customer
-                        </Button>
-                      </form>
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button
-                        size={'sm'}
-                        colorScheme='red'
-                        rounded={'full'}
-                        fontWeight={'semibold'}
-                        onClick={handleCloseModal}
-                      >
-                        Cancel
-                      </Button>
-                    </ModalFooter>
-                  </ModalContent>
-                </Modal>
               </Tbody>
             </Table>
           </TableContainer>
+          <ModalConfirmation
+            isOpen={isOpen}
+            onClose={onClose}
+            name={'customer'}
+            onClick={() => {
+              handleDelete(deleteId);
+              onClose();
+            }}
+          />
+          <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
+              <ModalBody>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <InputField
+                    name={'full_name'}
+                    label={'Full Name'}
+                    type={'text'}
+                    placeholder={'Please Input Your Full Name'}
+                    register={register('full_name', {
+                      required: 'This is required',
+                    })}
+                    errors={errors.full_name}
+                  />
+                  <InputField
+                    name={'address'}
+                    label={'Address'}
+                    type={'text'}
+                    placeholder={'Please Input Your Address'}
+                    register={register('address', {
+                      required: 'This is required',
+                    })}
+                    errors={errors.address}
+                  />
+                  <Button
+                    type='submit'
+                    size={'md'}
+                    colorScheme='blue'
+                    mt={3}
+                    w={'100%'}
+                    borderRadius={'full'}
+                  >
+                    Update Customer
+                  </Button>
+                </form>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  size={'sm'}
+                  colorScheme='red'
+                  rounded={'full'}
+                  fontWeight={'semibold'}
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         </Box>
       </Box>
     </Box>
@@ -284,21 +301,23 @@ export const InputCustomers = ({ fetchData }) => {
       handleCloseModal(),
         toast({
           title: 'Created Product',
-          description: 'You have successfully Created Product.',
+          description: 'You have successfully Created Product',
           status: 'success',
           duration: 3000,
           isClosable: true,
+          position: 'top',
         });
 
       reset();
       fetchData();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: 'Failed to create product',
         description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true,
+        position: 'top',
       });
     }
   };

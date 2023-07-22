@@ -16,6 +16,7 @@ const AllDataContext = createContext();
 
 const AllDataContextProvider = ({ children }) => {
   const [warehouseId, setWarehouseId] = useState(0);
+  const [detailWarehouse, setDetailWarehouse] = useState({});
   const [warehouses, setWarehouses] = useState([]);
   const [warehouseItems, setWarehouseItems] = useState([]);
   const [products, setProducts] = useState([]);
@@ -34,6 +35,8 @@ const AllDataContextProvider = ({ children }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [activeItem, setActiveItem] = useState('dashboard');
+  // const [access, setAccess] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);
   const [filterOrder, setFilterOrder] = useState({
     warehouses_id: '',
     customers_id: '',
@@ -62,7 +65,7 @@ const AllDataContextProvider = ({ children }) => {
     order: '',
   });
 
-  let access = '';
+  let access = null;
 
   if (typeof window !== 'undefined') {
     access = sessionStorage.getItem('token');
@@ -161,6 +164,9 @@ const AllDataContextProvider = ({ children }) => {
       fetchRevenue();
       fetchAllSuppliers();
       fetchAllItems();
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
     }
 
     if (warehouseId > 0) {
@@ -168,6 +174,7 @@ const AllDataContextProvider = ({ children }) => {
     }
   }, [
     access,
+    isLogin,
     warehouseId,
     itemsId,
     filterOrder,
@@ -213,6 +220,8 @@ const AllDataContextProvider = ({ children }) => {
         setFilterProducts,
         filterCustomer,
         setFilterCustomer,
+        detailWarehouse,
+        setDetailWarehouse,
         filterSupplier,
         setFilterSupplier,
         fetchAllSuppliers,
@@ -220,6 +229,8 @@ const AllDataContextProvider = ({ children }) => {
         fetchAllItems,
         fetchCategories,
         fetchSuppliers,
+        isLogin,
+        setIsLogin,
       }}
     >
       {children}

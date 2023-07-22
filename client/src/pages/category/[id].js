@@ -38,7 +38,7 @@ export default function Page({ categoryId }) {
   return (
     <Flex
       w={'100%'}
-      marginTop={100}
+      marginTop={'5em'}
       flexDirection={'column'}
       justifyContent={'flex-start'}
       zIndex={1}
@@ -48,9 +48,33 @@ export default function Page({ categoryId }) {
           <ArrowBackIcon w={4} h={4} />
         </Button>
         <Text fontSize={'xl'} fontWeight={'bold'}>
-          CATEGORY
+          Detail Category
         </Text>
       </HStack>
+      <Flex direction={'row'} columnGap={'15px'} mt={6}>
+        <Flex direction={'column'}>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Name
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Description
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Total Product
+          </Text>
+        </Flex>
+        <Flex direction={'column'}>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${category?.name}`}
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${category?.description}`}
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${category?.items?.length}`}
+          </Text>
+        </Flex>
+      </Flex>
       <Flex direction={'column'}>
         <Flex direction={'column'} columnGap={'20px'}>
           <Flex direction={'column'}></Flex>
@@ -58,14 +82,14 @@ export default function Page({ categoryId }) {
             <Text fontSize='md' fontWeight='bold'>
               List Product
             </Text>
-            <TableContainer w={'100%'}>
+            <TableContainer overflowY={'auto'} h={'25em'} px={5} w={'100%'}>
               <Table size={tableSize} variant='simple'>
-                <Thead bg={'#DFF6FE'}>
+                <Thead bg={'#06283D'}>
                   <Tr>
-                    <Th>Name</Th>
-                    <Th>SKU</Th>
-                    <Th>Base Price</Th>
-                    <Th>Selling Price</Th>
+                    <Th color={'#EEEDED'}>Name</Th>
+                    <Th color={'#EEEDED'}>SKU</Th>
+                    <Th color={'#EEEDED'}>Base Price</Th>
+                    <Th color={'#EEEDED'}>Selling Price</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
