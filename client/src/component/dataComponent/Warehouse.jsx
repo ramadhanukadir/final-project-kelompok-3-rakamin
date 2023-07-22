@@ -189,28 +189,17 @@ const Warehouses = () => {
   // Save Modal
   const onSubmit = async (data) => {
     try {
+      const { name, address, province, city, telephone } = data;
       // Validasi input
-      if (!data.name || !data.address || !data.province || !data.city || !data.telephone) {
-        toast({
-          title: 'Error',
-          description: 'Please fill in all required fields.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
+      if (!name || !address || !province || !city || !telephone) {
+        toast.error('Silakan lengkapi semua kolom yang wajib diisi.', { duration: 3000 });
         return;
       }
 
       // Validasi format nomor handphone
       const phoneRegex = /^[0-9]{10,12}$/;
       if (!phoneRegex.test(data.telephone)) {
-        toast({
-          title: 'Error',
-          description: 'Please enter a valid phone number.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
+        toast.error('Silakan masukkan nomor telepon yang valid.', { duration: 3000 });
         return;
       }
 
