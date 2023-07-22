@@ -44,8 +44,9 @@ import { useRouter } from 'next/router';
 import { DataContext } from '@/context/AllDataContext';
 import SelectField from '../SelectField/SelectField';
 import Filter from '../Filter';
-import { updateItems, deleteItems } from '@/api/product';
+import { updateItems, deleteItems, addStock } from '@/api/product';
 import ModalConfirmation from '../ModalConfirmation';
+import { moveStock } from '@/api/warehouses';
 
 const Product = () => {
   const toast = useToast();
@@ -76,8 +77,6 @@ const Product = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const router = useRouter();
-
-  console.log(filterProducts);
 
   useEffect(() => {
     if (detailItems) {
@@ -474,7 +473,7 @@ export const AddProductForm = ({ fetchItems }) => {
       await instance.post('/items', formData);
       toast({
         title: 'Created Product',
-        description: 'You have successfully Created Product.',
+        description: 'Successfully Created product',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -496,19 +495,6 @@ export const AddProductForm = ({ fetchItems }) => {
 
   const handleCloseModal = () => {
     setIsOpen(false);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setDetails((prev) => {
-      return { ...prev, [name]: value };
-    });
-  };
-
-  const handleImageChange = (e) => {
-    setDetails((prev) => {
-      return { ...prev, image: e.target.files[0] };
-    });
   };
 
   return (
@@ -570,6 +556,7 @@ export const AddProductForm = ({ fetchItems }) => {
                     type='number'
                     id='size'
                     {...register('size', { required: true })}
+                    min={0}
                   />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
@@ -579,6 +566,7 @@ export const AddProductForm = ({ fetchItems }) => {
                     type='number'
                     id='weight'
                     {...register('weight', { required: true })}
+                    min={0}
                   />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
@@ -597,6 +585,7 @@ export const AddProductForm = ({ fetchItems }) => {
                     type='number'
                     id='base_price'
                     {...register('base_price', { required: true })}
+                    min={0}
                   />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
@@ -606,6 +595,7 @@ export const AddProductForm = ({ fetchItems }) => {
                     type='number'
                     id='selling_price'
                     {...register('selling_price', { required: true })}
+                    min={0}
                   />
                   <FormErrorMessage>Harga harus diisi.</FormErrorMessage>
                 </FormControl>
@@ -667,11 +657,11 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await instance.post('/items/stock', data);
+      await addStock(data);
       handleCloseModal();
       toast({
-        title: 'Created Product',
-        description: 'You have successfully Created Product.',
+        title: 'Add Stock',
+        description: 'Successfully Add Stock Product.',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -680,7 +670,7 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
       fetchWarehousesStock();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: 'Failed to add stock product.',
         description: error.message,
         status: 'error',
         duration: 5000,
@@ -766,10 +756,11 @@ export const AddStockForm = ({ fetchWarehousesStock }) => {
                   <Input
                     size='sm'
                     variant='filled'
-                    type='text'
+                    type='number'
                     name='quantity'
                     onChange={handleChange}
                     {...register('stock', { required: true })}
+                    min={1}
                   />
                   <FormErrorMessage>Stock Harus Di Isi</FormErrorMessage>
                 </FormControl>
@@ -862,14 +853,11 @@ export const MoveStock = ({
 
   const onSubmit = async (data) => {
     try {
-      const response = await instance.post(
-        '/warehouses-stock/move-items',
-        data,
-        handleCloseModal()
-      );
+      await moveStock(data);
+      handleCloseModal();
       toast({
-        title: 'Created Product',
-        description: 'You have successfully Created Product.',
+        title: 'Product Moved',
+        description: 'Successfully move product.',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -880,7 +868,7 @@ export const MoveStock = ({
     } catch (error) {
       console.error('Terjadi kesalahan saat mengirim permintaan:', error);
       toast({
-        title: 'Failed to create product.',
+        title: 'Failed to move product.',
         description: error.response.data.message,
         status: 'error',
         duration: 5000,
