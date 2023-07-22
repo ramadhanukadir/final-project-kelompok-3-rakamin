@@ -181,6 +181,7 @@ const AllDataContextProvider = ({ children }) => {
     filterOrder,
     filterProducts,
     filterCustomer,
+    filterSupplier,
   ]);
 
   return (
@@ -230,6 +231,7 @@ const AllDataContextProvider = ({ children }) => {
         fetchCategories,
         isLogin,
         isLoading,
+        fetchSuppliers,
       }}
     >
       {children}
