@@ -59,7 +59,19 @@ function FormEditPassword() {
 
   return (
     <>
-      <Button onClick={onOpen}>Change Password</Button>
+      <Button
+        rounded={'full'}
+        size='md'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        onClick={onOpen}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+      >
+        Change Password
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

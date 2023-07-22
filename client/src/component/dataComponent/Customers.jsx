@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   getCustomersById,
   editCustomersById,
   deleteCustomersById,
   postCustomers,
-} from "@/api/customers";
+} from '@/api/customers';
 import {
   Table,
   Thead,
@@ -26,14 +26,16 @@ import {
   useToast,
   Icon,
   TableCaption,
+  useDisclosure,
   Skeleton,
-} from "@chakra-ui/react";
-import { FiPlus, FiDelete, FiEdit, FiMove } from "react-icons/fi";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import InputField from "../InputField/InputField";
-import { DataContext } from "@/context/AllDataContext";
-import Filter from "../Filter";
+} from '@chakra-ui/react';
+import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
+import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import InputField from '../InputField/InputField';
+import { DataContext } from '@/context/AllDataContext';
+import Filter from '../Filter';
+import ModalConfirmation from '../ModalConfirmation';
 
 const Customers = () => {
   const {
@@ -53,13 +55,15 @@ const Customers = () => {
   } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editCustomersId, setEditCustomersId] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     if (detailItems) {
-      setValue("full_name", detailItems?.data?.full_name);
-      setValue("address", detailItems?.data?.address);
+      setValue('full_name', detailItems?.data?.full_name);
+      setValue('address', detailItems?.data?.address);
     }
     fetchCustomers();
   }, [detailItems, isModalOpen]);
@@ -79,18 +83,19 @@ const Customers = () => {
       await deleteCustomersById(id);
       handleCloseModal();
       toast({
-        title: "Delete Product",
-        description: "You have successfully Created Product.",
-        status: "success",
+        title: 'Delete Customer',
+        description: 'Successfully Delete Customer',
+        status: 'success',
         duration: 3000,
         isClosable: true,
+        position: 'top',
       });
       fetchCustomers();
     } catch (error) {
       toast({
-        title: "Failed to delete product.",
+        title: 'Failed to delete customer',
         description: error.message,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true,
       });
@@ -102,9 +107,9 @@ const Customers = () => {
       await editCustomersById(editCustomersId, data);
       handleCloseModal();
       toast({
-        title: "Updated Customer",
-        description: "You have successfully Updated Customers.",
-        status: "success",
+        title: 'Updated Customer',
+        description: 'Successfully Updated Customers',
+        status: 'success',
         duration: 3000,
         isClosable: true,
       });
@@ -112,9 +117,9 @@ const Customers = () => {
       reset();
     } catch (error) {
       toast({
-        title: "Failed to create product.",
+        title: 'Failed to create customer',
         description: error.message,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true,
       });
@@ -126,15 +131,16 @@ const Customers = () => {
   };
 
   return (
-    <Box maxW="7xl" mx={"auto"} pt={{ base: 2, sm: 12, md: 17 }} mt={"3em"}>
+    <Box maxW='7xl' mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'3em'}>
       <Box>
         <Box
-          display={"flex"}
-          flexDirection={"row"}
-          justifyContent={"space-between"}
-          mb={"3em"}
-          pb={"8"}>
-          <Text fontWeight={"bold"} fontSize={"xl"}>
+          display={'flex'}
+          flexDirection={'row'}
+          justifyContent={'space-between'}
+          mb={'3em'}
+          pb={'8'}
+        >
+          <Text fontWeight={'bold'} fontSize={'xl'}>
             Customers
           </Text>
           <InputCustomers fetchData={() => fetchCustomers()} />
@@ -166,28 +172,42 @@ const Customers = () => {
             disableNextPage={filterCustomer.page === customers?.totalPages}
             disablePrevPage={filterCustomer.page === 1}
             count={customers?.totalItems}
+            handleOrder={(e) => {
+              setFilterCustomer({
+                ...filterCustomer,
+                order: e.target.value,
+              });
+            }}
+            handleSort={(e) => {
+              setFilterCustomer({
+                ...filterCustomer,
+                sort: e.target.value,
+              });
+            }}
+            value={'full_name'}
+            textValue={'Full Name'}
           />
-          <TableContainer overflowY={"auto"} h={"25em"} px={5}>
-            <Table variant="simple">
+          <TableContainer overflowY={'auto'} h={'25em'} px={5}>
+            <Table variant='simple'>
               <TableCaption>Customers</TableCaption>
-              <Thead bg={"#06283D"}>
+              <Thead bg={'#06283D'}>
                 <Tr>
-                  <Th color={"#EEEDED"}>Full Name</Th>
-                  <Th color={"#EEEDED"}>Address</Th>
-                  <Th color={"#EEEDED"}>Actions</Th>
+                  <Th color={'#EEEDED'}>Full Name</Th>
+                  <Th color={'#EEEDED'}>Address</Th>
+                  <Th color={'#EEEDED'}>Actions</Th>
                 </Tr>
               </Thead>
-              <Tbody bg={"#EEEDED"}>
+              <Tbody bg={'#EEEDED'}>
                 {isLoading ? (
                   <Tr>
                     <Td>
-                      <Skeleton height="20px" width="80%" />
+                      <Skeleton height='20px' width='80%' />
                     </Td>
                     <Td>
-                      <Skeleton height="20px" width="60%" />
+                      <Skeleton height='20px' width='60%' />
                     </Td>
                     <Td>
-                      <Skeleton height="20px" width="40%" />
+                      <Skeleton height='20px' width='40%' />
                     </Td>
                   </Tr>
                 ) : (
@@ -195,31 +215,35 @@ const Customers = () => {
                     <Tr key={customer.id}>
                       <Td
                         onClick={() => router.push(`/customers/${customer.id}`)}
-                        cursor={"pointer"}>
+                        cursor={'pointer'}
+                      >
                         {customer.full_name}
                       </Td>
                       <Td>{customer.address}</Td>
                       <Td>
                         <Icon
-                          color={"#06283D"}
+                          color={'#06283D'}
                           onClick={() => handleEdit(customer.id)}
                           as={FiEdit}
                           mr={3}
                           _hover={{
-                            cursor: "pointer",
-                            color: "#4F709C",
+                            cursor: 'pointer',
+                            color: '#4F709C',
                           }}
-                          title="Edit"
+                          title='Edit'
                         />
                         <Icon
-                          color={"red"}
-                          onClick={() => handleDelete(customer.id)}
+                          color={'red'}
+                          onClick={() => {
+                            setDeleteId(customer.id);
+                            onOpen();
+                          }}
                           as={FiDelete}
                           _hover={{
-                            cursor: "pointer",
-                            color: "#EF6262",
+                            cursor: 'pointer',
+                            color: '#EF6262',
                           }}
-                          title="Delete"
+                          title='Delete'
                         />
                       </Td>
                     </Tr>
@@ -228,42 +252,43 @@ const Customers = () => {
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader textAlign="center">Edit Customers</ModalHeader>
+                    <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <InputField
-                          name={"full_name"}
-                          label={"Full Name"}
-                          type={"text"}
-                          placeholder={"Please Input Your Full Name"}
-                          register={register("full_name", {
-                            required: "This is required",
+                          name={'full_name'}
+                          label={'Full Name'}
+                          type={'text'}
+                          placeholder={'Please Input Your Full Name'}
+                          register={register('full_name', {
+                            required: 'This is required',
                           })}
                           errors={errors.full_name}
                         />
                         <InputField
-                          name={"address"}
-                          label={"Address"}
-                          type={"text"}
-                          placeholder={"Please Input Your Address"}
-                          register={register("address", {
-                            required: "This is required",
+                          name={'address'}
+                          label={'Address'}
+                          type={'text'}
+                          placeholder={'Please Input Your Address'}
+                          register={register('address', {
+                            required: 'This is required',
                           })}
                           errors={errors.address}
                         />
                         <Button
-                          type="submit"
-                          size={"md"}
-                          colorScheme="blue"
+                          type='submit'
+                          size={'md'}
+                          colorScheme='blue'
                           mt={3}
-                          w={"100%"}
-                          borderRadius={"full"}>
+                          w={'100%'}
+                          borderRadius={'full'}
+                        >
                           Update Customer
                         </Button>
                       </form>
                     </ModalBody>
                     <ModalFooter>
-                      <Button size={"md"} onClick={handleCloseModal}>
+                      <Button size={'md'} onClick={handleCloseModal}>
                         Cancel
                       </Button>
                     </ModalFooter>
@@ -272,6 +297,66 @@ const Customers = () => {
               </Tbody>
             </Table>
           </TableContainer>
+          <ModalConfirmation
+            isOpen={isOpen}
+            onClose={onClose}
+            name={'customer'}
+            onClick={() => {
+              handleDelete(deleteId);
+              onClose();
+            }}
+          />
+          <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
+              <ModalBody>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <InputField
+                    name={'full_name'}
+                    label={'Full Name'}
+                    type={'text'}
+                    placeholder={'Please Input Your Full Name'}
+                    register={register('full_name', {
+                      required: 'This is required',
+                    })}
+                    errors={errors.full_name}
+                  />
+                  <InputField
+                    name={'address'}
+                    label={'Address'}
+                    type={'text'}
+                    placeholder={'Please Input Your Address'}
+                    register={register('address', {
+                      required: 'This is required',
+                    })}
+                    errors={errors.address}
+                  />
+                  <Button
+                    type='submit'
+                    size={'md'}
+                    colorScheme='blue'
+                    mt={3}
+                    w={'100%'}
+                    borderRadius={'full'}
+                  >
+                    Update Customer
+                  </Button>
+                </form>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  size={'sm'}
+                  colorScheme='red'
+                  rounded={'full'}
+                  fontWeight={'semibold'}
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         </Box>
       </Box>
     </Box>
@@ -292,25 +377,26 @@ export const InputCustomers = ({ fetchData }) => {
     try {
       console.log(data);
       await postCustomers(data);
-      // await instance.post('/customer', data);
       handleCloseModal(),
         toast({
-          title: "Created Product",
-          description: "You have successfully Created Product.",
-          status: "success",
+          title: 'Created Product',
+          description: 'You have successfully Created Product',
+          status: 'success',
           duration: 3000,
           isClosable: true,
+          position: 'top',
         });
 
       reset();
       fetchData();
     } catch (error) {
       toast({
-        title: "Failed to create product.",
+        title: 'Failed to create product',
         description: error.message,
-        status: "error",
+        status: 'error',
         duration: 5000,
         isClosable: true,
+        position: 'top',
       });
     }
   };
@@ -326,58 +412,66 @@ export const InputCustomers = ({ fetchData }) => {
   return (
     <Box>
       <Button
-        size="sm"
-        bgColor={"#06283D"}
-        color={"#EEEDED"}
+        size='sm'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
         leftIcon={<FiPlus />}
         onClick={handleOpenModal}
-        borderRadius={"full"}
-        boxShadow={"0px 0px 3px 0px #06283D"}
+        borderRadius={'full'}
+        boxShadow={'0px 0px 3px 0px #06283D'}
         _hover={{
-          bg: "#164B60",
-          color: "#EEEDED",
-        }}>
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+      >
         Add Customer
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign="center">Stock Form</ModalHeader>
+          <ModalHeader textAlign='center'>Stock Form</ModalHeader>
           <ModalBody pb={2}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <InputField
-                name={"full_name"}
-                label={"Full Name"}
-                type={"text"}
-                placeholder={"Please Input Your Full Name"}
-                register={register("full_name", {
-                  required: "This is required",
+                name={'full_name'}
+                label={'Full Name'}
+                type={'text'}
+                placeholder={'Please Input Your Full Name'}
+                register={register('full_name', {
+                  required: 'This is required',
                 })}
                 errors={errors.full_name}
               />
               <InputField
-                name={"address"}
-                label={"Address"}
-                type={"text"}
-                placeholder={"Please Input Your Address"}
-                register={register("address", {
-                  required: "This is required",
+                name={'address'}
+                label={'Address'}
+                type={'text'}
+                placeholder={'Please Input Your Address'}
+                register={register('address', {
+                  required: 'This is required',
                 })}
                 errors={errors.address}
               />
               <Button
-                type="submit"
-                size={"md"}
-                colorScheme="blue"
+                type='submit'
+                size={'md'}
+                colorScheme='blue'
                 mt={3}
-                w={"100%"}
-                borderRadius={"full"}>
+                w={'100%'}
+                borderRadius={'full'}
+              >
                 Add Customer
               </Button>
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button size={"md"} onClick={handleCloseModal}>
+            <Button
+              size={'sm'}
+              colorScheme='red'
+              rounded={'full'}
+              fontWeight={'semibold'}
+              onClick={handleCloseModal}
+            >
               Cancel
             </Button>
           </ModalFooter>

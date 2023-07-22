@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import { getCategoriesId, getAllCategories } from "@/modules/fetch";
-import { useRouter } from "next/router";
-import { DataContext } from "@/context/AllDataContext";
+import React, { useState, useEffect, useContext } from 'react';
+import { getCategoriesId, getAllCategories } from '@/modules/fetch';
+import { useRouter } from 'next/router';
+import { DataContext } from '@/context/AllDataContext';
 import {
   Box,
   Text,
@@ -19,13 +19,13 @@ import {
   VStack,
   Stack,
   useBreakpointValue,
-} from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+} from '@chakra-ui/react';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 export default function Page({ categoryId }) {
   const [category, setCategory] = useState({});
   const router = useRouter();
-  const tableSize = useBreakpointValue({ base: "lg", lg: "lg", sm: "sm" });
+  const tableSize = useBreakpointValue({ base: 'lg', lg: 'lg', sm: 'sm' });
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -37,51 +37,76 @@ export default function Page({ categoryId }) {
 
   return (
     <Flex
-      w={"100%"}
-      marginTop={100}
-      flexDirection={"column"}
-      justifyContent={"flex-start"}
-      zIndex={1}>
-      <HStack display={"flex"} justifyContent={"space-between"}>
-        <Button size={"sm"} w={"3"} onClick={() => router.back()}>
+      w={'100%'}
+      marginTop={'5em'}
+      flexDirection={'column'}
+      justifyContent={'flex-start'}
+      zIndex={1}
+    >
+      <HStack display={'flex'} justifyContent={'space-between'}>
+        <Button size={'sm'} w={'3'} onClick={() => router.back()}>
           <ArrowBackIcon w={4} h={4} />
         </Button>
-        <Text fontSize={"xl"} fontWeight={"bold"}>
-          CATEGORY
+        <Text fontSize={'xl'} fontWeight={'bold'}>
+          Detail Category
         </Text>
       </HStack>
-      <Flex direction={"column"}>
-        <Flex direction={"column"} columnGap={"20px"}>
-          <Flex direction={"column"}></Flex>
+      <Flex direction={'row'} columnGap={'15px'} mt={6}>
+        <Flex direction={'column'}>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Name
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Description
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            Total Product
+          </Text>
+        </Flex>
+        <Flex direction={'column'}>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${category?.name}`}
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${category?.description}`}
+          </Text>
+          <Text fontSize={'lg'} fontWeight={'normal'}>
+            {`: ${category?.items?.length}`}
+          </Text>
+        </Flex>
+      </Flex>
+      <Flex direction={'column'}>
+        <Flex direction={'column'} columnGap={'20px'}>
+          <Flex direction={'column'}></Flex>
           <VStack mt={6}>
-            <Text fontSize="md" fontWeight="bold">
+            <Text fontSize='md' fontWeight='bold'>
               List Category
             </Text>
-            <TableContainer w={"100%"}>
-              <Table size={tableSize} variant="simple">
-                <Thead bg={"#06283D"}>
+            <TableContainer overflowY={'auto'} h={'25em'} px={5} w={'100%'}>
+              <Table size={tableSize} variant='simple'>
+                <Thead bg={'#06283D'}>
                   <Tr>
-                    <Th color={"#EEEDED"}>Name</Th>
-                    <Th color={"#EEEDED"}>SKU</Th>
-                    <Th color={"#EEEDED"}>Base Price</Th>
-                    <Th color={"#EEEDED"}>Selling Price</Th>
+                    <Th color={'#EEEDED'}>Name</Th>
+                    <Th color={'#EEEDED'}>SKU</Th>
+                    <Th color={'#EEEDED'}>Base Price</Th>
+                    <Th color={'#EEEDED'}>Selling Price</Th>
                   </Tr>
                 </Thead>
-                <Tbody bg={"#EEEDED"}>
+                <Tbody bg={'#EEEDED'}>
                   {category?.items?.map((item) => (
                     <Tr key={item.id}>
                       <Td>{item.name}</Td>
                       <Td>{item.SKU}</Td>
                       <Td>
-                        {item.basePrice?.toLocaleString("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
+                        {item.basePrice?.toLocaleString('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR',
                         })}
                       </Td>
                       <Td>
-                        {item.sellingPrice?.toLocaleString("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
+                        {item.sellingPrice?.toLocaleString('id-ID', {
+                          style: 'currency',
+                          currency: 'IDR',
                         })}
                       </Td>
                     </Tr>

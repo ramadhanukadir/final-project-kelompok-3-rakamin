@@ -33,15 +33,15 @@ export default function Page({ orderId }) {
       justifyContent={'flex-start'}
       zIndex={1}
     >
-      <HStack>
+      <HStack justifyContent={'space-between'}>
         <Button size={'sm'} w={'3'} onClick={() => router.back()} title='Back'>
           <ArrowBackIcon w={4} h={4} />
         </Button>
-      </HStack>
-      <Flex direction={'column'} mt={4}>
         <Text fontSize='xl' fontWeight='bold'>
           Order Detail
         </Text>
+      </HStack>
+      <Flex direction={'column'} mt={4}>
         <Flex direction={'row'} columnGap={'20px'}>
           <Flex direction={'column'}>
             <Text>Cutomer </Text>

@@ -52,7 +52,19 @@ function FormEditProfilePicture() {
 
   return (
     <>
-      <Button onClick={onOpen}>Change Profile Picture</Button>
+      <Button
+        rounded={'full'}
+        size='md'
+        bgColor={'#06283D'}
+        color={'#EEEDED'}
+        onClick={onOpen}
+        _hover={{
+          bg: '#164B60',
+          color: '#EEEDED',
+        }}
+      >
+        Change Profile Picture
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

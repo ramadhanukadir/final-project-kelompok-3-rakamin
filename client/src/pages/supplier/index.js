@@ -1,10 +1,10 @@
-import Suppliers from "@/component/dataComponent/Suppliers";
-import { Text, Box } from "@chakra-ui/react";
-import React from "react";
+import Suppliers from '@/component/dataComponent/Suppliers';
+import { Text, Box } from '@chakra-ui/react';
+import React from 'react';
 
 const index = () => {
   return (
-    <Box maxW="7xl" mx={"auto"} px={{ base: 2, sm: 12, md: 17 }}>
+    <Box maxW='7xl' mx={'auto'}>
       <Suppliers />
     </Box>
   );
