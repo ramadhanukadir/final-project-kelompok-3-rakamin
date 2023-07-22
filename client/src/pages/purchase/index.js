@@ -34,6 +34,14 @@ const index = () => {
             setFilterOrder({ ...filterOrder, limit: e.target.value });
           }}
           count={orders?.meta?.totalData}
+          handleOrder={(e) => {
+            setFilterOrder({ ...filterOrder, order: e.target.value });
+          }}
+          handleSort={(e) => {
+            setFilterOrder({ ...filterOrder, sort: e.target.value });
+          }}
+          value={'customers_id'}
+          textValue={'Customers ID'}
         />
         <OrderList orders={orders.data} />
       </Box>

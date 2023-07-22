@@ -80,6 +80,8 @@ const Product = () => {
 
   const router = useRouter();
 
+  console.log(filterProducts);
+
   useEffect(() => {
     if (detailItems) {
       setValue('categories_id', detailItems.categoriesId);
@@ -232,6 +234,22 @@ const Product = () => {
             });
           }, 1000);
         }}
+        handleOrder={(e) => {
+          console.log(e.target.value);
+          setFilterProducts({
+            ...filterProducts,
+            order: e.target.value,
+          });
+        }}
+        handleSort={(e) => {
+          console.log(e.target.value);
+          setFilterProducts({
+            ...filterProducts,
+            sort: e.target.value,
+          });
+        }}
+        value={'name'}
+        textValue={'Name'}
       />
       <TableContainer overflowY={'auto'} h={'25em'} px={5}>
         <Table variant='simple' size={'md'}>

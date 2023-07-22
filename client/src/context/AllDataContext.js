@@ -35,7 +35,6 @@ const AllDataContextProvider = ({ children }) => {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [activeItem, setActiveItem] = useState('dashboard');
-  // const [access, setAccess] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
   const [filterOrder, setFilterOrder] = useState({
     warehouses_id: '',

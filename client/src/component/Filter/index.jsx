@@ -25,6 +25,10 @@ function Filter({
   count,
   handleSearch,
   placeholder,
+  handleOrder,
+  handleSort,
+  value,
+  textValue,
 }) {
   return (
     <HStack mb={3}>
@@ -71,6 +75,34 @@ function Filter({
           <option value={5}>5</option>
           <option value={15}>15</option>
           <option value={25}>25</option>
+        </Select>
+        <Select
+          h={'30px'}
+          w={'120px'}
+          onClick={handleOrder}
+          variant={'outline'}
+          borderColor={'#9DB2BF'}
+          borderRadius={'full'}
+        >
+          <option value={''} selected disabled>
+            Order by
+          </option>
+          <option value={value}>{textValue}</option>
+          <option value={'createdAt'}>Created</option>
+        </Select>
+        <Select
+          h={'30px'}
+          w={'100px'}
+          onClick={handleSort}
+          variant={'outline'}
+          borderColor={'#9DB2BF'}
+          borderRadius={'full'}
+        >
+          <option value={''} selected disabled>
+            Sort
+          </option>
+          <option value={'ASC'}>ASC</option>
+          <option value={'DESC'}>DESC</option>
         </Select>
       </HStack>
       {model === show && (

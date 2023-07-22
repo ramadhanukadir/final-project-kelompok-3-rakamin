@@ -142,7 +142,7 @@ const MyChart = () => {
       h='350px'
     >
       <Text color='gray' fontSize='sm'>
-        Total Revenue
+        Total Revenue on Last 7 Days
       </Text>
       <Text fontWeight='bold' fontSize='2xl'>
         {getTotalPriceForLast7Days()}

@@ -45,7 +45,6 @@ const login = () => {
   const onSubmit = async (data) => {
     try {
       await handleLogin(data);
-      console.log(data);
       toast({
         description: 'Login Success',
         status: 'success',

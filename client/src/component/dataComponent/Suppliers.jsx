@@ -365,6 +365,14 @@ const Suppliers = () => {
         disableNextPage={filterSupplier.page === suppliers.totalPages}
         disablePrevPage={filterSupplier.page === 1}
         count={suppliers.totalItems}
+        handleOrder={(e) => {
+          setFilterSupplier({ ...suppliers, order: e.target.value });
+        }}
+        handleSort={(e) => {
+          setFilterSupplier({ ...suppliers, sort: e.target.value });
+        }}
+        value={'name'}
+        textValue={'Name'}
       />
       <TableContainer overflowY={'auto'} h={'25em'} px={5}>
         <Table variant='simple'>

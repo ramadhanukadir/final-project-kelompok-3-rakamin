@@ -166,6 +166,20 @@ const Customers = () => {
             disableNextPage={filterCustomer.page === customers?.totalPages}
             disablePrevPage={filterCustomer.page === 1}
             count={customers?.totalItems}
+            handleOrder={(e) => {
+              setFilterCustomer({
+                ...filterCustomer,
+                order: e.target.value,
+              });
+            }}
+            handleSort={(e) => {
+              setFilterCustomer({
+                ...filterCustomer,
+                sort: e.target.value,
+              });
+            }}
+            value={'full_name'}
+            textValue={'Full Name'}
           />
           <TableContainer overflowY={'auto'} h={'25em'} px={5}>
             <Table variant='simple'>

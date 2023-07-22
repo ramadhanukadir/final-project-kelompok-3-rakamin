@@ -43,8 +43,7 @@ import { DataContext } from '@/context/AllDataContext';
 const SideBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
-  const { userLogin, setActiveItem, setIsLogin, isLogin } =
-    useContext(DataContext);
+  const { userLogin, setActiveItem, setIsLogin } = useContext(DataContext);
 
   const handleLogout = () => {
     sessionStorage.clear();
