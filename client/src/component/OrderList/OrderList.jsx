@@ -9,8 +9,8 @@ import {
   Th,
   Thead,
   Tr,
+  Skeleton,
 } from "@chakra-ui/react";
-import SkeletonLoading from "../SkeletonLoading";
 import { useRouter } from "next/router";
 
 function OrderList({ orders }) {
@@ -30,13 +30,20 @@ function OrderList({ orders }) {
         </Thead>
         <Tbody bg={"#EEEDED"}>
           {isLoading ? (
-            <>
-              <SkeletonLoading />
-              <SkeletonLoading />
-              <SkeletonLoading />
-              <SkeletonLoading />
-              <SkeletonLoading />
-            </>
+            <Tr>
+              <Td>
+                <Skeleton height="20px" width="80%" />
+              </Td>
+              <Td>
+                <Skeleton height="20px" width="60%" />
+              </Td>
+              <Td>
+                <Skeleton height="20px" width="40%" />
+              </Td>
+              <Td>
+                <Skeleton height="20px" width="60%" />
+              </Td>
+            </Tr>
           ) : (
             orders?.map((order) => (
               <Tr

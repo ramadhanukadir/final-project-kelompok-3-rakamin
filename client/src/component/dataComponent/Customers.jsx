@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import {
   getCustomersById,
   editCustomersById,
   deleteCustomersById,
   postCustomers,
-} from '@/api/customers';
+} from "@/api/customers";
 import {
   Table,
   Thead,
@@ -26,17 +26,23 @@ import {
   useToast,
   Icon,
   TableCaption,
-} from '@chakra-ui/react';
-import { FiPlus, FiDelete, FiEdit, FiMove } from 'react-icons/fi';
-import { useRouter } from 'next/router';
-import { useForm } from 'react-hook-form';
-import InputField from '../InputField/InputField';
-import { DataContext } from '@/context/AllDataContext';
-import Filter from '../Filter';
+  Skeleton,
+} from "@chakra-ui/react";
+import { FiPlus, FiDelete, FiEdit, FiMove } from "react-icons/fi";
+import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+import InputField from "../InputField/InputField";
+import { DataContext } from "@/context/AllDataContext";
+import Filter from "../Filter";
 
 const Customers = () => {
-  const { customers, filterCustomer, setFilterCustomer, fetchCustomers } =
-    useContext(DataContext);
+  const {
+    customers,
+    filterCustomer,
+    setFilterCustomer,
+    fetchCustomers,
+    isLoading,
+  } = useContext(DataContext);
   const toast = useToast();
   const {
     register,
@@ -52,8 +58,8 @@ const Customers = () => {
 
   useEffect(() => {
     if (detailItems) {
-      setValue('full_name', detailItems?.data?.full_name);
-      setValue('address', detailItems?.data?.address);
+      setValue("full_name", detailItems?.data?.full_name);
+      setValue("address", detailItems?.data?.address);
     }
     fetchCustomers();
   }, [detailItems, isModalOpen]);
@@ -73,18 +79,18 @@ const Customers = () => {
       await deleteCustomersById(id);
       handleCloseModal();
       toast({
-        title: 'Delete Product',
-        description: 'You have successfully Created Product.',
-        status: 'success',
+        title: "Delete Product",
+        description: "You have successfully Created Product.",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
       fetchCustomers();
     } catch (error) {
       toast({
-        title: 'Failed to delete product.',
+        title: "Failed to delete product.",
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -96,9 +102,9 @@ const Customers = () => {
       await editCustomersById(editCustomersId, data);
       handleCloseModal();
       toast({
-        title: 'Updated Customer',
-        description: 'You have successfully Updated Customers.',
-        status: 'success',
+        title: "Updated Customer",
+        description: "You have successfully Updated Customers.",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
@@ -106,9 +112,9 @@ const Customers = () => {
       reset();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: "Failed to create product.",
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -120,16 +126,15 @@ const Customers = () => {
   };
 
   return (
-    <Box maxW='7xl' mx={'auto'} pt={{ base: 2, sm: 12, md: 17 }} mt={'3em'}>
+    <Box maxW="7xl" mx={"auto"} pt={{ base: 2, sm: 12, md: 17 }} mt={"3em"}>
       <Box>
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'space-between'}
-          mb={'3em'}
-          pb={'8'}
-        >
-          <Text fontWeight={'bold'} fontSize={'xl'}>
+          display={"flex"}
+          flexDirection={"row"}
+          justifyContent={"space-between"}
+          mb={"3em"}
+          pb={"8"}>
+          <Text fontWeight={"bold"} fontSize={"xl"}>
             Customers
           </Text>
           <InputCustomers fetchData={() => fetchCustomers()} />
@@ -162,91 +167,103 @@ const Customers = () => {
             disablePrevPage={filterCustomer.page === 1}
             count={customers?.totalItems}
           />
-          <TableContainer overflowY={'auto'} h={'25em'} px={5}>
-            <Table variant='simple'>
+          <TableContainer overflowY={"auto"} h={"25em"} px={5}>
+            <Table variant="simple">
               <TableCaption>Customers</TableCaption>
-              <Thead bg={'#06283D'}>
+              <Thead bg={"#06283D"}>
                 <Tr>
-                  <Th color={'#EEEDED'}>Full Name</Th>
-                  <Th color={'#EEEDED'}>Address</Th>
-                  <Th color={'#EEEDED'}>Actions</Th>
+                  <Th color={"#EEEDED"}>Full Name</Th>
+                  <Th color={"#EEEDED"}>Address</Th>
+                  <Th color={"#EEEDED"}>Actions</Th>
                 </Tr>
               </Thead>
-              <Tbody bg={'#EEEDED'}>
-                {customers?.dataCustomers?.map((customer) => (
-                  <Tr key={customer.id}>
-                    <Td
-                      onClick={() => router.push(`/customers/${customer.id}`)}
-                      cursor={'pointer'}
-                    >
-                      {customer.full_name}
-                    </Td>
-                    <Td>{customer.address}</Td>
+              <Tbody bg={"#EEEDED"}>
+                {isLoading ? (
+                  <Tr>
                     <Td>
-                      <Icon
-                        color={'#06283D'}
-                        onClick={() => handleEdit(customer.id)}
-                        as={FiEdit}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title='Edit'
-                      />
-                      <Icon
-                        color={'red'}
-                        onClick={() => handleDelete(customer.id)}
-                        as={FiDelete}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#EF6262',
-                        }}
-                        title='Delete'
-                      />
+                      <Skeleton height="20px" width="80%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="60%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="40%" />
                     </Td>
                   </Tr>
-                ))}
+                ) : (
+                  customers?.dataCustomers?.map((customer) => (
+                    <Tr key={customer.id}>
+                      <Td
+                        onClick={() => router.push(`/customers/${customer.id}`)}
+                        cursor={"pointer"}>
+                        {customer.full_name}
+                      </Td>
+                      <Td>{customer.address}</Td>
+                      <Td>
+                        <Icon
+                          color={"#06283D"}
+                          onClick={() => handleEdit(customer.id)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: "pointer",
+                            color: "#4F709C",
+                          }}
+                          title="Edit"
+                        />
+                        <Icon
+                          color={"red"}
+                          onClick={() => handleDelete(customer.id)}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: "pointer",
+                            color: "#EF6262",
+                          }}
+                          title="Delete"
+                        />
+                      </Td>
+                    </Tr>
+                  ))
+                )}
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader textAlign='center'>Edit Customers</ModalHeader>
+                    <ModalHeader textAlign="center">Edit Customers</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <InputField
-                          name={'full_name'}
-                          label={'Full Name'}
-                          type={'text'}
-                          placeholder={'Please Input Your Full Name'}
-                          register={register('full_name', {
-                            required: 'This is required',
+                          name={"full_name"}
+                          label={"Full Name"}
+                          type={"text"}
+                          placeholder={"Please Input Your Full Name"}
+                          register={register("full_name", {
+                            required: "This is required",
                           })}
                           errors={errors.full_name}
                         />
                         <InputField
-                          name={'address'}
-                          label={'Address'}
-                          type={'text'}
-                          placeholder={'Please Input Your Address'}
-                          register={register('address', {
-                            required: 'This is required',
+                          name={"address"}
+                          label={"Address"}
+                          type={"text"}
+                          placeholder={"Please Input Your Address"}
+                          register={register("address", {
+                            required: "This is required",
                           })}
                           errors={errors.address}
                         />
                         <Button
-                          type='submit'
-                          size={'md'}
-                          colorScheme='blue'
+                          type="submit"
+                          size={"md"}
+                          colorScheme="blue"
                           mt={3}
-                          w={'100%'}
-                          borderRadius={'full'}
-                        >
+                          w={"100%"}
+                          borderRadius={"full"}>
                           Update Customer
                         </Button>
                       </form>
                     </ModalBody>
                     <ModalFooter>
-                      <Button size={'md'} onClick={handleCloseModal}>
+                      <Button size={"md"} onClick={handleCloseModal}>
                         Cancel
                       </Button>
                     </ModalFooter>
@@ -278,9 +295,9 @@ export const InputCustomers = ({ fetchData }) => {
       // await instance.post('/customer', data);
       handleCloseModal(),
         toast({
-          title: 'Created Product',
-          description: 'You have successfully Created Product.',
-          status: 'success',
+          title: "Created Product",
+          description: "You have successfully Created Product.",
+          status: "success",
           duration: 3000,
           isClosable: true,
         });
@@ -289,9 +306,9 @@ export const InputCustomers = ({ fetchData }) => {
       fetchData();
     } catch (error) {
       toast({
-        title: 'Failed to create product.',
+        title: "Failed to create product.",
         description: error.message,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -309,60 +326,58 @@ export const InputCustomers = ({ fetchData }) => {
   return (
     <Box>
       <Button
-        size='sm'
-        bgColor={'#06283D'}
-        color={'#EEEDED'}
+        size="sm"
+        bgColor={"#06283D"}
+        color={"#EEEDED"}
         leftIcon={<FiPlus />}
         onClick={handleOpenModal}
-        borderRadius={'full'}
-        boxShadow={'0px 0px 3px 0px #06283D'}
+        borderRadius={"full"}
+        boxShadow={"0px 0px 3px 0px #06283D"}
         _hover={{
-          bg: '#164B60',
-          color: '#EEEDED',
-        }}
-      >
+          bg: "#164B60",
+          color: "#EEEDED",
+        }}>
         Add Customer
       </Button>
       <Modal isOpen={isOpen} onClose={handleCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader textAlign='center'>Stock Form</ModalHeader>
+          <ModalHeader textAlign="center">Stock Form</ModalHeader>
           <ModalBody pb={2}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <InputField
-                name={'full_name'}
-                label={'Full Name'}
-                type={'text'}
-                placeholder={'Please Input Your Full Name'}
-                register={register('full_name', {
-                  required: 'This is required',
+                name={"full_name"}
+                label={"Full Name"}
+                type={"text"}
+                placeholder={"Please Input Your Full Name"}
+                register={register("full_name", {
+                  required: "This is required",
                 })}
                 errors={errors.full_name}
               />
               <InputField
-                name={'address'}
-                label={'Address'}
-                type={'text'}
-                placeholder={'Please Input Your Address'}
-                register={register('address', {
-                  required: 'This is required',
+                name={"address"}
+                label={"Address"}
+                type={"text"}
+                placeholder={"Please Input Your Address"}
+                register={register("address", {
+                  required: "This is required",
                 })}
                 errors={errors.address}
               />
               <Button
-                type='submit'
-                size={'md'}
-                colorScheme='blue'
+                type="submit"
+                size={"md"}
+                colorScheme="blue"
                 mt={3}
-                w={'100%'}
-                borderRadius={'full'}
-              >
+                w={"100%"}
+                borderRadius={"full"}>
                 Add Customer
               </Button>
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button size={'md'} onClick={handleCloseModal}>
+            <Button size={"md"} onClick={handleCloseModal}>
               Cancel
             </Button>
           </ModalFooter>

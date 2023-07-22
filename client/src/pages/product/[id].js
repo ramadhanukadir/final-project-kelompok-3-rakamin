@@ -115,7 +115,9 @@ function Card({ SKU, description, name, basePrice, sellingPrice, image }) {
       boxShadow={"2xl"}
       rounded={"lg"}
       pos={"relative"}
-      zIndex={1}>
+      zIndex={1}
+      justifyContent={"center"}
+      alignItems={"center"}>
       <Box
         rounded={"lg"}
         mt={15}
@@ -154,10 +156,15 @@ function Card({ SKU, description, name, basePrice, sellingPrice, image }) {
           textTransform={"uppercase"}>
           {SKU}
         </Text>
-        <Text color={"gray.500"} fontSize={"sm"} textTransform={"uppercase"}>
+        <Text
+          color={"black"}
+          fontWeight={500}
+          fontSize={"xl"}
+          fontFamily={"mono"}
+          textTransform={"uppercase"}>
           {name}
         </Text>
-        <Heading fontSize={"2xl"} fontFamily={"body"} fontWeight={500}>
+        <Heading fontSize={"sm"} fontFamily={"body"}>
           {description}
         </Heading>
         <Stack direction={"column"} align={"center"}>
@@ -167,7 +174,7 @@ function Card({ SKU, description, name, basePrice, sellingPrice, image }) {
               currency: "IDR",
             })}
           </Text>
-          <Text color={"gray.600"}>
+          <Text color={"black"} fontWeight={"bold"}>
             {sellingPrice?.toLocaleString("id-ID", {
               style: "currency",
               currency: "IDR",

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { instance } from '@/modules/axios';
-import ReactPaginate from 'react-paginate';
-import axios from 'axios';
+import React, { useState, useEffect, useContext } from "react";
+import { instance } from "@/modules/axios";
+import axios from "axios";
+import { DataContext } from "@/context/AllDataContext";
 
 import {
   Button,
@@ -39,29 +39,32 @@ import {
   Icon,
   IconButton,
   Flex,
-} from '@chakra-ui/react';
+  TableCaption,
+  Skeleton,
+} from "@chakra-ui/react";
 
-import { SearchIcon } from '@chakra-ui/icons';
-import { Center } from '@chakra-ui/react';
-import { FiPlus, FiDelete, FiEdit, FiEye } from 'react-icons/fi';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/router';
-import Filter from '../Filter';
+import { SearchIcon } from "@chakra-ui/icons";
+import { Center } from "@chakra-ui/react";
+import { FiPlus, FiDelete, FiEdit, FiEye } from "react-icons/fi";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import Filter from "../Filter";
 
 const Warehouses = () => {
   const router = useRouter();
 
+  const { isLoading } = useContext(DataContext);
   const [warehouses, setWarehouses] = useState([]);
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [pages, setPages] = useState({});
   const [rows, setRows] = useState(0);
-  const [keyword, setKeyword] = useState('');
-  const [query, setQuery] = useState('');
-  const [msg, setMsg] = useState('');
+  const [keyword, setKeyword] = useState("");
+  const [query, setQuery] = useState("");
+  const [msg, setMsg] = useState("");
 
   const [filterWarehouses, setFilterWarehouses] = useState({
-    search_query: '',
+    search_query: "",
     page: 1,
     limit: 5,
   });
@@ -72,7 +75,8 @@ const Warehouses = () => {
   const [isSavePopupOpen, setIsSavePopupOpen] = useState(false);
 
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
   const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
 
   const [editWarehouseData, setEditWarehouseData] = useState(null);
@@ -90,7 +94,7 @@ const Warehouses = () => {
   const onSubmitEdit = async (data) => {
     try {
       if (!editWarehouseData) {
-        console.log('Gudang belum dipilih untuk diedit.');
+        console.log("Gudang belum dipilih untuk diedit.");
         return;
       }
 
@@ -123,7 +127,9 @@ const Warehouses = () => {
   }, [page, keyword, filterWarehouses]);
 
   const getWarehouses = async () => {
-    const response = await instance.get(`/warehouses/with-filter?search_query=${filterWarehouses.search_query}&page=${filterWarehouses.page}&limit=${filterWarehouses.limit}`);
+    const response = await instance.get(
+      `/warehouses/with-filter?search_query=${filterWarehouses.search_query}&page=${filterWarehouses.page}&limit=${filterWarehouses.limit}`
+    );
 
     setWarehouses(response.data.result);
     setPage(response.data.page);
@@ -134,9 +140,9 @@ const Warehouses = () => {
   const changePage = ({ selected }) => {
     setPage(selected);
     if (selected === 9) {
-      setMsg('cari data dengan kata kunci spesifik');
+      setMsg("cari data dengan kata kunci spesifik");
     } else {
-      setMsg('');
+      setMsg("");
     }
   };
 
@@ -167,7 +173,9 @@ const Warehouses = () => {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get('https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB');
+        const response = await axios.get(
+          "https://api.goapi.id/v1/regional/provinsi?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB"
+        );
         setProvinces(response.data.data);
         // console.log(response.data.data);
       } catch (error) {
@@ -179,7 +187,9 @@ const Warehouses = () => {
 
   const fetchCitiesByProvince = async (selectedProvince) => {
     try {
-      const response = await axios.get(`https://api.goapi.id/v1/regional/kota?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB&provinsi_id=${selectedProvince}`);
+      const response = await axios.get(
+        `https://api.goapi.id/v1/regional/kota?api_key=xPYHpbKxZjKwZTMsBURTp8zDNnZtYB&provinsi_id=${selectedProvince}`
+      );
       setCities(response.data.data);
     } catch (error) {
       console.log(error);
@@ -190,11 +200,17 @@ const Warehouses = () => {
   const onSubmit = async (data) => {
     try {
       // Validasi input
-      if (!data.name || !data.address || !data.province || !data.city || !data.telephone) {
+      if (
+        !data.name ||
+        !data.address ||
+        !data.province ||
+        !data.city ||
+        !data.telephone
+      ) {
         toast({
-          title: 'Error',
-          description: 'Please fill in all required fields.',
-          status: 'error',
+          title: "Error",
+          description: "Please fill in all required fields.",
+          status: "error",
           duration: 3000,
           isClosable: true,
         });
@@ -205,9 +221,9 @@ const Warehouses = () => {
       const phoneRegex = /^[0-9]{10,12}$/;
       if (!phoneRegex.test(data.telephone)) {
         toast({
-          title: 'Error',
-          description: 'Please enter a valid phone number.',
-          status: 'error',
+          title: "Error",
+          description: "Please enter a valid phone number.",
+          status: "error",
           duration: 3000,
           isClosable: true,
         });
@@ -215,7 +231,7 @@ const Warehouses = () => {
       }
 
       // Kirim data gudang ke backend
-      await instance.post('/warehouses', data);
+      await instance.post("/warehouses", data);
 
       // Dapatkan data gudang terbaru dari backend
       getWarehouses();
@@ -269,13 +285,29 @@ const Warehouses = () => {
   };
 
   return (
-    <Box width="100%">
-      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} py={'10'} mt={10}>
-        <Text fontWeight={'bold'} fontSize={'xl'}>
+    <Box maxW="7xl" mx={"auto"} pt={{ base: 2, sm: 12, md: 17 }} mt={"3em"}>
+      <Box
+        display={"flex"}
+        flexDirection={"row"}
+        justifyContent={"space-between"}
+        mb={"3em"}
+        pb={"8"}>
+        <Text fontWeight={"bold"} fontSize={"xl"}>
           Warehouses
         </Text>
-        <Box display={'flex'} flexDirection={'row'} gap={'5'}>
-          <Button size="sm" bgColor={''} leftIcon={<FiPlus />} onClick={openModal}>
+        <Box display={"flex"} flexDirection={"row"} gap={"5"}>
+          <Button
+            size="sm"
+            bgColor={"#06283D"}
+            color={"#EEEDED"}
+            leftIcon={<FiPlus />}
+            onClick={openModal}
+            borderRadius={"full"}
+            boxShadow={"0px 0px 3px 0px #06283D"}
+            _hover={{
+              bg: "#164B60",
+              color: "#EEEDED",
+            }}>
             Add Warehouse
           </Button>
         </Box>
@@ -307,7 +339,7 @@ const Warehouses = () => {
         disableNextPage={filterWarehouses.page === pages}
         disablePrevPage={filterWarehouses.page === 1}
         count={rows}
-        placeholder={'Search by Name or Warehouse'}
+        placeholder={"Search by Name or Warehouse"}
         handleSearch={(e) => {
           setTimeout(() => {
             setFilterWarehouses({
@@ -317,100 +349,84 @@ const Warehouses = () => {
           }, 1000);
         }}
       />
-
       <Box>
-        <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Box display={'row'} justifyContent={'start'} alignItems={'center'} gap={'10'} my={'5'}></Box>
-          <Box display={'flex'} justifyContent={'end'} mb={2}></Box>
-        </Box>
         <Box>
-          <TableContainer>
+          <TableContainer overflowY={"auto"} h={"25em"} px={5}>
             <Table variant="simple">
-              <Thead bg={'#DFF6FE'}>
+              <TableCaption>Warehouses</TableCaption>
+              <Thead bg={"#06283D"}>
                 <Tr>
-                  <Th>Warehouse Name</Th>
-                  <Th>Address</Th>
-                  <Th>Province</Th>
-                  <Th>City</Th>
-                  <Th>Postal Code</Th>
-                  <Th>Telephone</Th>
-                  <Th>
+                  <Th color={"#EEEDED"}>Warehouse Name</Th>
+                  <Th color={"#EEEDED"}>Address</Th>
+                  <Th color={"#EEEDED"}>Province</Th>
+                  <Th color={"#EEEDED"}>City</Th>
+
+                  <Th color={"#EEEDED"}>
                     <Center>Actions</Center>
                   </Th>
                 </Tr>
               </Thead>
-              <Tbody>
-                {warehouses.map((warehouse) => (
-                  <Tr key={warehouse.id}>
-                    <Td>{warehouse.name}</Td>
-                    <Td>{warehouse.address}</Td>
-                    <Td>{warehouse.province}</Td>
-                    <Td>{warehouse.city}</Td>
-                    <Td>{warehouse.postal_code}</Td>
-                    <Td>{warehouse.telephone}</Td>
+              <Tbody bg={"#EEEDED"}>
+                {isLoading ? (
+                  <Tr>
                     <Td>
-                      <Icon
-                        boxSize={5}
-                        color={'#06283D'}
-                        onClick={() => router.push(`/warehouse/${warehouse.id}`)}
-                        as={FiEye}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title="View"
-                      />
-                      <Icon
-                        boxSize={5}
-                        color={'#06283D'}
-                        onClick={() => handleEditWarehouse(warehouse)}
-                        as={FiEdit}
-                        mr={3}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#4F709C',
-                        }}
-                        title="Edit"
-                      />
-                      <Icon
-                        boxSize={5}
-                        color={'red'}
-                        onClick={() => handleDeleteWarehouse(warehouse.id)}
-                        as={FiDelete}
-                        _hover={{
-                          cursor: 'pointer',
-                          color: '#EF6262',
-                        }}
-                        title="Delete"
-                      />
+                      <Skeleton height="20px" width="80%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="60%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="40%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="60%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="60%" />
                     </Td>
                   </Tr>
-                ))}
+                ) : (
+                  warehouses.map((warehouse) => (
+                    <Tr key={warehouse.id}>
+                      <Td
+                        onClick={() =>
+                          router.push(`/warehouse/${warehouse.id}`)
+                        }
+                        cursor={"pointer"}>
+                        {warehouse.name}
+                      </Td>
+                      <Td>{warehouse.address}</Td>
+                      <Td>{warehouse.province}</Td>
+                      <Td>{warehouse.city}</Td>
+                      <Td>
+                        <Icon
+                          color={"#06283D"}
+                          onClick={() => handleEditWarehouse(warehouse)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: "pointer",
+                            color: "#4F709C",
+                          }}
+                          title="Edit"
+                        />
+                        <Icon
+                          color={"red"}
+                          onClick={() => handleDeleteWarehouse(warehouse.id)}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: "pointer",
+                            color: "#EF6262",
+                          }}
+                          title="Delete"
+                        />
+                      </Td>
+                    </Tr>
+                  ))
+                )}
               </Tbody>
             </Table>
           </TableContainer>
-
-          {/* <Text fontWeight={'bold'} fontSize={'l'} mt={5}>
-            Total Warehouse: {rows} Page: {rows ? page + 1 : 0} of {pages}
-          </Text>
-          <p className="text-danger">{msg}</p>
-
-          <nav className="pagination is-centered" key={rows} role="navigation" aria-label="pagination">
-            <ReactPaginate
-              previousLabel={'< Prev'}
-              nextLabel={'Next >'}
-              pageCount={Math.min(10, pages)}
-              onPageChange={changePage}
-              containerClassName={'pagination-container'}
-              activeClassName={'active-page'}
-              pageLinkClassName="pagination-link"
-              previousLinkClassName="pagination-previous"
-              nextLinkClassName="pagination-next"
-              activeLinkClassName="pagination-link is-current"
-              disabledLinkClassName="pagination-link is-disabled"
-            />
-          </nav> */}
         </Box>
       </Box>
 
@@ -419,32 +435,48 @@ const Warehouses = () => {
         <ModalContent>
           <ModalHeader> Add Warehouse</ModalHeader>
           <ModalBody>
-            <form onSubmit={''}>
+            <form onSubmit={""}>
               <ChakraFormControl isInvalid={errors.name} isRequired>
                 <ChakraFormLabel>Name</ChakraFormLabel>
-                <Input {...register('name', { required: true })} />
-                {errors.name && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Input {...register("name", { required: true })} />
+                {errors.name && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.address} isRequired>
                 <ChakraFormLabel>Address</ChakraFormLabel>
-                <Textarea {...register('address', { required: true })} />
-                {errors.address && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Textarea {...register("address", { required: true })} />
+                {errors.address && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.province} isRequired>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))}>
+                <Select
+                  id="province"
+                  {...register("province", { required: true })}
+                  onChange={(e) =>
+                    fetchCitiesByProvince(
+                      e.target.selectedOptions[0].getAttribute("data-id")
+                    )
+                  }>
                   <option value="">-Select Province-</option>
                   {provinces.map((province) => (
-                    <option key={province.id} value={province.name} data-id={province.id}>
+                    <option
+                      key={province.id}
+                      value={province.name}
+                      data-id={province.id}>
                       {province.name}
                     </option>
                   ))}
-                  {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
+                  {errors.province && (
+                    <FormErrorMessage>This field is required</FormErrorMessage>
+                  )}
                 </Select>
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.city} isRequired>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select id="city" {...register('city', { required: true })}>
+                <Select id="city" {...register("city", { required: true })}>
                   <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
@@ -452,16 +484,23 @@ const Warehouses = () => {
                     </option>
                   ))}
                 </Select>
-                {errors.city && <FormErrorMessage>This field is required</FormErrorMessage>}
+                {errors.city && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.postal_code}>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input type="number" {...register('postal_code')} />
+                <Input type="number" {...register("postal_code")} />
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.telephone} isRequired>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input type="number" {...register('telephone', { required: true })} />
-                {errors.telephone && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Input
+                  type="number"
+                  {...register("telephone", { required: true })}
+                />
+                {errors.telephone && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
             </form>
           </ModalBody>
@@ -477,28 +516,55 @@ const Warehouses = () => {
       </Modal>
 
       {isSavePopupOpen && (
-        <Box position="fixed" bottom={4} right={4} p={3} bg="green.500" color="white" borderRadius="md" zIndex={9999}>
+        <Box
+          position="fixed"
+          bottom={4}
+          right={4}
+          p={3}
+          bg="green.500"
+          color="white"
+          borderRadius="md"
+          zIndex={9999}>
           Data has been saved to the database.
         </Box>
       )}
 
       {isDeletePopupOpen && (
-        <Box position="fixed" bottom={4} right={4} p={3} bg="red.700" color="white" borderRadius="md" zIndex={9999}>
+        <Box
+          position="fixed"
+          bottom={4}
+          right={4}
+          p={3}
+          bg="red.700"
+          color="white"
+          borderRadius="md"
+          zIndex={9999}>
           Data has been deleted.
         </Box>
       )}
 
-      <AlertDialog isOpen={isDeleteConfirmationOpen} onClose={cancelDeleteWarehouse}>
+      <AlertDialog
+        isOpen={isDeleteConfirmationOpen}
+        onClose={cancelDeleteWarehouse}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Delete Warehouse
             </AlertDialogHeader>
-            <AlertDialogBody>Are you sure you want to delete this warehouse? This action is irreversible.</AlertDialogBody>
+            <AlertDialogBody>
+              Are you sure you want to delete this warehouse? This action is
+              irreversible.
+            </AlertDialogBody>
             <AlertDialogFooter>
-              <Button onClick={cancelDeleteWarehouse}>Cancel</Button>
-              <Button colorScheme="red" ml={3} onClick={confirmDeleteWarehouse}>
+              <Button
+                rounded={"full"}
+                colorScheme="red"
+                mr={3}
+                onClick={confirmDeleteWarehouse}>
                 Delete
+              </Button>
+              <Button rounded={"full"} onClick={cancelDeleteWarehouse}>
+                Cancel
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -514,30 +580,58 @@ const Warehouses = () => {
             <form onSubmit={handleSubmit(onSubmitEdit)}>
               <ChakraFormControl isInvalid={errors.name} isRequired>
                 <ChakraFormLabel>Name</ChakraFormLabel>
-                <Input defaultValue={editWarehouseData?.name} {...register('name', { required: true })} />
-                {errors.name && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Input
+                  defaultValue={editWarehouseData?.name}
+                  {...register("name", { required: true })}
+                />
+                {errors.name && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.address} isRequired>
                 <ChakraFormLabel>address</ChakraFormLabel>
-                <Textarea defaultValue={editWarehouseData?.address} {...register('address', { required: true })} />
-                {errors.address && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Textarea
+                  defaultValue={editWarehouseData?.address}
+                  {...register("address", { required: true })}
+                />
+                {errors.address && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.province} isRequired>
                 <ChakraFormLabel>Province</ChakraFormLabel>
-                <Select id="province" {...register('province', { required: true })} onChange={(e) => fetchCitiesByProvince(e.target.selectedOptions[0].getAttribute('data-id'))} defaultValue={editWarehouseData?.province}>
+                <Select
+                  id="province"
+                  {...register("province", { required: true })}
+                  onChange={(e) =>
+                    fetchCitiesByProvince(
+                      e.target.selectedOptions[0].getAttribute("data-id")
+                    )
+                  }
+                  defaultValue={editWarehouseData?.province}>
                   <option value="">-Select Province-</option>
                   {provinces.map((province) => (
-                    <option key={province.id} value={province.name} data-id={province.id}>
+                    <option
+                      key={province.id}
+                      value={province.name}
+                      data-id={province.id}>
                       {province.name}
                     </option>
                   ))}
-                  {errors.province && <FormErrorMessage>This field is required</FormErrorMessage>}
+                  {errors.province && (
+                    <FormErrorMessage>This field is required</FormErrorMessage>
+                  )}
                 </Select>
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.city} isRequired>
                 <ChakraFormLabel>City</ChakraFormLabel>
-                <Select id="city" {...register('city', { required: true })} defaultValue={editWarehouseData?.city}>
-                  <option value={editWarehouseData?.city}>{editWarehouseData?.city}</option>
+                <Select
+                  id="city"
+                  {...register("city", { required: true })}
+                  defaultValue={editWarehouseData?.city}>
+                  <option value={editWarehouseData?.city}>
+                    {editWarehouseData?.city}
+                  </option>
                   <option value="">-Select City-</option>
                   {cities.map((city) => (
                     <option key={city.id} value={city.name}>
@@ -545,16 +639,28 @@ const Warehouses = () => {
                     </option>
                   ))}
                 </Select>
-                {errors.city && <FormErrorMessage>This field is required</FormErrorMessage>}
+                {errors.city && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.postal_code}>
                 <ChakraFormLabel>Postal Code</ChakraFormLabel>
-                <Input defaultValue={editWarehouseData?.postal_code} type="number" {...register('postal_code')} />
+                <Input
+                  defaultValue={editWarehouseData?.postal_code}
+                  type="number"
+                  {...register("postal_code")}
+                />
               </ChakraFormControl>
               <ChakraFormControl isInvalid={errors.telephone} isRequired>
                 <ChakraFormLabel>Telephone</ChakraFormLabel>
-                <Input defaultValue={editWarehouseData?.telephone} type="number" {...register('telephone', { required: true })} />
-                {errors.telephone && <FormErrorMessage>This field is required</FormErrorMessage>}
+                <Input
+                  defaultValue={editWarehouseData?.telephone}
+                  type="number"
+                  {...register("telephone", { required: true })}
+                />
+                {errors.telephone && (
+                  <FormErrorMessage>This field is required</FormErrorMessage>
+                )}
               </ChakraFormControl>
             </form>
           </ModalBody>

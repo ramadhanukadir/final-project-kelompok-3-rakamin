@@ -11,11 +11,13 @@ import { fetchUser } from "@/api/auth";
 import { getAllExpenses, getAllOrdersItems, getAllRevenue } from "@/api/chart";
 import { getAllCategories } from "@/api/category";
 import { getAllSuppliers } from "@/api/suppliers";
+import { useTimeout } from "@chakra-ui/react";
 
 const AllDataContext = createContext();
 
 const AllDataContextProvider = ({ children }) => {
   const [warehouseId, setWarehouseId] = useState(0);
+  const [detailWarehouse, setDetailWarehouse] = useState({});
   const [warehouses, setWarehouses] = useState([]);
   const [warehouseItems, setWarehouseItems] = useState([]);
   const [products, setProducts] = useState([]);
@@ -170,7 +172,9 @@ const AllDataContextProvider = ({ children }) => {
       fetchWarehouseById(warehouseId);
     }
 
-    setIsLoading(false);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }, [
     access,
     warehouseId,
@@ -217,6 +221,8 @@ const AllDataContextProvider = ({ children }) => {
         setFilterProducts,
         filterCustomer,
         setFilterCustomer,
+        detailWarehouse,
+        setDetailWarehouse,
         filterSupplier,
         setFilterSupplier,
         fetchAllSuppliers,

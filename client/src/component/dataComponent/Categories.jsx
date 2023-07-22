@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { instance } from "@/modules/axios";
 import {
   Box,
@@ -12,7 +12,6 @@ import {
   Th,
   Td,
   Tbody,
-  useBreakpointValue,
   Modal,
   ModalBody,
   ModalContent,
@@ -20,14 +19,11 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalFooter,
-  VStack,
-  FormLabel,
-  FormControl,
   FormControl as FormErrorMessage,
   FormLabel as ChakraFormLabel,
-  Input,
   useToast,
   Icon,
+  Skeleton,
 } from "@chakra-ui/react";
 import { useFieldArray, useForm, watch } from "react-hook-form";
 import {
@@ -38,42 +34,36 @@ import {
 } from "@/modules/fetch";
 import { FiPlus, FiEdit, FiDelete } from "react-icons/fi";
 import { useRouter } from "next/router";
+import { DataContext } from "@/context/AllDataContext";
+import InputField from "../InputField/InputField";
+import SkeletonLoading from "@/component/SkeletonLoading";
 
 const Categories = () => {
-  const [categories, setCategories] = useState([]);
+  const { categories, fetchCategories, isLoading } = useContext(DataContext);
   const toast = useToast();
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
     reset,
-    resetField,
     setValue,
   } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItemId, setEditItemId] = useState(null);
   const [detailItems, setDetailItems] = useState({});
   const router = useRouter();
-
-  const fetchCategories = async () => {
-    const { data } = await getAllCategories();
-    setCategories(data);
-  };
+  console.log(isLoading);
 
   useEffect(() => {
-    fetchCategories();
     if (detailItems) {
       setValue("name", detailItems.name);
       setValue("description", detailItems.description);
     }
   }, [detailItems, isModalOpen]);
-  console.log(categories);
 
   const handleEdit = async (id) => {
     const foundProduct = await getCategoriesId(id);
     setDetailItems(foundProduct);
-    fetchCategories();
     if (foundProduct) {
       setEditItemId(id);
       setIsModalOpen(true);
@@ -86,10 +76,11 @@ const Categories = () => {
       handleCloseModal(),
         toast({
           title: "Delete Product",
-          description: "You have successfully Created Product.",
+          description: "You have successfully deleted Product.",
           status: "success",
           duration: 3000,
           isClosable: true,
+          position: "top",
         });
       fetchCategories();
     } catch (error) {
@@ -99,6 +90,7 @@ const Categories = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
     }
   };
@@ -108,21 +100,23 @@ const Categories = () => {
       await instance.put(`/categories/${editItemId}`, data);
       handleCloseModal();
       toast({
-        title: "Created Product",
-        description: "You have successfully Created Product.",
+        title: "Update Product",
+        description: "You have successfully updated Product.",
         status: "success",
         duration: 3000,
         isClosable: true,
+        position: "top",
       });
       fetchCategories();
       reset();
     } catch (error) {
       toast({
-        title: "Failed to create product.",
+        title: "Failed to update product.",
         description: error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
     }
   };
@@ -143,7 +137,7 @@ const Categories = () => {
           <Text fontWeight={"bold"} fontSize={"xl"}>
             Category
           </Text>
-          <InputCategory />
+          <InputCategory fetchCategories={() => fetchCategories()} />
         </Box>
         <Box>
           <TableContainer overflowY={"auto"} h={"25em"} px={5}>
@@ -156,84 +150,102 @@ const Categories = () => {
                 </Tr>
               </Thead>
               <Tbody bg={"#EEEDED"}>
-                {categories?.map((c) => (
-                  <Tr key={c.id}>
-                    <Td
-                      onClick={() => router.push(`/category/${c.id}`)}
-                      cursor={"pointer"}
-                      _hover={"black"}>
-                      {c.name}
-                    </Td>
-                    <Tr>
-                      <Td>{c.description}</Td>
-                    </Tr>
-
+                {isLoading ? (
+                  <Tr>
                     <Td>
-                      <Icon
-                        color={"#06283D"}
-                        onClick={() => handleEdit(c.id)}
-                        as={FiEdit}
-                        mr={3}
-                        _hover={{
-                          cursor: "pointer",
-                          color: "#4F709C",
-                        }}
-                        title="Edit"
-                      />
-                      <Icon
-                        color={"red"}
-                        onClick={() => handleDeleteItems(c.id)}
-                        as={FiDelete}
-                        _hover={{
-                          cursor: "pointer",
-                          color: "#EF6262",
-                        }}
-                        title="Delete"
-                      />
+                      <Skeleton height="20px" width="80%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="60%" />
+                    </Td>
+                    <Td>
+                      <Skeleton height="20px" width="40%" />
                     </Td>
                   </Tr>
-                ))}
+                ) : (
+                  categories?.map((c) => (
+                    <Tr key={c.id}>
+                      <Td
+                        onClick={() => router.push(`/category/${c.id}`)}
+                        cursor={"pointer"}
+                        _hover={"black"}>
+                        {c.name}
+                      </Td>
+                      <Tr>
+                        <Td>{c.description}</Td>
+                      </Tr>
+
+                      <Td>
+                        <Icon
+                          color={"#06283D"}
+                          onClick={() => handleEdit(c.id)}
+                          as={FiEdit}
+                          mr={3}
+                          _hover={{
+                            cursor: "pointer",
+                            color: "#4F709C",
+                          }}
+                          title="Edit"
+                        />
+                        <Icon
+                          color={"red"}
+                          onClick={() => handleDeleteItems(c.id)}
+                          as={FiDelete}
+                          _hover={{
+                            cursor: "pointer",
+                            color: "#EF6262",
+                          }}
+                          title="Delete"
+                        />
+                      </Td>
+                    </Tr>
+                  ))
+                )}
                 <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
                   <ModalOverlay />
                   <ModalContent>
                     <ModalHeader textAlign="center">Edit Category</ModalHeader>
                     <ModalBody>
                       <form onSubmit={handleSubmit(onSubmit)}>
-                        <FormControl isInvalid={errors.name} mb={4}>
-                          <FormLabel htmlFor="name">Name:</FormLabel>
-                          <Input
-                            type="text"
-                            id="name"
-                            {...register("name", { required: true })}
-                          />
-                          <FormErrorMessage>Name Harus Di Isi</FormErrorMessage>
-                        </FormControl>
-                        <FormControl isInvalid={errors.description} mb={4}>
-                          <FormLabel htmlFor="description">
-                            Description
-                          </FormLabel>
-                          <Input
-                            type="text"
-                            id="description"
-                            {...register("description", { required: true })}
-                          />
-                          <FormErrorMessage>
-                            Description Harus Di isi
-                          </FormErrorMessage>
-                        </FormControl>
+                        <InputField
+                          label={"Category Name"}
+                          name={"name"}
+                          placeholder={"Insert name"}
+                          register={register("name", {
+                            required: "This is required",
+                          })}
+                          errors={errors.name}
+                        />
+                        <InputField
+                          label={"Description"}
+                          name={"description"}
+                          placeholder={"Insert description"}
+                          register={register("description", {
+                            required: "This is required",
+                          })}
+                          errors={errors.description}
+                        />
                         <Button
                           type="submit"
                           size={"md"}
                           colorScheme="blue"
-                          mr={3}>
-                          Edit Category
-                        </Button>
-                        <Button size={"md"} onClick={handleCloseModal}>
-                          Cancel
+                          isLoading={isSubmitting}
+                          rounded={"full"}
+                          w={"100%"}>
+                          Update Category
                         </Button>
                       </form>
                     </ModalBody>
-                    <ModalFooter></ModalFooter>
+                    <ModalFooter>
+                      <Button
+                        size={"sm"}
+                        colorScheme="red"
+                        rounded={"full"}
+                        fontWeight={"semibold"}
+                        onClick={handleCloseModal}>
+                        Cancel
+                      </Button>
+                    </ModalFooter>
                   </ModalContent>
                 </Modal>
               </Tbody>
@@ -245,50 +257,38 @@ const Categories = () => {
   );
 };
 
-export const InputCategory = () => {
+export const InputCategory = ({ fetchCategories }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
   } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const toast = useToast();
 
   const onSubmit = async (data) => {
-    const jsonData = JSON.stringify(data);
     try {
-      const response = await instance.post(
-        "/categories",
-        jsonData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-        handleCloseModal(),
+      const response = await instance.post("/categories", data);
+      handleCloseModal(),
         toast({
           title: "Created Product",
           description: "You have successfully Created Product.",
           status: "success",
           duration: 3000,
           isClosable: true,
-        })
-      );
-      if (response.status === 200) {
-        console.log("Produk berhasil ditambahkan!");
-        fetchCategories();
-        reset();
-      }
+          position: "top",
+        });
+      fetchCategories();
+      reset();
     } catch (error) {
-      console.error("Terjadi kesalahan saat mengirim permintaan:", error);
       toast({
         title: "Failed to create product.",
-        description: err.message,
+        description: error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
     }
   };
@@ -300,11 +300,6 @@ export const InputCategory = () => {
   const handleCloseModal = () => {
     setIsOpen(false);
   };
-
-  React.useEffect(() => {
-    setValue("name", "");
-    setValue("description", "");
-  }, [setValue]);
 
   return (
     <Box>
@@ -327,36 +322,44 @@ export const InputCategory = () => {
         <ModalContent>
           <ModalHeader textAlign="center">Category Form</ModalHeader>
           <ModalBody>
-            <VStack>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <FormControl isInvalid={errors.name} mb={4}>
-                  <FormLabel htmlFor="name">Name</FormLabel>
-                  <Input
-                    type="text"
-                    id="name"
-                    {...register("name", { required: true })}
-                  />
-                  <FormErrorMessage>Name harus diisi.</FormErrorMessage>
-                </FormControl>
-                <FormControl isInvalid={errors.description} mb={4}>
-                  <FormLabel htmlFor="description">Description</FormLabel>
-                  <Input
-                    type="text"
-                    id="description"
-                    {...register("description", { required: true })}
-                  />
-                  <FormErrorMessage>Description harus diisi.</FormErrorMessage>
-                </FormControl>
-
-                <Button type="submit" size={"md"} colorScheme="blue" mr={3}>
-                  Create Category
-                </Button>
-                <Button size={"md"} onClick={handleCloseModal}>
-                  Cancel
-                </Button>
-              </form>
-            </VStack>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <InputField
+                label={"Category Name"}
+                name={"name"}
+                placeholder={"Insert name"}
+                register={register("name", { required: "This is required" })}
+                errors={errors.name}
+              />
+              <InputField
+                label={"Description"}
+                name={"description"}
+                placeholder={"Insert description"}
+                register={register("description", {
+                  required: "This is required",
+                })}
+                errors={errors.description}
+              />
+              <Button
+                type="submit"
+                size={"md"}
+                colorScheme="blue"
+                mt={3}
+                rounded={"full"}
+                w={"100%"}>
+                Create Category
+              </Button>
+            </form>
           </ModalBody>
+          <ModalFooter>
+            <Button
+              size={"sm"}
+              colorScheme="red"
+              rounded={"full"}
+              fontWeight={"semibold"}
+              onClick={handleCloseModal}>
+              Cancel
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>
