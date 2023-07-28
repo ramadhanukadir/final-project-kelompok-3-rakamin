@@ -34,7 +34,7 @@ const AllDataContextProvider = ({ children }) => {
   const [orderData, setOrderData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [activeItem, setActiveItem] = useState('dashboard');
+  const [activeItem, setActiveItem] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [filterOrder, setFilterOrder] = useState({
@@ -149,8 +149,8 @@ const AllDataContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
     if (access !== null) {
+      setIsLoading(true);
       fetchCustomers();
       fetchAllCustomers();
       fetchItems();
@@ -166,6 +166,7 @@ const AllDataContextProvider = ({ children }) => {
       fetchAllSuppliers();
       fetchAllItems();
       setIsLogin(true);
+      setIsLoading(false);
     } else {
       setIsLogin(false);
     }

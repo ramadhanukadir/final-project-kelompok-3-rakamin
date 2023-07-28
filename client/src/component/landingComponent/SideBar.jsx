@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -51,7 +51,6 @@ const SideBar = () => {
   const handleLogout = () => {
     sessionStorage.clear();
     router.push('/');
-    setActiveItem('dashboard');
     setIsLogin(false);
   };
 
@@ -97,6 +96,10 @@ const SidebarContent = ({ onClose, ...rest }) => {
     setActiveItem(item);
   };
 
+  useEffect(() => {
+    setActiveItem(router.pathname);
+  }, [router.pathname]);
+
   return (
     <Box
       bg={useColorModeValue('white')}
@@ -132,7 +135,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
           navSize={''}
           icon={FiHome}
           title='Dashboard'
-          active={activeItem === 'dashboard'}
+          active={activeItem === '/dashboard'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('dashboard'), router.push('/dashboard');
@@ -141,7 +144,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={BiCategory}
           title='Category'
-          active={activeItem === 'category'}
+          active={activeItem === '/category'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('category'), router.push('/category');
@@ -150,7 +153,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiShoppingCart}
           title='Purchase'
-          active={activeItem === 'purchase'}
+          active={activeItem === '/purchase'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('purchase'), router.push('/purchase');
@@ -159,7 +162,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiPackage}
           title='Product'
-          active={activeItem === 'product'}
+          active={activeItem === '/product'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('product'), router.push('/product');
@@ -168,7 +171,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiUser}
           title='Supplier'
-          active={activeItem === 'supplier'}
+          active={activeItem === '/supplier'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('supplier'), router.push('/supplier');
@@ -177,7 +180,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiUsers}
           title='Customers'
-          active={activeItem === 'customers'}
+          active={activeItem === '/customers'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('customers'), router.push('/customers');
@@ -186,7 +189,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={MdOutlineWarehouse}
           title='Warehouse'
-          active={activeItem === 'warehouse'}
+          active={activeItem === '/warehouse'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('warehouse'), router.push('/warehouse');
@@ -195,7 +198,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiSettings}
           title='Account Setting'
-          active={activeItem === 'profile'}
+          active={activeItem === '/profile'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('profile'), router.push('/profile');
