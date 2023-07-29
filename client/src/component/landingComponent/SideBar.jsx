@@ -144,7 +144,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={BiCategory}
           title='Category'
-          active={activeItem === '/category'}
+          active={activeItem === '/category' || activeItem === '/category/[id]'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('category'), router.push('/category');
@@ -153,7 +153,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiShoppingCart}
           title='Purchase'
-          active={activeItem === '/purchase'}
+          active={activeItem === '/purchase' || activeItem === '/purchase/[id]'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('purchase'), router.push('/purchase');
@@ -162,7 +162,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiPackage}
           title='Product'
-          active={activeItem === '/product'}
+          active={activeItem === '/product' || activeItem === '/product/[id]'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('product'), router.push('/product');
@@ -171,7 +171,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiUser}
           title='Supplier'
-          active={activeItem === '/supplier'}
+          active={activeItem === '/supplier' || activeItem === '/supplier/[id]'}
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('supplier'), router.push('/supplier');
@@ -180,7 +180,9 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={FiUsers}
           title='Customers'
-          active={activeItem === '/customers'}
+          active={
+            activeItem === '/customers' || activeItem === '/customers/[id]'
+          }
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('customers'), router.push('/customers');
@@ -189,7 +191,9 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <SideItem
           icon={MdOutlineWarehouse}
           title='Warehouse'
-          active={activeItem === '/warehouse'}
+          active={
+            activeItem === '/warehouse' || activeItem === '/warehouse/[id]'
+          }
           activeColor={'#1363DF'}
           onClick={() => {
             handleItemClick('warehouse'), router.push('/warehouse');
