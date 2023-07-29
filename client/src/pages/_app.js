@@ -4,6 +4,7 @@ import { Navbar } from '@/component/landingComponent';
 import SideBar from '@/component/landingComponent/SideBar';
 import { useRouter } from 'next/router';
 import AllDataContextProvider from '@/context/AllDataContext';
+import Head from 'next/head';
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -13,6 +14,14 @@ export default function App({ Component, pageProps }) {
     router.pathname === '/login';
   return (
     <ChakraProvider>
+      <Head>
+        <title>Stocktrackr</title>
+        <meta
+          name='description'
+          content='Stocktrackr is an inventory management application'
+        />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
       <Flex direction='row' h={'100vh'}>
         <AllDataContextProvider>
           {!isRootPage && (
